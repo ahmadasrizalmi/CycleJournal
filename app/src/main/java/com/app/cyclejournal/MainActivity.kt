@@ -134,7 +134,8 @@ class MainActivity : FragmentActivity() {
                             }
                         },
                         isProUserActive = isProUser,
-                        anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId()
+                        anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId(),
+                        onSaveDailyLog = { cycleViewModel.saveDailyLog(it) }
                     )
                 }
             }

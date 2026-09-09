@@ -31,6 +31,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image as AppLogoImage
 import androidx.compose.ui.geometry.Offset
 import com.app.cyclejournal.R
+import com.app.cyclejournal.data.local.entity.CervicalMucusType
+import com.app.cyclejournal.data.local.entity.DailyLogEntity
+import com.app.cyclejournal.data.local.entity.FlowIntensity
+import java.time.LocalDate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -119,7 +123,8 @@ fun CycleJournalApp(
     onRestoreCloud: (() -> Unit)? = null,
     onNukeData: (() -> Unit)? = null,
     isProUserActive: Boolean = false,
-    anonymousRecoveryKey: String = "px-7f9a2b1c4e0d"
+    anonymousRecoveryKey: String = "px-7f9a2b1c4e0d",
+    onSaveDailyLog: (DailyLogEntity) -> Unit = {}
 ) {
     var currentScreen by remember { mutableStateOf(AppScreen.SPLASH) }
     var isDarkMode by remember { mutableStateOf(false) }
@@ -291,7 +296,9 @@ fun CycleJournalApp(
             DailyJournalLogModal(
                 isDarkMode = isDarkMode,
                 onDismiss = { isLogModalOpen = false },
-                onSave = {
+                onSave = { log ->
+                    // Wire ke data layer: simpan ke Room via CycleViewModel.saveDailyLog()
+                    onSaveDailyLog(log)
                     isLogModalOpen = false
                     triggerToast("Jurnal Hari Ini Berhasil Disimpan")
                 }
@@ -1998,7 +2005,7 @@ fun PinSetupModalDialog(
 fun DailyJournalLogModal(
     isDarkMode: Boolean,
     onDismiss: () -> Unit,
-    onSave: () -> Unit
+    onSave: (DailyLogEntity) -> Unit
 ) {
     var vasScore by remember { mutableStateOf(7f) }
     var selectedFlow by remember { mutableStateOf("Sedang") }
@@ -2170,7 +2177,20 @@ fun DailyJournalLogModal(
             }
 
             Button(
-                onClick = onSave,
+                onClick = {
+                    onSave(
+                        DailyLogEntity(
+                            date = LocalDate.now(),
+                            flow = flowFromLabel(selectedFlow),
+                            basalBodyTempCelsius = null,
+                            cervicalMucus = mucusFromLabel(selectedMucus),
+                            painVasScore = vasScore.toInt(),
+                            painLocation = null,
+                            takenAnalgesic = false,
+                            notes = if (selectedSymptoms.isEmpty()) null else selectedSymptoms.joinToString(", ")
+                        )
+                    )
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = CoralDeep),
                 shape = RoundedCornerShape(16.dp)
@@ -2190,6 +2210,23 @@ private data class Tuple5<A, B, C, D, E>(
     val d: D,
     val e: E
 )
+
+private fun flowFromLabel(label: String): FlowIntensity = when (label) {
+    "Tidak" -> FlowIntensity.NONE
+    "Bercak" -> FlowIntensity.SPOTTING
+    "Ringan" -> FlowIntensity.LIGHT
+    "Sedang" -> FlowIntensity.MEDIUM
+    "Deras" -> FlowIntensity.HEAVY
+    else -> FlowIntensity.NONE
+}
+
+private fun mucusFromLabel(label: String): CervicalMucusType = when (label) {
+    "Kering" -> CervicalMucusType.DRY
+    "Krim" -> CervicalMucusType.CREAMY
+    "Cair" -> CervicalMucusType.WATERY
+    "Putih Telur" -> CervicalMucusType.EGG_WHITE
+    else -> CervicalMucusType.NONE
+}
 
 @Composable
 fun CycleBottomNavBar(
