@@ -37,6 +37,9 @@ import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
 import com.app.cyclejournal.domain.model.CycleStats
 import com.app.cyclejournal.domain.model.FertilePrediction
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -127,8 +130,8 @@ fun CycleJournalApp(
     onSharePdf: (() -> Unit)? = null,
     onExportCsv: (() -> Unit)? = null,
     onBuyPro: (() -> Unit)? = null,
-    onBackupCloud: (() -> Unit)? = null,
-    onRestoreCloud: (() -> Unit)? = null,
+    onBackupCloud: ((String) -> Unit)? = null,
+    onRestoreCloud: ((String) -> Unit)? = null,
     onNukeData: (() -> Unit)? = null,
     isProUserActive: Boolean = false,
     anonymousRecoveryKey: String = "px-7f9a2b1c4e0d",
@@ -137,7 +140,8 @@ fun CycleJournalApp(
     fertilePrediction: FertilePrediction? = null,
     cycleStats: CycleStats? = null,
     periodDates: Set<LocalDate> = emptySet(),
-    allLogs: List<DailyLogEntity> = emptyList()
+    allLogs: List<DailyLogEntity> = emptyList(),
+    onSavePin: (String) -> Unit = {}
 ) {
     var currentScreen by remember { mutableStateOf(AppScreen.SPLASH) }
     var isDarkMode by remember { mutableStateOf(false) }
@@ -293,11 +297,11 @@ fun CycleJournalApp(
                             onCopyRecoveryKey = {
                                 triggerToast("Kunci Pemulihan Cadangan Disalin: $anonymousRecoveryKey")
                             },
-                            onBackupCloud = {
-                                onBackupCloud?.invoke() ?: triggerToast("Cadangan Enkripsi Cloud Berhasil")
+                            onBackupCloud = { pin ->
+                                onBackupCloud?.invoke(pin) ?: triggerToast("Cadangan Enkripsi Cloud Berhasil")
                             },
-                            onRestoreCloud = {
-                                onRestoreCloud?.invoke() ?: triggerToast("Data Arsip Berhasil Dipulihkan")
+                            onRestoreCloud = { pin ->
+                                onRestoreCloud?.invoke(pin) ?: triggerToast("Data Arsip Berhasil Dipulihkan")
                             },
                             onNukeData = {
                                 onNukeData?.invoke() ?: run {
@@ -316,7 +320,8 @@ fun CycleJournalApp(
             PinSetupModalDialog(
                 isDarkMode = isDarkMode,
                 onDismiss = { isPinModalOpen = false },
-                onPinSaved = {
+                onPinSaved = { pin ->
+                    onSavePin(pin)
                     pinStatusText = "Aktif (PIN 4-Digit)"
                     isPinModalOpen = false
                     triggerToast("Kunci PIN Keamanan Berhasil Diaktifkan")
@@ -1719,8 +1724,8 @@ fun SettingsScreen(
     onToggleDarkMode: () -> Unit,
     onBuyPro: () -> Unit,
     onCopyRecoveryKey: () -> Unit,
-    onBackupCloud: () -> Unit,
-    onRestoreCloud: () -> Unit,
+    onBackupCloud: (String) -> Unit,
+    onRestoreCloud: (String) -> Unit,
     onNukeData: () -> Unit
 ) {
     val cardBg = if (isDarkMode) DarkCardSurface else Color.White
@@ -1898,16 +1903,27 @@ fun SettingsScreen(
                         Text("px-7f9a2b1c4e0d", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = textSecondary)
                     }
 
+                    var backupPin by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        value = backupPin,
+                        onValueChange = { if (it.length <= 4 && it.all(Char::isDigit)) backupPin = it },
+                        label = { Text("PIN 4-Digit untuk Cadangan/Pemulihan", fontSize = 11.sp) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        visualTransformation = PasswordVisualTransformation(),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
-                            onClick = onBackupCloud,
+                            onClick = { onBackupCloud(backupPin) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Text("Cadangkan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
-                            onClick = onRestoreCloud,
+                            onClick = { onRestoreCloud(backupPin) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {

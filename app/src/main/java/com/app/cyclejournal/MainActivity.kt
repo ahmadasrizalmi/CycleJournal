@@ -134,11 +134,11 @@ class MainActivity : FragmentActivity() {
                         onBuyPro = {
                             billingManager.launchPurchaseFlow(this@MainActivity)
                         },
-                        onBackupCloud = {
-                            settingsViewModel.performManualBackup("0000")
+                        onBackupCloud = { pin ->
+                            settingsViewModel.performManualBackup(pin)
                         },
-                        onRestoreCloud = {
-                            settingsViewModel.performManualRestore("0000")
+                        onRestoreCloud = { pin ->
+                            settingsViewModel.performManualRestore(pin)
                         },
                         onNukeData = {
                             settingsViewModel.wipeAllUserData {
@@ -148,6 +148,7 @@ class MainActivity : FragmentActivity() {
                         isProUserActive = isProUser,
                         anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId(),
                         onSaveDailyLog = { cycleViewModel.saveDailyLog(it) },
+                        onSavePin = { pinManager.savePin(it) },
                         latestCycle = latestCycle,
                         fertilePrediction = fertilePrediction,
                         cycleStats = cycleStats,
