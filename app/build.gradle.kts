@@ -119,6 +119,12 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    // Google Play Billing (v6+)
+    implementation("com.android.billingclient:billing-ktx:6.2.1")
+
+    // Google Mobile Ads (AdMob)
+    implementation("com.google.android.gms:play-services-ads:23.3.0")
+
     // Local Testing (JVM)
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")

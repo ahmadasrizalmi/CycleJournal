@@ -1,19 +1,24 @@
 package com.app.cyclejournal
 
 import android.os.Bundle
+import android.os.Process
 import android.view.WindowManager
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.app.cyclejournal.billing.AdMobManager
+import com.app.cyclejournal.billing.BillingManager
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.security.BiometricAuthHelper
 import com.app.cyclejournal.security.SecurityPinManager
-import com.app.cyclejournal.ui.navigation.AppNavHost
-import com.app.cyclejournal.ui.navigation.Screen
+import com.app.cyclejournal.ui.CycleJournalApp
+import com.app.cyclejournal.ui.home.CycleViewModel
 import com.app.cyclejournal.ui.security.PinLockScreen
+import com.app.cyclejournal.ui.settings.SettingsViewModel
 import com.app.cyclejournal.ui.theme.CycleJournalTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,6 +31,15 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var prefs: OnboardingPreferences
+
+    @Inject
+    lateinit var billingManager: BillingManager
+
+    @Inject
+    lateinit var adMobManager: AdMobManager
+
+    private val cycleViewModel: CycleViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     private var lastBackgroundTimestamp = 0L
     private val isAppUnlocked = androidx.compose.runtime.mutableStateOf(false)
@@ -41,6 +55,11 @@ class MainActivity : FragmentActivity() {
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
         )
+
+        // Initialize Monetization & Privacy-compliant Ads
+        billingManager.initialize()
+        adMobManager.initialize()
+        adMobManager.loadRewardedVideo()
 
         biometricAuthHelper = BiometricAuthHelper(this)
 
@@ -84,12 +103,39 @@ class MainActivity : FragmentActivity() {
                         }
                     )
                 } else {
-                    val startDestination = if (prefs.isOnboardingCompleted()) {
-                        Screen.Home.route
-                    } else {
-                        Screen.Onboarding.route
-                    }
-                    AppNavHost(startDestination = startDestination)
+                    val isProUser = billingManager.isProUser.value
+
+                    CycleJournalApp(
+                        onSharePdf = {
+                            // Free-tier rewarded ad gate / Pro direct export
+                            adMobManager.showRewardedVideo(
+                                activity = this@MainActivity,
+                                onRewardEarned = {
+                                    cycleViewModel.exportAndSharePdfReport(this@MainActivity)
+                                },
+                                onDismissedOrFailed = {}
+                            )
+                        },
+                        onExportCsv = {
+                            settingsViewModel.exportAndShareCsv(this@MainActivity)
+                        },
+                        onBuyPro = {
+                            billingManager.launchPurchaseFlow(this@MainActivity)
+                        },
+                        onBackupCloud = {
+                            settingsViewModel.performManualBackup("0000")
+                        },
+                        onRestoreCloud = {
+                            settingsViewModel.performManualRestore("0000")
+                        },
+                        onNukeData = {
+                            settingsViewModel.wipeAllUserData {
+                                Process.killProcess(Process.myPid())
+                            }
+                        },
+                        isProUserActive = isProUser,
+                        anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId()
+                    )
                 }
             }
         }

@@ -1,11 +1,17 @@
 package com.app.cyclejournal.di
 
 import android.content.Context
+import com.app.cyclejournal.billing.AdMobManager
+import com.app.cyclejournal.billing.BillingManager
+import com.app.cyclejournal.billing.UserEntitlementManager
 import com.app.cyclejournal.data.local.AppDatabase
 import com.app.cyclejournal.data.local.dao.CycleDao
 import com.app.cyclejournal.data.local.dao.DailyLogDao
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
+import com.app.cyclejournal.data.preferences.PrivacyPreferenceManager
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
+import com.app.cyclejournal.domain.engine.AnomalyDetector
+import com.app.cyclejournal.domain.engine.BbtEngine
 import com.app.cyclejournal.domain.engine.ClinicalCycleEngine
 import com.app.cyclejournal.domain.engine.CycleAggregator
 import com.app.cyclejournal.domain.manager.DataRestoreManager
@@ -106,5 +112,47 @@ object AppModule {
         backupClient: CloudflareBackupClient
     ): DataWipeManager {
         return DataWipeManager(context, database, pinManager, keyManager, alarmScheduler, backupClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserEntitlementManager(@ApplicationContext context: Context): UserEntitlementManager {
+        return UserEntitlementManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBillingManager(
+        @ApplicationContext context: Context,
+        entitlementManager: UserEntitlementManager
+    ): BillingManager {
+        return BillingManager(context, entitlementManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAdMobManager(
+        @ApplicationContext context: Context,
+        entitlementManager: UserEntitlementManager
+    ): AdMobManager {
+        return AdMobManager(context, entitlementManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBbtEngine(): BbtEngine {
+        return BbtEngine()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnomalyDetector(): AnomalyDetector {
+        return AnomalyDetector()
+    }
+
+    @Provides
+    @Singleton
+    fun providePrivacyPreferenceManager(@ApplicationContext context: Context): PrivacyPreferenceManager {
+        return PrivacyPreferenceManager(context)
     }
 }
