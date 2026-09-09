@@ -161,7 +161,8 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(100.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink)
             ) {
                 Row(
@@ -183,7 +184,7 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryCoral)
             ) {
                 Row(

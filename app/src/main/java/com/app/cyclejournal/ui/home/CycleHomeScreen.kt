@@ -2,6 +2,7 @@ package com.app.cyclejournal.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -73,55 +74,67 @@ fun CycleHomeScreen(
                     }
                 },
                 actions = {
+                    // Actions moved to bottom navigation bar or top quick actions
                     IconButton(onClick = onNavigateToReport) {
-                        Icon(
-                            Icons.Outlined.PictureAsPdf,
-                            contentDescription = "Laporan SpOG",
-                            tint = PrimaryPink
-                        )
-                    }
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            Icons.Outlined.Settings,
-                            contentDescription = "Pengaturan",
-                            tint = TextSecondary
-                        )
+                        Icon(Icons.Outlined.PictureAsPdf, contentDescription = "Laporan SpOG", tint = PrimaryPink)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundWhite)
             )
         },
         bottomBar = {
-            // Sticky Bottom CTA: Catat Gejala Hari Ini
             Surface(
                 color = BackgroundWhite,
-                shadowElevation = 8.dp,
+                shadowElevation = 16.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .height(74.dp)
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = { isBottomSheetOpen = true },
+                    // Tab 1: Beranda
+                    IconButton(onClick = {}) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Outlined.CalendarMonth, contentDescription = "Beranda", tint = PrimaryPink, modifier = Modifier.size(22.dp))
+                            Text("Beranda", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = PrimaryPink)
+                        }
+                    }
+
+                    // Center Elevated FAB (Catat Gejala)
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(28.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink)
+                            .offset(y = (-12).dp)
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(CoralPinkGradient)
+                            .clickable { isBottomSheetOpen = true },
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(Icons.Outlined.EditCalendar, contentDescription = null, tint = Color.White)
-                            Text(
-                                text = stringResource(R.string.action_log_symptoms),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = Color.White
-                            )
+                        Icon(
+                            Icons.Outlined.EditCalendar,
+                            contentDescription = "Catat Gejala",
+                            tint = Color.White,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+
+                    // Tab 2: Laporan SpOG
+                    IconButton(onClick = onNavigateToReport) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Outlined.PictureAsPdf, contentDescription = "Laporan", tint = TextSecondary, modifier = Modifier.size(22.dp))
+                            Text("Laporan", fontSize = 10.sp, color = TextSecondary)
+                        }
+                    }
+
+                    // Tab 3: Pengaturan
+                    IconButton(onClick = onNavigateToSettings) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Outlined.Settings, contentDescription = "Pengaturan", tint = TextSecondary, modifier = Modifier.size(22.dp))
+                            Text("Pengaturan", fontSize = 10.sp, color = TextSecondary)
                         }
                     }
                 }

@@ -111,12 +111,12 @@ fun DailyLogInputSheet(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(100.dp))
                             .background(if (isSelected) tint else Color(0xFFF8FAFC))
                             .border(
                                 width = if (isSelected) 1.5.dp else 1.dp,
                                 color = if (isSelected) PrimaryPink else BorderSubtle,
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(100.dp)
                             )
                             .clickable { flow = intensity }
                             .padding(vertical = 10.dp),
@@ -285,12 +285,12 @@ fun DailyLogInputSheet(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(100.dp))
                             .background(if (isSelected) FertileBg else Color(0xFFF8FAFC))
                             .border(
                                 width = if (isSelected) 1.5.dp else 1.dp,
                                 color = if (isSelected) FertileText else BorderSubtle,
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(100.dp)
                             )
                             .clickable { mucus = type }
                             .padding(vertical = 10.dp),
@@ -344,7 +344,8 @@ fun DailyLogInputSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(100.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink)
         ) {
             Row(

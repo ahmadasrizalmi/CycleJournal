@@ -139,7 +139,7 @@ fun SettingsScreen(
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(100.dp)
                             ) {
                                 Text(stringResource(R.string.action_backup_now), fontSize = 13.sp)
                             }
@@ -149,7 +149,7 @@ fun SettingsScreen(
                                     showRestoreDialog = true
                                 },
                                 modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(100.dp)
                             ) {
                                 Text(stringResource(R.string.action_restore_backup), fontSize = 13.sp)
                             }
@@ -198,7 +198,7 @@ fun SettingsScreen(
                                 showNukeDialog = true
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = AlertBorder),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(100.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(Icons.Outlined.DeleteForever, contentDescription = null, tint = Color.White)
