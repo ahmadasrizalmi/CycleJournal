@@ -40,6 +40,10 @@ class CycleViewModel @Inject constructor(
     val allCyclesFlow: StateFlow<List<CycleEntity>> = cycleDao.getAllCyclesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    // 1b. All daily logs (biomarkers, pain, notes) — for week strip, BBT chart, recent history
+    val allLogsFlow: StateFlow<List<DailyLogEntity>> = dailyLogDao.getAllLogsFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     // 2. Latest active cycle
     val latestCycleFlow: StateFlow<CycleEntity?> = allCyclesFlow.map { it.firstOrNull() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)

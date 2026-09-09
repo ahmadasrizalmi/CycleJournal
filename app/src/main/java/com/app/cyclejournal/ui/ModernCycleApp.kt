@@ -37,6 +37,7 @@ import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
 import com.app.cyclejournal.domain.model.CycleStats
 import com.app.cyclejournal.domain.model.FertilePrediction
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
@@ -106,7 +107,9 @@ data class DayLog(
     val painVas: Int,
     val painDesc: String,
     val mucus: String,
-    val phaseType: CyclePhaseType
+    val phaseType: CyclePhaseType,
+    val date: LocalDate? = null,
+    val bbtValue: Double? = null
 )
 
 data class CalendarDateInfo(
@@ -133,7 +136,8 @@ fun CycleJournalApp(
     latestCycle: CycleEntity? = null,
     fertilePrediction: FertilePrediction? = null,
     cycleStats: CycleStats? = null,
-    periodDates: Set<LocalDate> = emptySet()
+    periodDates: Set<LocalDate> = emptySet(),
+    allLogs: List<DailyLogEntity> = emptyList()
 ) {
     var currentScreen by remember { mutableStateOf(AppScreen.SPLASH) }
     var isDarkMode by remember { mutableStateOf(false) }
@@ -144,18 +148,17 @@ fun CycleJournalApp(
     var isProLicenseActive by remember(isProUserActive) { mutableStateOf(isProUserActive) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
-    val weekDays = remember {
-        listOf(
-            DayLog(11, "Kam", "Selesai Haid", "36.30 °C", 0, "Bebas Nyeri", "Flek Coklat", CyclePhaseType.MENSTRUATION),
-            DayLog(12, "Jum", "Fase Folikuler", "36.32 °C", 0, "Bebas Nyeri", "Kering", CyclePhaseType.FOLLICULAR),
-            DayLog(13, "Sab", "Fase Pra-Subur", "36.38 °C", 0, "Bebas Nyeri", "Krim", CyclePhaseType.FOLLICULAR),
-            DayLog(14, "Min", "Jendela Subur", "36.50 °C", 7, "Sedang (VAS 7)", "Putih Telur", CyclePhaseType.FERTILE),
-            DayLog(15, "Sen", "Masa Subur Aktif", "36.42 °C", 0, "Bebas Nyeri", "Cair Basah", CyclePhaseType.FERTILE),
-            DayLog(16, "Sel", "Peluang Konsepsi Tinggi", "36.45 °C", 2, "Nyeri Ringan", "Putih Telur", CyclePhaseType.FERTILE),
-            DayLog(17, "Rab", "Puncak Ovulasi", "36.48 °C", 3, "Mittelschmerz", "Putih Telur Maksimal", CyclePhaseType.OVULATION)
-        )
+    val weekDays = remember(allLogs, latestCycle, fertilePrediction) {
+        // Bangun strip 7 hari dari data nyata (data layer)
+        val last7 = allLogs.sortedBy { it.date }.takeLast(7)
+        if (last7.isEmpty()) emptyList() else last7.map { it.toDayLog(latestCycle, fertilePrediction) }
     }
-    var selectedDayLog by remember { mutableStateOf(weekDays[3]) }
+    val defaultDayLog = DayLog(
+        LocalDate.now().dayOfMonth, shortDayName(LocalDate.now()), "Fase Folikuler",
+        "-- °C", 0, "Bebas Nyeri", "Tidak ada", CyclePhaseType.FOLLICULAR,
+        LocalDate.now(), null
+    )
+    var selectedDayLog by remember { mutableStateOf(weekDays.lastOrNull() ?: defaultDayLog) }
 
     // ===== REAL DATA DARI DATA LAYER (Room + engine) =====
     val todayCycleDay = latestCycle?.let {
@@ -935,9 +938,15 @@ fun DashboardScreen(
                     ) {
                         val width = size.width
                         val height = size.height
-                        val coverLineY = height * 0.55f
+                        // ==== Data BBT nyata dari data layer ====
+                        val bbtValues = weekDays.mapNotNull { it.bbtValue }
+                        val minT = bbtValues.minOrNull() ?: 36.30
+                        val maxT = bbtValues.maxOrNull() ?: 36.50
+                        val range = ((maxT - minT).takeIf { it > 0.01 }) ?: 1.0
+                        val avgT = bbtValues.average().takeIf { bbtValues.isNotEmpty() } ?: 36.40
+                        val coverLineY = (height * (0.85f - 0.65f * ((avgT - minT) / range))).toFloat()
 
-                        // Baseline Dotted Coverline at 36.40°C
+                        // Baseline Coverline (rata-rata BBT)
                         drawLine(
                             color = Color(0xFFCBD5E1),
                             start = Offset(0f, coverLineY),
@@ -946,15 +955,15 @@ fun DashboardScreen(
                             pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f)
                         )
 
-                        val points = listOf(
-                            Offset(width * 0.05f, height * 0.75f),
-                            Offset(width * 0.20f, height * 0.68f),
-                            Offset(width * 0.35f, height * 0.62f),
-                            Offset(width * 0.50f, height * 0.65f), // Today
-                            Offset(width * 0.65f, height * 0.40f),
-                            Offset(width * 0.80f, height * 0.25f),
-                            Offset(width * 0.95f, height * 0.18f)
-                        )
+                        val points = if (bbtValues.size >= 2) {
+                            bbtValues.mapIndexed { i, v ->
+                                val x = width * (0.08f + 0.84f * (i.toFloat() / (bbtValues.size - 1)))
+                                val y = (height * (0.85f - 0.65f * ((v - minT) / range))).toFloat().coerceIn(0f, height)
+                                Offset(x, y)
+                            }
+                        } else {
+                            listOf(Offset(width * 0.5f, height * 0.5f))
+                        }
 
                         val curvePath = Path().apply {
                             moveTo(points.first().x, points.first().y)
@@ -989,7 +998,7 @@ fun DashboardScreen(
                         )
 
                         points.forEachIndexed { index, point ->
-                            val dotColor = if (index == 3) Slate900 else CoralDeep
+                            val dotColor = if (index == points.lastIndex) Slate900 else CoralDeep
                             drawCircle(color = Color.White, radius = 9f, center = point)
                             drawCircle(color = dotColor, radius = 6f, center = point)
                         }
@@ -2275,6 +2284,70 @@ private fun mucusFromLabel(label: String): CervicalMucusType = when (label) {
     "Cair" -> CervicalMucusType.WATERY
     "Putih Telur" -> CervicalMucusType.EGG_WHITE
     else -> CervicalMucusType.NONE
+}
+
+// ===== Helper untuk membangun strip 7 hari dari data nyata (data layer) =====
+private fun DailyLogEntity.toDayLog(latestCycle: CycleEntity?, fp: FertilePrediction?): DayLog {
+    val cycleDay = latestCycle?.let { (ChronoUnit.DAYS.between(it.startDate, this.date) + 1).toInt() }?.coerceAtLeast(1) ?: 1
+    val phaseType = cyclePhaseFor(cycleDay, this, fp)
+    return DayLog(
+        dayOfMonth = date.dayOfMonth,
+        dayLabel = shortDayName(date),
+        phaseName = phaseNameFor(phaseType, cycleDay),
+        bbtString = basalBodyTempCelsius?.let { "%.2f °C".format(it) } ?: "-- °C",
+        painVas = painVasScore,
+        painDesc = painDescFor(painVasScore),
+        mucus = mucusLabelFor(cervicalMucus),
+        phaseType = phaseType,
+        date = date,
+        bbtValue = basalBodyTempCelsius
+    )
+}
+
+private fun cyclePhaseFor(cycleDay: Int, log: DailyLogEntity, fp: FertilePrediction?): CyclePhaseType {
+    if (log.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) return CyclePhaseType.MENSTRUATION
+    if (fp != null) {
+        val d = log.date
+        if (d == fp.predictedOvulationDate) return CyclePhaseType.OVULATION
+        if (!d.isBefore(fp.fertileWindowStart) && !d.isAfter(fp.fertileWindowEnd)) return CyclePhaseType.FERTILE
+        if (d.isAfter(fp.fertileWindowEnd)) return CyclePhaseType.LUTEAL
+    }
+    return CyclePhaseType.FOLLICULAR
+}
+
+private fun phaseNameFor(pt: CyclePhaseType, cycleDay: Int): String = when (pt) {
+    CyclePhaseType.MENSTRUATION -> if (cycleDay <= 1) "Haid" else "Haid Berlangsung"
+    CyclePhaseType.FOLLICULAR -> "Fase Folikuler"
+    CyclePhaseType.FERTILE -> "Jendela Subur"
+    CyclePhaseType.OVULATION -> "Puncak Ovulasi"
+    CyclePhaseType.LUTEAL -> "Fase Luteal"
+}
+
+private fun shortDayName(date: LocalDate): String = when (date.dayOfWeek) {
+    DayOfWeek.MONDAY -> "Sen"
+    DayOfWeek.TUESDAY -> "Sel"
+    DayOfWeek.WEDNESDAY -> "Rab"
+    DayOfWeek.THURSDAY -> "Kam"
+    DayOfWeek.FRIDAY -> "Jum"
+    DayOfWeek.SATURDAY -> "Sab"
+    DayOfWeek.SUNDAY -> "Min"
+}
+
+private fun painDescFor(score: Int): String = when {
+    score == 0 -> "Bebas Nyeri"
+    score <= 3 -> "Nyeri Ringan"
+    score <= 6 -> "Nyeri Sedang"
+    score <= 8 -> "Nyeri Berat"
+    else -> "Sangat Hebat"
+}
+
+private fun mucusLabelFor(m: CervicalMucusType): String = when (m) {
+    CervicalMucusType.NONE -> "Tidak ada"
+    CervicalMucusType.DRY -> "Kering"
+    CervicalMucusType.STICKY -> "Lengket"
+    CervicalMucusType.CREAMY -> "Krim"
+    CervicalMucusType.WATERY -> "Cair"
+    CervicalMucusType.EGG_WHITE -> "Putih Telur"
 }
 
 @Composable

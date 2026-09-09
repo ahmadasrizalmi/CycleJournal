@@ -115,6 +115,7 @@ class MainActivity : FragmentActivity() {
                     val fertilePrediction by cycleViewModel.fertilePredictionFlow.collectAsState()
                     val cycleStats by cycleViewModel.cycleStatsFlow.collectAsState()
                     val periodDates by cycleViewModel.periodDatesFlow.collectAsState()
+                    val allLogs by cycleViewModel.allLogsFlow.collectAsState()
 
                     CycleJournalApp(
                         onSharePdf = {
@@ -150,7 +151,8 @@ class MainActivity : FragmentActivity() {
                         latestCycle = latestCycle,
                         fertilePrediction = fertilePrediction,
                         cycleStats = cycleStats,
-                        periodDates = periodDates
+                        periodDates = periodDates,
+                        allLogs = allLogs
                     )
                 }
             }
