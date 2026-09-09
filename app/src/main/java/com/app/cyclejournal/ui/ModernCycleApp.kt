@@ -32,9 +32,14 @@ import androidx.compose.foundation.Image as AppLogoImage
 import androidx.compose.ui.geometry.Offset
 import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.CervicalMucusType
+import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
+import com.app.cyclejournal.domain.model.CycleStats
+import com.app.cyclejournal.domain.model.FertilePrediction
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -124,7 +129,11 @@ fun CycleJournalApp(
     onNukeData: (() -> Unit)? = null,
     isProUserActive: Boolean = false,
     anonymousRecoveryKey: String = "px-7f9a2b1c4e0d",
-    onSaveDailyLog: (DailyLogEntity) -> Unit = {}
+    onSaveDailyLog: (DailyLogEntity) -> Unit = {},
+    latestCycle: CycleEntity? = null,
+    fertilePrediction: FertilePrediction? = null,
+    cycleStats: CycleStats? = null,
+    periodDates: Set<LocalDate> = emptySet()
 ) {
     var currentScreen by remember { mutableStateOf(AppScreen.SPLASH) }
     var isDarkMode by remember { mutableStateOf(false) }
@@ -147,6 +156,19 @@ fun CycleJournalApp(
         )
     }
     var selectedDayLog by remember { mutableStateOf(weekDays[3]) }
+
+    // ===== REAL DATA DARI DATA LAYER (Room + engine) =====
+    val todayCycleDay = latestCycle?.let {
+        (ChronoUnit.DAYS.between(it.startDate, LocalDate.now()) + 1).toInt()
+    }?.coerceAtLeast(1) ?: 1
+    val ovulationCountdown = fertilePrediction?.let {
+        ChronoUnit.DAYS.between(LocalDate.now(), it.predictedOvulationDate).toInt()
+    }?.takeIf { it >= 0 }
+    val nextPeriodCountdown = fertilePrediction?.let {
+        ChronoUnit.DAYS.between(LocalDate.now(), it.predictedNextPeriodDate).toInt()
+    }?.takeIf { it >= 0 }
+    val averageCycle = cycleStats?.averageLength ?: 28.0
+    val stdDev = cycleStats?.standardDeviation ?: 0.0
 
     val triggerToast: (String) -> Unit = { message ->
         toastMessage = message
@@ -204,6 +226,11 @@ fun CycleJournalApp(
                             isDiscreetMode = isDiscreetMode,
                             weekDays = weekDays,
                             selectedDay = selectedDayLog,
+                            cycleDay = todayCycleDay,
+                            ovulationCountdown = ovulationCountdown,
+                            nextPeriodCountdown = nextPeriodCountdown,
+                            averageCycle = averageCycle,
+                            stdDev = stdDev,
                             onSelectDay = { selectedDayLog = it },
                             onOpenCalendar = { currentScreen = AppScreen.CALENDAR },
                             onOpenLogModal = { isLogModalOpen = true }
@@ -211,9 +238,11 @@ fun CycleJournalApp(
                         AppScreen.CALENDAR -> CalendarScreen(
                             isDarkMode = isDarkMode,
                             selectedDay = selectedDayLog,
+                            periodDates = periodDates,
+                            fertilePrediction = fertilePrediction,
                             onOpenLogModal = { isLogModalOpen = true },
                             onDaySelected = { day ->
-                                triggerToast("Memeriksa data tanggal $day September 2026")
+                                triggerToast("Memeriksa data tanggal $day ${LocalDate.now().month.name.lowercase()}")
                             }
                         )
                         AppScreen.REPORT -> MedicalReportScreen(
@@ -630,6 +659,11 @@ fun DashboardScreen(
     isDiscreetMode: Boolean,
     weekDays: List<DayLog>,
     selectedDay: DayLog,
+    cycleDay: Int,
+    ovulationCountdown: Int?,
+    nextPeriodCountdown: Int?,
+    averageCycle: Double,
+    stdDev: Double,
     onSelectDay: (DayLog) -> Unit,
     onOpenCalendar: () -> Unit,
     onOpenLogModal: () -> Unit
@@ -692,7 +726,13 @@ fun DashboardScreen(
                         )
 
                         Text(
-                            text = if (isDiscreetMode) "Pencatatan normal berlangsung" else "Ovulasi dalam 2 hari ke depan",
+                            text = if (isDiscreetMode) "Pencatatan normal berlangsung" else (ovulationCountdown?.let { cd ->
+                                when {
+                                    cd == 0 -> "Ovulasi diperkirakan hari ini"
+                                    cd == 1 -> "Ovulasi dalam 1 hari"
+                                    else -> "Ovulasi dalam $cd hari"
+                                }
+                            } ?: "Perkiraan ovulasi belum tersedia") + (nextPeriodCountdown?.let { " • Haid dalam $it hari" } ?: ""),
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.9f)
                         )
@@ -708,7 +748,7 @@ fun DashboardScreen(
                             ) {
                                 Column {
                                     Text("RATA-RATA", fontSize = 8.sp, color = Color.White.copy(alpha = 0.8f), fontWeight = FontWeight.Bold)
-                                    Text("28 Hari (±1.5)", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text("${averageCycle.roundToInt()} Hari (±${stdDev.roundToInt()})", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Bold)
                                 }
                             }
 
@@ -743,15 +783,15 @@ fun DashboardScreen(
                             drawArc(
                                 color = Color.White,
                                 startAngle = -90f,
-                                sweepAngle = (selectedDay.dayOfMonth.toFloat() / 28f) * 360f,
+                                sweepAngle = (cycleDay.toFloat() / averageCycle.toFloat()) * 360f,
                                 useCenter = false,
                                 style = Stroke(width = 16f, cap = StrokeCap.Round)
                             )
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Hari", fontSize = 9.sp, color = Color.White.copy(alpha = 0.8f))
-                            Text("${selectedDay.dayOfMonth}", fontSize = 22.sp, fontWeight = FontWeight.Black, color = Color.White)
-                            Text("dari 28", fontSize = 8.sp, color = Color.White.copy(alpha = 0.8f))
+                            Text("$cycleDay", fontSize = 22.sp, fontWeight = FontWeight.Black, color = Color.White)
+                            Text("dari ${averageCycle.roundToInt()}", fontSize = 8.sp, color = Color.White.copy(alpha = 0.8f))
                         }
                     }
                 }
@@ -1073,6 +1113,8 @@ fun DashboardScreen(
 fun CalendarScreen(
     isDarkMode: Boolean,
     selectedDay: DayLog,
+    periodDates: Set<LocalDate>,
+    fertilePrediction: FertilePrediction?,
     onOpenLogModal: () -> Unit,
     onDaySelected: (Int) -> Unit
 ) {
@@ -1081,7 +1123,7 @@ fun CalendarScreen(
     val textPrimary = if (isDarkMode) Color.White else Slate900
     val textSecondary = if (isDarkMode) Slate400 else Slate500
 
-    var currentSelectedCalendarDay by remember { mutableStateOf(14) }
+    var currentSelectedCalendarDay by remember { mutableStateOf(LocalDate.now().dayOfMonth) }
 
     LazyColumn(
         modifier = Modifier
@@ -1167,9 +1209,16 @@ fun CalendarScreen(
                     rows.forEach { rowDays ->
                         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
                             rowDays.forEach { d ->
-                                val isMenstruation = d in 8..12
-                                val isFertile = d in 17..21 && d != 20
-                                val isOvulation = d == 20
+                                val today = LocalDate.now()
+                                val isMenstruation = periodDates.any { it.dayOfMonth == d && it.month == today.month && it.year == today.year }
+                                val isOvulation = fertilePrediction?.let { fp ->
+                                    val od = fp.predictedOvulationDate
+                                    od.dayOfMonth == d && od.month == today.month && od.year == today.year
+                                } == true
+                                val isFertile = fertilePrediction?.let { fp ->
+                                    !isMenstruation && d in fp.fertileWindowStart.dayOfMonth..fp.fertileWindowEnd.dayOfMonth &&
+                                        fp.fertileWindowStart.month == today.month
+                                } == true
                                 val isSelected = d == currentSelectedCalendarDay
 
                                 val (cellBg, cellText) = when {

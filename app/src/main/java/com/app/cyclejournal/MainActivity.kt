@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.app.cyclejournal.billing.AdMobManager
 import com.app.cyclejournal.billing.BillingManager
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
@@ -17,6 +19,10 @@ import com.app.cyclejournal.security.BiometricAuthHelper
 import com.app.cyclejournal.security.SecurityPinManager
 import com.app.cyclejournal.ui.CycleJournalApp
 import com.app.cyclejournal.ui.home.CycleViewModel
+import com.app.cyclejournal.data.local.entity.CycleEntity
+import com.app.cyclejournal.domain.model.CycleStats
+import com.app.cyclejournal.domain.model.FertilePrediction
+import java.time.LocalDate
 import com.app.cyclejournal.ui.security.PinLockScreen
 import com.app.cyclejournal.ui.settings.SettingsViewModel
 import com.app.cyclejournal.ui.theme.CycleJournalTheme
@@ -105,6 +111,11 @@ class MainActivity : FragmentActivity() {
                 } else {
                     val isProUser = billingManager.isProUser.value
 
+                    val latestCycle by cycleViewModel.latestCycleFlow.collectAsState()
+                    val fertilePrediction by cycleViewModel.fertilePredictionFlow.collectAsState()
+                    val cycleStats by cycleViewModel.cycleStatsFlow.collectAsState()
+                    val periodDates by cycleViewModel.periodDatesFlow.collectAsState()
+
                     CycleJournalApp(
                         onSharePdf = {
                             // Free-tier rewarded ad gate / Pro direct export
@@ -135,7 +146,11 @@ class MainActivity : FragmentActivity() {
                         },
                         isProUserActive = isProUser,
                         anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId(),
-                        onSaveDailyLog = { cycleViewModel.saveDailyLog(it) }
+                        onSaveDailyLog = { cycleViewModel.saveDailyLog(it) },
+                        latestCycle = latestCycle,
+                        fertilePrediction = fertilePrediction,
+                        cycleStats = cycleStats,
+                        periodDates = periodDates
                     )
                 }
             }
