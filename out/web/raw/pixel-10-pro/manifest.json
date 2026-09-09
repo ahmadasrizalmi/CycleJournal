@@ -1,0 +1,25 @@
+{
+  "device": "pixel-10-pro",
+  "screenshots": [
+    {
+      "sceneId": "dashboard",
+      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/dashboard.png"
+    },
+    {
+      "sceneId": "daily-log",
+      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/daily-log.png"
+    },
+    {
+      "sceneId": "medical-report",
+      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/medical-report.png"
+    },
+    {
+      "sceneId": "privacy-security",
+      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/privacy-security.png"
+    },
+    {
+      "sceneId": "data-portability",
+      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/data-portability.png"
+    }
+  ]
+}

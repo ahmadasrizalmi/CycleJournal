@@ -116,6 +116,8 @@ class MainActivity : FragmentActivity() {
                     val cycleStats by cycleViewModel.cycleStatsFlow.collectAsState()
                     val periodDates by cycleViewModel.periodDatesFlow.collectAsState()
                     val allLogs by cycleViewModel.allLogsFlow.collectAsState()
+                    val completedCycles by cycleViewModel.completedCyclesFlow.collectAsState()
+                    val anomalies by cycleViewModel.anomaliesFlow.collectAsState()
 
                     CycleJournalApp(
                         onSharePdf = {
@@ -153,7 +155,10 @@ class MainActivity : FragmentActivity() {
                         fertilePrediction = fertilePrediction,
                         cycleStats = cycleStats,
                         periodDates = periodDates,
-                        allLogs = allLogs
+                        allLogs = allLogs,
+                        completedCycles = completedCycles,
+                        anomalies = anomalies,
+                        isPinSet = pinManager.isPinSet()
                     )
                 }
             }
