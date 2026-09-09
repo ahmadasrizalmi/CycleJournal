@@ -27,7 +27,10 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image as AppLogoImage
 import androidx.compose.ui.geometry.Offset
+import com.app.cyclejournal.R
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -416,24 +419,14 @@ fun CycleSplashScreen(onEnterApp: () -> Unit) {
                         .blur(26.dp)
                 )
 
-                // Logo Shell with Pearl Core
-                Box(
+                // Official CycleJournal logo (transparent master asset)
+                AppLogoImage(
+                    painter = painterResource(id = R.drawable.logo_transparent),
+                    contentDescription = "CycleJournal Logo",
                     modifier = Modifier
                         .size(124.dp)
                         .scale(pulseScale)
-                        .clip(CircleShape)
-                        .background(CoralPinkGradient)
-                        .shadow(16.dp, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                            .background(PearlIridescentGradient)
-                            .border(1.5.dp, Color.White.copy(alpha = 0.9f), CircleShape)
-                    )
-                }
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -548,20 +541,13 @@ fun CycleTopAppBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
+            AppLogoImage(
+                painter = painterResource(id = R.drawable.logo_transparent),
+                contentDescription = "CycleJournal Logo",
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(CoralPinkGradient),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clip(CircleShape)
-                        .background(PearlIridescentGradient)
-                )
-            }
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Text(
