@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CycleJournal - Medical-Grade UI/UX Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            coral: {
+              300: '#FFB2A1',
+              400: '#FF8A71',
+              500: '#FF6F61',
+              600: '#FF5E7D',
+              700: '#E64264'
+            },
+            medical: {
+              cyan: '#06B6D4',
+              teal: '#0D9488',
+              rose: '#F43F5E',
+              amber: '#F59E0B',
+              slate: '#0F172A'
+            }
+          },
+          boxShadow: {
+            'glow-coral': '0 10px 25px -5px rgba(255, 94, 125, 0.4)',
+            'subtle-card': '0 4px 20px -2px rgba(15, 23, 42, 0.05)',
+            'floating-fab': '0 12px 30px -4px rgba(255, 94, 125, 0.5)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Mobile Viewport Simulation */
+    body {
+      background: radial-gradient(circle at top left, #1e293b, #0f172a);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .phone-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 892px;
+      background: #FAFAFB;
+      border-radius: 46px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 0 10px #222938, 0 0 0 12px #334155;
+      overflow: hidden;
+      position: relative;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .coral-gradient {
+      background: linear-gradient(135deg, #FF8A71 0%, #FF5E7D 100%);
+    }
+    .coral-gradient-soft {
+      background: linear-gradient(135deg, rgba(255, 138, 113, 0.12) 0%, rgba(255, 94, 125, 0.12) 100%);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    /* Logo SVG pearl effect */
+    .pearl-sheen {
+      background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #FEE2E2 40%, #E2E8F0 85%, #CBD5E1 100%);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -4px 8px rgba(244,63,94,0.2), 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    /* Ambient Aurora & Floating Animation for Splash */
+    @keyframes floatSoft {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-8px) scale(1.02); }
+    }
+    @keyframes meshBreathe {
+      0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.65; }
+      50% { transform: scale(1.2) translate(-15px, 12px); opacity: 0.9; }
+    }
+    .animate-float {
+      animation: floatSoft 4s ease-in-out infinite;
+    }
+    .mesh-blob-1 {
+      animation: meshBreathe 7s ease-in-out infinite alternate;
+    }
+    .mesh-blob-2 {
+      animation: meshBreathe 9s ease-in-out infinite alternate-reverse;
+    }
+
+    /* Dark Mode Smooth Transition */
+    .phone-frame.dark-theme {
+      background: #0B0F19;
+      color: #F1F5F9;
+    }
+    .phone-frame.dark-theme #screen-container {
+      background: #0B0F19;
+    }
+    .phone-frame.dark-theme .bg-white {
+      background-color: #151D2E !important;
+      border-color: #243048 !important;
+      color: #F1F5F9;
+    }
+    .phone-frame.dark-theme .text-slate-900,
+    .phone-frame.dark-theme .text-slate-800,
+    .phone-frame.dark-theme .text-slate-700 {
+      color: #E2E8F0 !important;
+    }
+    .phone-frame.dark-theme .text-slate-500,
+    .phone-frame.dark-theme .text-slate-400 {
+      color: #94A3B8 !important;
+    }
+    .phone-frame.dark-theme .bg-slate-50 {
+      background-color: #1A2438 !important;
+      border-color: #283750 !important;
+    }
+    .phone-frame.dark-theme .glass-nav {
+      background: rgba(15, 23, 42, 0.92) !important;
+      border-color: #222F46 !important;
+    }
+    .phone-frame.dark-theme .phone-status-bar {
+      color: #E2E8F0 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-6 select-none">
+
+  <div id="app-frame" class="phone-frame flex flex-col mx-auto relative border border-slate-700/50">
+
+    <!-- Top Speaker & Dynamic Island / Punch Hole -->
+    <div class="phone-status-bar absolute top-0 left-0 right-0 h-10 z-50 flex items-center justify-between px-7 pt-2 pointer-events-none text-slate-800 transition-colors">
+      <span class="text-xs font-semibold tracking-tight" id="status-clock">09:41</span>
+      <div class="w-24 h-4 bg-slate-900 rounded-full mx-auto flex items-center justify-center">
+        <div class="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-800 ml-auto mr-1.5"></div>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs">
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- MAIN APP SCREEN CONTAINER -->
+    <div class="flex-1 overflow-hidden relative pt-10 pb-20 bg-[#FBFBFC]" id="screen-container">
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 0: SPLASH SCREEN (ANIMATED AURORA & LOGO) -->
+      <!-- ========================================================= -->
+      <section id="view-splash" class="absolute inset-0 bg-gradient-to-b from-[#FFF5F3] via-white to-[#FFF0F3] z-40 flex flex-col items-center justify-between p-7 transition-opacity duration-500 overflow-hidden">
+        <!-- Living Aurora Background Blobs -->
+        <div class="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-gradient-to-tr from-[#FFB2A1]/40 to-[#FF8A71]/30 blur-3xl mesh-blob-1 pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-gradient-to-bl from-[#FF5E7D]/35 to-[#FDA4AF]/30 blur-3xl mesh-blob-2 pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-rose-200/20 blur-2xl pointer-events-none"></div>
+
+        <div class="w-full pt-4 flex items-center justify-between relative z-10">
+          <span class="text-[10px] font-bold tracking-widest uppercase text-coral-600 bg-rose-50/80 px-2.5 py-1 rounded-full border border-rose-100/80">FIGO Standard</span>
+          <span class="text-[10px] font-semibold text-slate-400">v1.0</span>
+        </div>
+
+        <!-- Center Brand Showcase -->
+        <div class="flex-1 flex flex-col items-center justify-center text-center relative z-10 my-auto">
+          <!-- Logo Container with Ambient Glow -->
+          <div class="relative w-40 h-40 flex items-center justify-center mb-6">
+            <div class="absolute inset-2 rounded-full coral-gradient opacity-35 blur-2xl animate-pulse"></div>
+            <img src="https://res.cloudinary.com/yiicenpf/image/upload/v1788922691/logo_cyclejournal_no_background.png" 
+                 alt="CycleJournal Logo" 
+                 class="relative z-10 w-36 h-36 object-contain animate-float drop-shadow-[0_16px_28px_rgba(255,94,125,0.32)]"
+                 onerror="this.onerror=null; this.src='https://placehold.co/150x150/FF8A71/ffffff?text=CycleJournal';">
+          </div>
+
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+            Cycle<span class="text-transparent bg-clip-text coral-gradient">Journal</span>
+          </h1>
+          <p class="text-xs font-semibold tracking-wider text-slate-400 mt-1 uppercase">Privasi Penuh &bull; Standar Dokter Kandungan</p>
+          
+          <!-- Redesigned: Frosted Glass Trust Capsule -->
+          <div class="mt-6 px-4 py-2 rounded-2xl bg-white/75 backdrop-blur-md border border-white/90 shadow-sm flex items-center gap-2">
+            <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-600">Enkripsi Mandiri &bull; 100% Offline di Ponsel</span>
+          </div>
+        </div>
+
+        <!-- Action Button & Trust Seal -->
+        <div class="w-full relative z-10 space-y-3 pb-2">
+          <button onclick="dismissSplash()" class="w-full py-4 rounded-2xl coral-gradient text-white font-bold text-sm shadow-glow-coral active:scale-[0.98] transition flex items-center justify-center gap-2">
+            <span>Masuk Aplikasi</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+          <p class="text-[10px] text-center text-slate-400 font-medium">Mulai Gratis &bull; Tanpa Pendaftaran Akun</p>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 2: DASHBOARD (BERANDA SIKLUS) -->
+      <!-- ========================================================= -->
+      <section id="view-dashboard" class="h-full overflow-y-auto px-5 pt-2 pb-6 hide-scrollbar">
+        
+        <!-- Header Bar with Discreet & Dark Mode Controls -->
+        <div class="flex items-center justify-between py-2 mb-3">
+          <div class="flex items-center gap-2.5">
+            <img src="https://res.cloudinary.com/yiicenpf/image/upload/v1788922691/logo_cyclejournal_no_background.png" 
+                 alt="CycleJournal" 
+                 class="w-9 h-9 object-contain drop-shadow-sm"
+                 onerror="this.style.display='none'">
+            <div>
+              <span id="privacy-badge-text" class="text-[10px] font-bold uppercase tracking-wider text-rose-500">Mode Privat Offline</span>
+              <h2 id="brand-title-text" class="text-base font-extrabold text-slate-900 leading-tight">CycleJournal</h2>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <!-- Discreet Mode Toggle -->
+            <button onclick="toggleDiscreetMode()" id="btn-discreet" title="Mode Privasi Samaran" class="w-8 h-8 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-600 active:scale-95 transition">
+              <i data-lucide="eye" id="icon-discreet" class="w-4 h-4"></i>
+            </button>
+            <!-- OLED Dark Mode Toggle (Subuh BBT Mode) -->
+            <button onclick="toggleDarkMode()" id="btn-darkmode" title="Mode Gelap / Subuh" class="w-8 h-8 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-600 active:scale-95 transition">
+              <i data-lucide="moon" id="icon-darkmode" class="w-4 h-4"></i>
+            </button>
+            <button onclick="switchScreen('settings')" class="w-8 h-8 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-600 active:scale-95 transition">
+              <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- HERO CARD: Dynamic Hormonal Phase Card -->
+        <div id="hero-phase-card" class="rounded-3xl p-5 text-white coral-gradient shadow-glow-coral relative overflow-hidden mb-4 transition-all duration-300">
+          <!-- Background Decorative Wave -->
+          <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center justify-between relative z-10">
+            <div>
+              <span id="hero-phase-badge" class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-semibold tracking-wide uppercase">
+                Jendela Subur
+              </span>
+              <h3 id="hero-phase-title" class="text-2xl font-black mt-2 tracking-tight">Fase Folikuler</h3>
+              <p id="hero-phase-desc" class="text-xs text-rose-100 mt-0.5 flex items-center gap-1">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span id="hero-phase-subtext">Ovulasi dalam 2 hari ke depan</span>
+              </p>
+              
+              <div class="mt-4 flex items-center gap-2">
+                <div class="bg-black/15 px-3 py-1.5 rounded-xl text-[11px]">
+                  <span class="text-rose-200 block text-[9px] uppercase font-bold">Rata-rata Siklus</span>
+                  <span class="font-bold">28 Hari (&plusmn;1.5)</span>
+                </div>
+                <div class="bg-black/15 px-3 py-1.5 rounded-xl text-[11px]">
+                  <span class="text-rose-200 block text-[9px] uppercase font-bold">Peluang Konsepsi</span>
+                  <span id="hero-conception-chance" class="font-bold text-amber-200">Tinggi (85%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Circular Progress SVG (Day 14 / 28) -->
+            <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
+              <svg class="w-24 h-24 transform -rotate-90">
+                <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.25)" stroke-width="7" fill="transparent"/>
+                <circle cx="48" cy="48" r="40" stroke="#FFFFFF" stroke-width="7" stroke-dasharray="251.2" stroke-dashoffset="125.6" stroke-linecap="round" fill="transparent"/>
+              </svg>
+              <div class="absolute flex flex-col items-center">
+                <span class="text-[10px] text-rose-100 font-medium">Hari</span>
+                <span class="text-2xl font-extrabold leading-none">14</span>
+                <span class="text-[9px] text-rose-100">dari 28</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPLACED: ERGONOMIC 7-DAY HORIZONTAL WEEK STRIP (Bukan Matriks 30 Hari Penuh) -->
+        <div class="bg-white rounded-3xl p-3.5 shadow-subtle-card border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-2.5 px-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-slate-800">Minggu Ini &bull; Sep 2026</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-coral-500 animate-pulse"></span>
+            </div>
+            <button onclick="switchScreen('calendar')" class="text-[11px] font-bold text-coral-600 flex items-center gap-0.5 hover:underline">
+              Buka Kalender Penuh <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- 7-Day Horizontal Strip -->
+          <div class="grid grid-cols-7 gap-1.5 text-center">
+            <!-- Day 11 (Thu) - Menstruasi End -->
+            <button onclick="selectWeekDay(11, 'Selesai Haid', '36.30 °C', 'Bebas Nyeri', 'Flek Coklat', 'Menstruasi')" class="py-2.5 px-1 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center hover:bg-slate-100 transition">
+              <span class="text-[9px] font-medium text-slate-400">Kam</span>
+              <span class="text-xs font-extrabold text-slate-700 mt-0.5">11</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mt-1"></span>
+            </button>
+            <!-- Day 12 (Fri) - Follicular -->
+            <button onclick="selectWeekDay(12, 'Fase Folikuler', '36.32 °C', 'Bebas Nyeri', 'Kering', 'Folikuler')" class="py-2.5 px-1 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center hover:bg-slate-100 transition">
+              <span class="text-[9px] font-medium text-slate-400">Jum</span>
+              <span class="text-xs font-extrabold text-slate-700 mt-0.5">12</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1"></span>
+            </button>
+            <!-- Day 13 (Sat) - Pre-fertile -->
+            <button onclick="selectWeekDay(13, 'Fase Pra-Subur', '36.38 °C', 'Bebas Nyeri', 'Krim', 'Folikuler')" class="py-2.5 px-1 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center hover:bg-slate-100 transition">
+              <span class="text-[9px] font-medium text-slate-400">Sab</span>
+              <span class="text-xs font-extrabold text-slate-700 mt-0.5">13</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 mt-1"></span>
+            </button>
+            <!-- Day 14 (Sun) - TODAY SELECTED -->
+            <button onclick="selectWeekDay(14, 'Jendela Subur', '36.50 °C', 'Sedang (VAS 7)', 'Putih Telur', 'Subur')" id="strip-day-14" class="py-2.5 px-1 rounded-2xl bg-slate-900 text-white shadow-md ring-2 ring-coral-400 flex flex-col items-center">
+              <span class="text-[9px] font-semibold text-rose-300">Min</span>
+              <span class="text-xs font-black mt-0.5">14</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-coral-400 mt-1"></span>
+            </button>
+            <!-- Day 15 (Mon) -->
+            <button onclick="selectWeekDay(15, 'Masa Subur Aktif', '36.42 °C', 'Bebas Nyeri', 'Cair Basah', 'Subur')" class="py-2.5 px-1 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center hover:bg-slate-100 transition">
+              <span class="text-[9px] font-medium text-slate-400">Sen</span>
+              <span class="text-xs font-extrabold text-slate-700 mt-0.5">15</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1"></span>
+            </button>
+            <!-- Day 16 (Tue) -->
+            <button onclick="selectWeekDay(16, 'Peluang Konsepsi Tinggi', '36.45 °C', 'Nyeri Ringan', 'Putih Telur', 'Subur')" class="py-2.5 px-1 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center hover:bg-slate-100 transition">
+              <span class="text-[9px] font-medium text-slate-400">Sel</span>
+              <span class="text-xs font-extrabold text-slate-700 mt-0.5">16</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1"></span>
+            </button>
+            <!-- Day 17 (Wed) - Peak Ovulation Approaching -->
+            <button onclick="selectWeekDay(17, 'Puncak Ovulasi', '36.48 °C', 'Mittelschmerz', 'Putih Telur Maksimal', 'Ovulasi')" class="py-2.5 px-1 rounded-2xl bg-cyan-50 border border-cyan-200 flex flex-col items-center hover:bg-cyan-100 transition">
+              <span class="text-[9px] font-bold text-cyan-700">Rab</span>
+              <span class="text-xs font-black text-cyan-900 mt-0.5">17</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-600 mt-1 ring-1 ring-cyan-300"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- NEW: BBT BIPHASIC SPARKLINE TREND CARD (FIGO Symptothermal Chart) -->
+        <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-rose-50 text-coral-600 flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Tren Kurva Suhu Basal (BBT)</h4>
+                <p class="text-[10px] text-slate-400">Pantauan Pergeseran Biphasik (3-over-6)</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Normal</span>
+          </div>
+
+          <!-- Mini SVG Sparkline Chart -->
+          <div class="relative h-20 w-full pt-2">
+            <svg class="w-full h-full overflow-visible" viewBox="0 0 300 70">
+              <!-- Threshold Cover Baseline Line -->
+              <line x1="0" y1="42" x2="300" y2="42" stroke="#CBD5E1" stroke-dasharray="3,3" stroke-width="1.5" />
+              <text x="235" y="38" fill="#94A3B8" font-size="8" font-family="sans-serif">Coverline 36.40°C</text>
+
+              <!-- Temperature Area Gradient Fill -->
+              <defs>
+                <linearGradient id="bbtFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FF5E7D" stop-opacity="0.25"/>
+                  <stop offset="100%" stop-color="#FF5E7D" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+              <path d="M 10 52 L 55 48 L 105 44 L 155 46 L 205 32 L 255 18 L 290 14 L 290 68 L 10 68 Z" fill="url(#bbtFill)"/>
+
+              <!-- Main Biphasic Polyline Curve -->
+              <path d="M 10 52 L 55 48 L 105 44 L 155 46 L 205 32 L 255 18 L 290 14" 
+                    fill="none" stroke="#FF5E7D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- Data Points -->
+              <circle cx="10" cy="52" r="3" fill="#FFFFFF" stroke="#FF5E7D" stroke-width="2"/>
+              <circle cx="55" cy="48" r="3" fill="#FFFFFF" stroke="#FF5E7D" stroke-width="2"/>
+              <circle cx="105" cy="44" r="3" fill="#FFFFFF" stroke="#FF5E7D" stroke-width="2"/>
+              <circle cx="155" cy="46" r="3.5" fill="#0F172A" stroke="#FF8A71" stroke-width="2"/> <!-- Hari Ini -->
+              <circle cx="205" cy="32" r="3" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"/>
+              <circle cx="255" cy="18" r="3" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"/>
+              <circle cx="290" cy="14" r="3" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"/>
+            </svg>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-100">
+            <span>Fase Folikuler (Rendah)</span>
+            <span class="font-bold text-coral-600">Prediksi Kenaikan Progesteron (+0.28°C)</span>
+            <span>Fase Luteal</span>
+          </div>
+        </div>
+
+        <!-- QUICK DAILY LOG SUMMARY CARD -->
+        <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-coral-500"></div>
+              <h4 id="dash-log-title" class="text-xs font-bold text-slate-800">Catatan Hari Ini (14 Sep)</h4>
+            </div>
+            <button onclick="openLogModal()" class="text-xs font-bold text-coral-600 flex items-center gap-0.5 hover:underline">
+              Ubah Catatan <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 text-[10px] block">Suhu Basal (BBT)</span>
+              <span id="dash-bbt-val" class="font-bold text-slate-800 font-mono text-sm">36.50 °C</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 text-[10px] block">Lendir Serviks</span>
+              <span id="dash-mucus-val" class="font-bold text-slate-800">Putih Telur</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-rose-50/70 border border-rose-100 col-span-2 flex items-center justify-between">
+              <div>
+                <span class="text-rose-600 text-[10px] font-semibold block">Skala Nyeri (VAS)</span>
+                <span id="dash-pain-val" class="font-bold text-rose-700">7 / 10 &bull; Nyeri Pelvis &amp; Pinggang</span>
+              </div>
+              <span class="px-2 py-1 rounded-md bg-rose-600 text-white text-[10px] font-bold">SpOG Alert</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 2B: HALAMAN KALENDER LENGKAP & DETAIL SIKLUS -->
+      <!-- ========================================================= -->
+      <section id="view-calendar" class="hidden h-full overflow-y-auto px-5 pt-2 pb-6 hide-scrollbar">
+        <!-- Calendar Header -->
+        <div class="flex items-center justify-between py-2 mb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-coral-600">Peta Siklus &amp; Ovulasi</span>
+            <h2 class="text-lg font-black text-slate-900 leading-tight">Kalender Siklus</h2>
+          </div>
+          <button onclick="selectCalendarDate(14, 'Hari Ini &bull; Hari ke-14 Siklus', 'Masa Subur', '36.50 °C', 'Sedang (VAS 7)', 'Putih Telur')" class="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-[11px] font-bold text-coral-600 hover:bg-rose-100 transition">
+            Hari Ini
+          </button>
+        </div>
+
+        <!-- Month Navigation Bar -->
+        <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100 mb-4">
+          <div class="flex items-center justify-between mb-3 px-1">
+            <button class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 active:bg-slate-100 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <div class="text-center">
+              <h3 class="text-sm font-extrabold text-slate-900">September 2026</h3>
+              <p class="text-[10px] text-slate-400 font-medium">Siklus #8 &bull; Rata-rata 28 Hari</p>
+            </div>
+            <button class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 active:bg-slate-100 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+          </div>
+
+          <!-- Day Headers -->
+          <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400 mb-2">
+            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+          </div>
+
+          <!-- Calendar Matrix (7x5) with interactive tap -->
+          <div class="grid grid-cols-7 gap-1 text-xs text-center font-medium">
+            <!-- Prev month overflow -->
+            <span class="py-2 text-slate-300">31</span>
+            
+            <button onclick="selectCalendarDate(1, 'Fase Folikuler Awal', 'Fase Istirahat', '36.30 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">1</button>
+            <button onclick="selectCalendarDate(2, 'Fase Folikuler Awal', 'Fase Istirahat', '36.32 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">2</button>
+            <button onclick="selectCalendarDate(3, 'Fase Folikuler Awal', 'Fase Istirahat', '36.30 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">3</button>
+            <button onclick="selectCalendarDate(4, 'Fase Folikuler Awal', 'Fase Istirahat', '36.35 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">4</button>
+            <button onclick="selectCalendarDate(5, 'Fase Folikuler Awal', 'Fase Istirahat', '36.31 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">5</button>
+            <button onclick="selectCalendarDate(6, 'Fase Folikuler Awal', 'Fase Istirahat', '36.33 °C', 'Nihil', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">6</button>
+
+            <!-- Menstruation Period (8-12) -->
+            <button onclick="selectCalendarDate(8, 'Hari ke-1 Menstruasi', 'Haid Deras', '36.20 °C', 'Nyeri Haid (VAS 8)', 'Bercak Darah')" class="py-2 rounded-xl bg-rose-100 text-coral-700 font-black relative flex flex-col items-center">
+              <span>8</span>
+              <span class="w-1 h-1 rounded-full bg-coral-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(9, 'Hari ke-2 Menstruasi', 'Haid Deras', '36.25 °C', 'Nyeri Haid (VAS 7)', 'Darah Segar')" class="py-2 rounded-xl bg-rose-100 text-coral-700 font-black relative flex flex-col items-center">
+              <span>9</span>
+              <span class="w-1 h-1 rounded-full bg-coral-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(10, 'Hari ke-3 Menstruasi', 'Haid Sedang', '36.28 °C', 'Nyeri Ringan (VAS 3)', 'Darah Sedang')" class="py-2 rounded-xl bg-rose-100 text-coral-700 font-black relative flex flex-col items-center">
+              <span>10</span>
+              <span class="w-1 h-1 rounded-full bg-coral-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(11, 'Hari ke-4 Menstruasi', 'Haid Ringan', '36.30 °C', 'Bebas Nyeri', 'Flek Coklat')" class="py-2 rounded-xl bg-rose-100 text-coral-700 font-black relative flex flex-col items-center">
+              <span>11</span>
+              <span class="w-1 h-1 rounded-full bg-coral-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(12, 'Hari ke-5 Menstruasi', 'Selesai Haid', '36.32 °C', 'Bebas Nyeri', 'Bercak Halus')" class="py-2 rounded-xl bg-rose-100 text-coral-700 font-black relative flex flex-col items-center">
+              <span>12</span>
+              <span class="w-1 h-1 rounded-full bg-coral-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(13, 'Hari Pasca-Haid', 'Fase Folikuler', '36.38 °C', 'Bebas Nyeri', 'Krim')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">13</button>
+
+            <!-- Selected Today (14) -->
+            <button onclick="selectCalendarDate(14, 'Hari Ini &bull; Hari ke-14 Siklus', 'Masa Subur', '36.50 °C', 'Sedang (VAS 7)', 'Putih Telur')" id="cal-day-14" class="py-2 rounded-xl bg-slate-900 text-white font-black ring-2 ring-coral-400 shadow-sm relative flex flex-col items-center">
+              <span>14</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-coral-400 mt-0.5"></span>
+            </button>
+
+            <!-- Fertile Window (17-21) -->
+            <button onclick="selectCalendarDate(15, 'Fase Pra-Subur', 'Kemungkinan Konsepsi Rendah', '36.40 °C', 'Bebas Nyeri', 'Cair')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">15</button>
+            <button onclick="selectCalendarDate(16, 'Awal Jendela Subur', 'Peluang Konsepsi Meningkat', '36.42 °C', 'Bebas Nyeri', 'Cair Basah')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">16</button>
+            <button onclick="selectCalendarDate(17, 'Jendela Subur Hari ke-1', 'Peluang Hamil Tinggi', '36.45 °C', 'Nyeri Pelvis Ringan', 'Putih Telur')" class="py-2 rounded-xl bg-cyan-100 text-cyan-800 font-bold relative flex flex-col items-center">
+              <span>17</span>
+              <span class="w-1 h-1 rounded-full bg-cyan-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(18, 'Jendela Subur Hari ke-2', 'Peluang Hamil Tinggi', '36.44 °C', 'Bebas Nyeri', 'Putih Telur (Lunak)')" class="py-2 rounded-xl bg-cyan-100 text-cyan-800 font-bold relative flex flex-col items-center">
+              <span>18</span>
+              <span class="w-1 h-1 rounded-full bg-cyan-600 mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(19, 'Jendela Subur Hari ke-3', 'Peluang Hamil Sangat Tinggi', '36.46 °C', 'Bebas Nyeri', 'Putih Telur (Melar)')" class="py-2 rounded-xl bg-cyan-100 text-cyan-800 font-bold relative flex flex-col items-center">
+              <span>19</span>
+              <span class="w-1 h-1 rounded-full bg-cyan-600 mt-0.5"></span>
+            </button>
+
+            <!-- Ovulation Peak (20) -->
+            <button onclick="selectCalendarDate(20, 'Hari Puncak Ovulasi', 'Pelepasan Sel Telur (Puncak)', '36.48 °C', 'Mittelschmerz', 'Putih Telur Maksimal')" class="py-2 rounded-xl bg-cyan-600 text-white font-black ring-2 ring-cyan-300 shadow-sm relative flex flex-col items-center">
+              <span>20</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-white mt-0.5"></span>
+            </button>
+            <button onclick="selectCalendarDate(21, 'Akhir Jendela Subur', 'Fase Luteal Awal', '36.65 °C (Naik)', 'Bebas Nyeri', 'Kental Kering')" class="py-2 rounded-xl bg-cyan-100 text-cyan-800 font-bold relative flex flex-col items-center">
+              <span>21</span>
+              <span class="w-1 h-1 rounded-full bg-cyan-600 mt-0.5"></span>
+            </button>
+
+            <!-- Luteal Phase (22 - 30) -->
+            <button onclick="selectCalendarDate(22, 'Fase Luteal', 'Suhu Tubuh Tinggi (Progesteron)', '36.70 °C', 'Bebas Nyeri', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">22</button>
+            <button onclick="selectCalendarDate(23, 'Fase Luteal', 'Fase Istirahat', '36.68 °C', 'Bebas Nyeri', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">23</button>
+            <button onclick="selectCalendarDate(24, 'Fase Luteal', 'Fase Istirahat', '36.71 °C', 'Bebas Nyeri', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">24</button>
+            <button onclick="selectCalendarDate(25, 'Fase Luteal', 'Fase Istirahat', '36.70 °C', 'Bebas Nyeri', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">25</button>
+            <button onclick="selectCalendarDate(26, 'Fase Luteal', 'Masa Istirahat', '36.69 °C', 'Bebas Nyeri', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">26</button>
+            <button onclick="selectCalendarDate(27, 'Fase Luteal Akhir', 'Gejala PMS Ringan', '36.65 °C', 'Kram Ringan', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">27</button>
+            <button onclick="selectCalendarDate(28, 'Fase Luteal Akhir', 'Peringatan H-2 Haid Baru', '36.60 °C', 'Kram Perut', 'Bercak Awal')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition border border-dashed border-rose-300">28</button>
+
+            <button onclick="selectCalendarDate(29, 'Fase Luteal Akhir', 'Hari ke-29 Siklus', '36.55 °C', 'Sensitivitas Payudara', 'Kering')" class="py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition">29</button>
+            <button onclick="selectCalendarDate(30, 'Prediksi Haid Baru', 'Perkiraan Siklus Berikutnya', '36.40 °C', 'Kram Pelvis', 'Flek')" class="py-2 rounded-xl bg-rose-50 text-coral-600 font-bold border border-rose-200">30</button>
+            <!-- Next month fill -->
+            <span class="py-2 text-slate-300">1</span>
+            <span class="py-2 text-slate-300">2</span>
+            <span class="py-2 text-slate-300">3</span>
+            <span class="py-2 text-slate-300">4</span>
+            <span class="py-2 text-slate-300">5</span>
+          </div>
+
+          <!-- Legend Bar -->
+          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-500 font-medium">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-200"></span> Menstruasi</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-200"></span> Masa Subur</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-600 ring-1 ring-cyan-400"></span> Puncak Ovulasi</span>
+          </div>
+        </div>
+
+        <!-- DYNAMIC SELECTED DATE INSPECTOR CARD -->
+        <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100 mb-4">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span id="cal-inspector-day" class="text-xs font-black text-slate-900">14 September 2026</span>
+                <span id="cal-inspector-tag" class="px-2 py-0.5 rounded-full bg-cyan-50 border border-cyan-200 text-[10px] font-bold text-cyan-700">Masa Subur</span>
+              </div>
+              <p id="cal-inspector-subtitle" class="text-[11px] text-slate-500">Hari Ini &bull; Hari ke-14 Siklus</p>
+            </div>
+            <button onclick="openLogModal()" class="px-3 py-1.5 rounded-xl coral-gradient text-white text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Isi Jurnal</span>
+            </button>
+          </div>
+
+          <!-- Parameter Snapshot -->
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-[10px] text-slate-400 block font-medium">Suhu Basal</span>
+              <strong id="cal-inspector-bbt" class="font-mono text-slate-800 text-xs">36.50 °C</strong>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-[10px] text-slate-400 block font-medium">Lendir Serviks</span>
+              <strong id="cal-inspector-mucus" class="text-slate-800 text-xs">Putih Telur</strong>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-[10px] text-slate-400 block font-medium">Skala Nyeri</span>
+              <strong id="cal-inspector-pain" class="text-rose-600 text-xs">Sedang (VAS 7)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- CYCLE INSIGHT STAT CARD -->
+        <div class="rounded-2xl p-3.5 bg-gradient-to-r from-rose-50 to-orange-50/50 border border-rose-100/80 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center text-coral-600">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-slate-800">Prediksi Haid Berikutnya</h4>
+              <p class="text-[11px] text-slate-500">Sekitar 6 Oktober 2026 (&plusmn;1 hari)</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold font-mono text-coral-700 bg-white px-2.5 py-1 rounded-lg border border-rose-100">22 Hari Lagi</span>
+        </div>
+
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 3: LAPORAN KLINIS & SpOG EXPORT -->
+      <!-- ========================================================= -->
+      <section id="view-report" class="hidden h-full overflow-y-auto px-5 pt-2 pb-6 hide-scrollbar">
+        <div class="flex items-center justify-between py-2 mb-3">
+          <h2 class="text-lg font-black text-slate-900">Laporan Medis SpOG</h2>
+          <span class="text-[10px] font-mono px-2 py-1 bg-slate-100 rounded-lg text-slate-600 font-medium">FIGO Compliant</span>
+        </div>
+
+        <!-- Document Preview Container -->
+        <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-200/80 mb-4 text-xs">
+          <!-- Document Header -->
+          <div class="border-b border-slate-100 pb-3 mb-3 flex items-start justify-between">
+            <div>
+              <h3 class="font-extrabold text-slate-900 text-sm">REKAPITULASI SIKLUS KLINIS</h3>
+              <p class="text-[10px] text-slate-400">ID Anonim: <span class="font-mono text-slate-600">px-7f9a2b1c4e0d</span></p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block">Tanggal Unduh</span>
+              <span class="font-bold text-slate-700">14 Sep 2026</span>
+            </div>
+          </div>
+
+          <!-- FIGO Key Metrics Grid -->
+          <div class="grid grid-cols-3 gap-2 mb-3">
+            <div class="p-2 rounded-xl bg-slate-50 text-center">
+              <span class="text-[9px] text-slate-400 block">Rata-rata</span>
+              <strong class="text-slate-800 text-xs">28.0 Hari</strong>
+            </div>
+            <div class="p-2 rounded-xl bg-slate-50 text-center">
+              <span class="text-[9px] text-slate-400 block">Variasi Siklus</span>
+              <strong class="text-slate-800 text-xs">&plusmn;1.5 Hari</strong>
+            </div>
+            <div class="p-2 rounded-xl bg-slate-50 text-center">
+              <span class="text-[9px] text-slate-400 block">Lama Haid</span>
+              <strong class="text-slate-800 text-xs">5.0 Hari</strong>
+            </div>
+          </div>
+
+          <!-- NEW: BBT Curve Preview inside Medical Report -->
+          <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-100 mb-3">
+            <span class="text-[10px] font-bold text-slate-700 block mb-1">Pola Temperatur Biphasik (Ovulasi Terkonfirmasi)</span>
+            <svg class="w-full h-12" viewBox="0 0 280 40">
+              <line x1="0" y1="24" x2="280" y2="24" stroke="#CBD5E1" stroke-dasharray="2,2" stroke-width="1" />
+              <path d="M 5 30 L 45 28 L 85 26 L 125 27 L 165 18 L 205 10 L 245 8 L 275 8" fill="none" stroke="#FF5E7D" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="125" cy="27" r="2.5" fill="#0F172A"/>
+              <circle cx="165" cy="18" r="2.5" fill="#0D9488"/>
+            </svg>
+            <div class="flex justify-between text-[8px] text-slate-400 mt-0.5">
+              <span>Baseline: 36.32°C</span>
+              <span class="text-teal-600 font-bold">Shift +0.25°C Pasca-Ovulasi</span>
+              <span>Sustained High</span>
+            </div>
+          </div>
+
+          <!-- Clinical Anomaly Alert Pill -->
+          <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200 mb-3">
+            <div class="flex items-center gap-1.5 text-rose-700 font-bold text-[11px] mb-0.5">
+              <i data-lucide="info" class="w-3.5 h-3.5"></i>
+              <span>Perhatian: Nyeri Haid Cukup Intens</span>
+            </div>
+            <p class="text-[10px] text-rose-800/80 leading-relaxed">
+              Tercatat skala nyeri 7/10 disertai konsumsi obat pereda nyeri. Riwayat ini akan sangat berguna untuk dibahas saat konsultasi dengan dokter kandungan Anda.
+            </p>
+          </div>
+
+          <!-- History Table -->
+          <div class="rounded-xl border border-slate-100 overflow-hidden mb-3">
+            <table class="w-full text-left text-[10px]">
+              <thead class="bg-slate-50 font-bold text-slate-500">
+                <tr>
+                  <th class="p-1.5">Mulai</th>
+                  <th class="p-1.5">Panjang</th>
+                  <th class="p-1.5">Durasi</th>
+                  <th class="p-1.5">Ovulasi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr><td class="p-1.5">01 Jan 26</td><td class="p-1.5 font-semibold">26 Hari</td><td class="p-1.5">5 Hari</td><td class="p-1.5 text-cyan-700 font-mono">15 Jan</td></tr>
+                <tr><td class="p-1.5">27 Jan 26</td><td class="p-1.5 font-semibold">28 Hari</td><td class="p-1.5">5 Hari</td><td class="p-1.5 text-cyan-700 font-mono">11 Feb</td></tr>
+                <tr><td class="p-1.5">24 Feb 26</td><td class="p-1.5 font-semibold">30 Hari</td><td class="p-1.5">5 Hari</td><td class="p-1.5 text-cyan-700 font-mono">13 Mar</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Doctor Signature Area Preview -->
+          <div class="border border-dashed border-slate-200 rounded-xl p-2.5 text-center bg-slate-50/50">
+            <span class="text-[9px] text-slate-400 block">Kolom Catatan &amp; Paraf Dokter SpOG</span>
+            <div class="h-6"></div>
+          </div>
+        </div>
+
+        <!-- Action Export Buttons -->
+        <div class="space-y-2.5">
+          <!-- Rewarded Ad Hook for Free Tier -->
+          <button onclick="simulatePdfExport()" class="w-full py-3.5 rounded-2xl coral-gradient text-white font-bold text-xs shadow-glow-coral flex items-center justify-center gap-2 active:scale-98 transition">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Unduh PDF Medis (Tonton 1 Iklan Singkat)</span>
+          </button>
+          <button onclick="simulateCsvExport()" class="w-full py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs shadow-sm flex items-center justify-center gap-2 active:bg-slate-50 transition">
+            <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+            <span>Ekspor CSV Mentah (Excel / Sheets)</span>
+          </button>
+
+          <!-- Upsell Pro Lifetime Card -->
+          <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-xs">
+                <i data-lucide="crown" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Lisensi Pro Seumur Hidup</h4>
+                <p class="text-[10px] text-slate-500">Unduh instan tanpa iklan selamanya</p>
+              </div>
+            </div>
+            <button onclick="buyProLicense()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-extrabold shadow-sm active:scale-95 transition">
+              Beli Rp 49k
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 4: HALAMAN PENGATURAN LENGKAP (SETTINGS) -->
+      <!-- ========================================================= -->
+      <section id="view-settings" class="hidden h-full overflow-y-auto px-5 pt-2 pb-8 hide-scrollbar">
+        <!-- Settings Header -->
+        <div class="flex items-center justify-between py-2 mb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-coral-600">Preferensi &amp; Kontrol</span>
+            <h2 class="text-lg font-black text-slate-900 leading-tight">Pengaturan</h2>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- GROUP 0: MONETISASI / STATUS LISENSI -->
+          <div id="card-pro-status" class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-4 text-white shadow-md relative overflow-hidden">
+            <div class="flex items-start justify-between relative z-10">
+              <div>
+                <span class="px-2 py-0.5 rounded-full bg-black/20 text-[10px] font-extrabold uppercase tracking-wider">Versi Gratis (Didukung Iklan)</span>
+                <h3 class="text-base font-black mt-1">Upgrade ke Lifetime Pro</h3>
+                <p class="text-[11px] text-amber-100 mt-0.5 leading-relaxed">
+                  Beli putus sekali seumur hidup: 100% bebas iklan, ekspor PDF tanpa batas &amp; sinkronisasi cloud terenkripsi.
+                </p>
+                <button onclick="buyProLicense()" class="mt-3 px-4 py-2 rounded-xl bg-white text-amber-700 text-xs font-black shadow-sm active:scale-95 transition flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>Beli Putus Rp 49.000</span>
+                </button>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+                <i data-lucide="crown" class="w-5 h-5 text-white"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 1: KEAMANAN & AKSES APLIKASI -->
+          <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i data-lucide="shield" class="w-3.5 h-3.5 text-coral-600"></i>
+              <span>Keamanan &amp; Kunci Aplikasi</span>
+            </h3>
+
+            <div class="space-y-3 divide-y divide-slate-100">
+              <!-- PIN Setup Trigger Row -->
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Kunci PIN 4-Digit</h4>
+                  <p id="settings-pin-status" class="text-[11px] text-slate-400">Belum diatur (Opsional)</p>
+                </div>
+                <button onclick="openPinModal()" class="px-3 py-1.5 rounded-xl coral-gradient text-white text-[11px] font-bold shadow-sm active:scale-95 transition">
+                  Atur PIN
+                </button>
+              </div>
+
+              <!-- Biometric Toggle Row -->
+              <div class="flex items-center justify-between pt-3">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Kunci Sidik Jari / Wajah</h4>
+                  <p class="text-[11px] text-slate-400">Buka cepat saat ponsel dipinjam</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" onchange="toggleBiometricSetting(this)" class="sr-only peer">
+                  <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-coral-500"></div>
+                </label>
+              </div>
+
+              <!-- Auto-Lock Timeout -->
+              <div class="flex items-center justify-between pt-3">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Kunci Otomatis</h4>
+                  <p class="text-[11px] text-slate-400">Saat aplikasi di latar belakang</p>
+                </div>
+                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">30 Detik</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 2: PRIVASI & CADANGAN DATA -->
+          <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-coral-600"></i>
+              <span>Privasi &amp; Cadangan</span>
+            </h3>
+
+            <div class="space-y-3 divide-y divide-slate-100">
+              <!-- Anonymous Key Display -->
+              <div class="pt-1">
+                <div class="flex items-center justify-between mb-1">
+                  <h4 class="text-xs font-bold text-slate-800">Kunci Pemulihan Cadangan</h4>
+                  <button onclick="copyAnonymousId()" class="text-coral-600 font-bold text-[11px] flex items-center gap-1 hover:underline">
+                    <i data-lucide="copy" class="w-3 h-3"></i> Salin
+                  </button>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px] text-slate-600 select-all">
+                  px-7f9a2b1c4e0d
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Gunakan kode rahasia ini jika Anda berganti perangkat baru.</p>
+              </div>
+
+              <!-- Cloud Backup Sync -->
+              <div class="pt-3">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-800">Cadangan Cloud Terkunci</h4>
+                    <p class="text-[11px] text-slate-400">Hanya tersimpan dalam bentuk terenkripsi</p>
+                  </div>
+                  <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Aktif</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                  <button onclick="triggerCloudBackup()" class="py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] hover:bg-slate-100 flex items-center justify-center gap-1.5 transition">
+                    <i data-lucide="cloud-upload" class="w-3.5 h-3.5 text-coral-600"></i>
+                    <span>Cadangkan</span>
+                  </button>
+                  <button onclick="triggerCloudRestore()" class="py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] hover:bg-slate-100 flex items-center justify-center gap-1.5 transition">
+                    <i data-lucide="cloud-download" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>Pulihkan</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 3: TAMPILAN & PREFERENSI -->
+          <div class="bg-white rounded-3xl p-4 shadow-subtle-card border border-slate-100">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i data-lucide="sliders" class="w-3.5 h-3.5 text-coral-600"></i>
+              <span>Tampilan &amp; Notifikasi</span>
+            </h3>
+
+            <div class="space-y-3 divide-y divide-slate-100">
+              <!-- Mode Samaran (Discreet Mode) -->
+              <div class="flex items-center justify-between pt-1">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Mode Samaran (Anti-Intip)</h4>
+                  <p class="text-[11px] text-slate-400">Samarkan istilah sensitif di tempat umum</p>
+                </div>
+                <button onclick="toggleDiscreetMode()" id="settings-discreet-toggle" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-bold hover:bg-slate-200 transition">
+                  Ubah
+                </button>
+              </div>
+
+              <!-- OLED Subuh Mode -->
+              <div class="flex items-center justify-between pt-3">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Mode Gelap Subuh</h4>
+                  <p class="text-[11px] text-slate-400">Ramah mata saat ukur suhu basal</p>
+                </div>
+                <button onclick="toggleDarkMode()" id="settings-darkmode-toggle" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-bold hover:bg-slate-200 transition">
+                  Ganti Tema
+                </button>
+              </div>
+
+              <!-- BBT Morning Reminder -->
+              <div class="flex items-center justify-between pt-3">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Pengingat Suhu Basal (BBT)</h4>
+                  <p class="text-[11px] text-slate-400">Alarm lembut pukul 05:30 pagi</p>
+                </div>
+                <span class="text-xs font-bold text-coral-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100">05:30</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 4: ZONA BERSIHKAN DATA (HAPUS TOTAL) -->
+          <div class="bg-rose-50/50 rounded-3xl p-4 border border-rose-200/70">
+            <h3 class="text-xs font-bold text-rose-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600"></i>
+              <span>Hapus Data &amp; Reset</span>
+            </h3>
+            <p class="text-[11px] text-slate-600 leading-relaxed mb-3">
+              Menghapus seluruh catatan siklus lokal di ponsel dan cadangan cloud secara permanen sesuai hak privasi Anda.
+            </p>
+            <button onclick="confirmNukeData()" class="w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-sm hover:bg-rose-700 active:scale-98 transition flex items-center justify-center gap-1.5">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>Hapus Seluruh Data Permanen</span>
+            </button>
+          </div>
+
+          <!-- App Version Footer -->
+          <div class="text-center pt-2 pb-1">
+            <span class="text-[11px] text-slate-400 font-medium">CycleJournal v1.0.0 &bull; Standar Klinis FIGO</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+    <!-- COMPONENT: MODAL SETUP KUNCI PIN KEAMANAN (CLEAN & ISOLATED) -->
+    <!-- ========================================================= -->
+    <div id="pin-setup-modal" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col justify-end hidden transition-opacity duration-300">
+      <div class="bg-white rounded-t-[36px] p-6 max-h-[92%] overflow-y-auto hide-scrollbar shadow-2xl border-t border-slate-100 flex flex-col">
+        
+        <!-- Header & Close Button -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-8"></div>
+          <div class="w-12 h-1.5 rounded-full bg-slate-300 mx-auto"></div>
+          <button onclick="closePinModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="text-center mb-4">
+          <div class="w-12 h-12 rounded-2xl coral-gradient-soft border border-rose-200 flex items-center justify-center mx-auto mb-2 text-coral-600">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-base font-extrabold text-slate-900">Setup Kunci PIN 4-Digit</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Lindungi catatan intim saat ponsel Anda dipinjam orang lain</p>
+        </div>
+
+        <!-- PIN Dots Display -->
+        <div class="flex justify-center items-center gap-3 py-3 bg-slate-50 rounded-2xl border border-slate-100 mb-4">
+          <div id="modal-pin-dot-1" class="w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all duration-150"></div>
+          <div id="modal-pin-dot-2" class="w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all duration-150"></div>
+          <div id="modal-pin-dot-3" class="w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all duration-150"></div>
+          <div id="modal-pin-dot-4" class="w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all duration-150"></div>
+        </div>
+
+        <!-- Touch Numpad Grid -->
+        <div class="grid grid-cols-3 gap-2.5 mb-4">
+          <button onclick="pressPin('1')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">1</button>
+          <button onclick="pressPin('2')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">2</button>
+          <button onclick="pressPin('3')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">3</button>
+          <button onclick="pressPin('4')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">4</button>
+          <button onclick="pressPin('5')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">5</button>
+          <button onclick="pressPin('6')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">6</button>
+          <button onclick="pressPin('7')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">7</button>
+          <button onclick="pressPin('8')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">8</button>
+          <button onclick="pressPin('9')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">9</button>
+          <div class="flex items-center justify-center text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Aman</div>
+          <button onclick="pressPin('0')" class="h-12 rounded-2xl bg-slate-50 active:bg-slate-200 text-lg font-bold text-slate-800 border border-slate-100 flex items-center justify-center transition">0</button>
+          <button onclick="deletePin()" class="h-12 rounded-2xl bg-slate-100 active:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+            <i data-lucide="delete" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Confirm Save Button -->
+        <button onclick="savePinFromModal()" class="w-full py-3.5 rounded-2xl coral-gradient text-white font-bold text-xs shadow-glow-coral active:scale-98 transition">
+          Simpan Kunci Keamanan
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- COMPONENT: BOTTOM SHEET / MODAL LOG HARIAN ENHANCED -->
+    <!-- ========================================================= -->
+    <div id="log-modal" class="absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex flex-col justify-end hidden transition-opacity duration-300">
+      <div class="bg-white rounded-t-[32px] p-5 max-h-[88%] overflow-y-auto hide-scrollbar shadow-2xl border-t border-slate-100 flex flex-col space-y-4">
+        
+        <!-- Drag Pill & Header -->
+        <div class="w-12 h-1.5 rounded-full bg-slate-300 mx-auto -mt-1 mb-1"></div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-base">Jurnal Kondisi Hari Ini</h3>
+            <span class="text-xs text-slate-400 font-medium">Senin, 14 September 2026</span>
+          </div>
+          <button onclick="closeLogModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+
+        <!-- Flow Intensity Radio Pills -->
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-2">Pendarahan Menstruasi (Flow)</label>
+          <div class="grid grid-cols-5 gap-1.5 text-[11px] font-semibold">
+            <button onclick="selectFlow(this)" class="flow-btn py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600">Tidak</button>
+            <button onclick="selectFlow(this)" class="flow-btn py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700">Bercak</button>
+            <button onclick="selectFlow(this)" class="flow-btn py-2 rounded-xl border border-rose-300 bg-rose-100 text-rose-800">Ringan</button>
+            <button onclick="selectFlow(this)" class="flow-btn py-2 rounded-xl coral-gradient text-white font-bold shadow-sm">Sedang</button>
+            <button onclick="selectFlow(this)" class="flow-btn py-2 rounded-xl border border-rose-400 bg-rose-700 text-white">Deras</button>
+          </div>
+        </div>
+
+        <!-- Pain VAS Slider (0-10) with Functional Impact Rating (No Emojis) -->
+        <div id="vas-card" class="p-3.5 rounded-2xl border transition-all duration-200 bg-rose-50/80 border-rose-200/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="activity" id="vas-icon" class="w-4 h-4 text-rose-600"></i>
+              <span class="text-xs font-bold text-slate-800">Tingkat Nyeri (Skala 0–10)</span>
+            </div>
+            <span id="vas-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-rose-200/80 text-rose-800">
+              Perhatian SpOG
+            </span>
+          </div>
+
+          <!-- Score and Clinical Impact Description -->
+          <div class="flex items-baseline justify-between mb-2">
+            <span id="vas-val" class="text-base font-black font-mono text-rose-700">7 <span class="text-xs font-bold text-slate-400">/ 10</span></span>
+            <span id="vas-impact-desc" class="text-[11px] font-semibold text-rose-700 text-right">Nyeri Berat &bull; Membatasi gerak, butuh pereda nyeri</span>
+          </div>
+
+          <input type="range" id="vas-slider" min="0" max="10" value="7" 
+                 oninput="updateVas(this.value)"
+                 class="w-full accent-rose-500 h-2 bg-slate-200 rounded-lg cursor-pointer">
+          
+          <div class="flex justify-between text-[9px] text-slate-400 mt-1.5 font-medium">
+            <span>Bebas Nyeri (0)</span>
+            <span>Mengganggu (4–6)</span>
+            <span>Tirah Baring (7–10)</span>
+          </div>
+        </div>
+
+        <!-- NEW: QUICK SYMPTOM CHIPS (1-Tap Selection) -->
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-1.5">Gejala Tubuh Hari Ini (Pilih Cepat)</label>
+          <div class="flex flex-wrap gap-1.5" id="symptom-chips-container">
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 text-[11px] font-semibold flex items-center gap-1">
+              <span>Kram Pelvis</span>
+              <i data-lucide="check" class="w-3 h-3"></i>
+            </button>
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 text-[11px] font-semibold flex items-center gap-1">
+              <span>Sakit Pinggang</span>
+              <i data-lucide="check" class="w-3 h-3"></i>
+            </button>
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-medium flex items-center gap-1">
+              <span>Payudara Sensitif</span>
+            </button>
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-medium flex items-center gap-1">
+              <span>Sakit Kepala / Migrain</span>
+            </button>
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-medium flex items-center gap-1">
+              <span>Perut Kembung</span>
+            </button>
+            <button onclick="toggleSymptomChip(this)" class="symptom-chip px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-medium flex items-center gap-1">
+              <span>Mood Sensitif</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BBT Stepper & Analgesic Checkbox -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+            <span class="text-[10px] text-slate-400 block font-bold">Suhu Basal Tubuh (°C)</span>
+            <input type="number" step="0.05" value="36.50" id="input-bbt" class="w-full bg-transparent font-bold text-base text-slate-800 font-mono focus:outline-none">
+          </div>
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold">Analgesik</span>
+              <span class="text-xs font-semibold text-slate-700">Minum Obat</span>
+            </div>
+            <input type="checkbox" id="check-analgesic" checked class="w-4 h-4 accent-coral-500 rounded">
+          </div>
+        </div>
+
+        <!-- Cervical Mucus Selector -->
+        <div>
+          <label class="text-xs font-bold text-slate-700 block mb-2">Lendir Serviks (Sintotermal)</label>
+          <div class="grid grid-cols-4 gap-1.5 text-[10px] font-semibold text-center">
+            <button onclick="selectMucus(this)" class="mucus-btn py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">Kering</button>
+            <button onclick="selectMucus(this)" class="mucus-btn py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">Krim</button>
+            <button onclick="selectMucus(this)" class="mucus-btn py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">Cair</button>
+            <button onclick="selectMucus(this)" class="mucus-btn py-2 rounded-xl border border-cyan-400 bg-cyan-50 text-cyan-800 font-bold">Putih Telur</button>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <button onclick="saveLogData()" class="w-full py-3.5 rounded-2xl coral-gradient text-white font-bold text-sm shadow-glow-coral active:scale-98 transition">
+          Simpan Catatan Hari Ini
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- BOTTOM NAVIGATION DOCK (ERGONOMIC THUMB-ZONE) -->
+    <!-- ========================================================= -->
+    <nav class="absolute bottom-0 left-0 right-0 h-18 glass-nav border-t border-slate-200/70 px-4 py-2 flex items-center justify-around z-30">
+      <button onclick="switchScreen('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-0.5 text-coral-600">
+        <i data-lucide="home" class="w-5 h-5"></i>
+        <span class="text-[10px] font-bold">Beranda</span>
+      </button>
+      <button onclick="switchScreen('calendar')" id="nav-calendar" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Kalender</span>
+      </button>
+
+      <!-- Center Floating Action Button (FAB) -->
+      <button onclick="openLogModal()" class="w-12 h-12 -mt-5 rounded-2xl coral-gradient text-white flex items-center justify-center shadow-floating-fab active:scale-90 transition">
+        <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
+      </button>
+
+      <button onclick="switchScreen('report')" id="nav-report" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600">
+        <i data-lucide="file-text" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Laporan</span>
+      </button>
+      <button onclick="switchScreen('settings')" id="nav-settings" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600">
+        <i data-lucide="settings" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Pengaturan</span>
+      </button>
+    </nav>
+
+    <!-- Toast Notification Snack -->
+    <div id="toast-msg" class="absolute top-14 left-6 right-6 z-50 bg-slate-900/90 backdrop-blur-md text-white px-4 py-2.5 rounded-2xl text-xs font-semibold text-center shadow-xl transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+      Aksi Berhasil
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    let currentPin = '';
+    let isDiscreetMode = false;
+    let isDarkMode = false;
+
+    function showToast(text) {
+      const toast = document.getElementById('toast-msg');
+      toast.innerText = text;
+      toast.classList.remove('-translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    /* TOGGLE DISCREET PRIVACY MODE (ANTI-INTIP DI RUANG PUBLIK) */
+    function toggleDiscreetMode() {
+      isDiscreetMode = !isDiscreetMode;
+      const title = document.getElementById('brand-title-text');
+      const badge = document.getElementById('privacy-badge-text');
+      const heroPhaseBadge = document.getElementById('hero-phase-badge');
+      const heroPhaseTitle = document.getElementById('hero-phase-title');
+      const heroPhaseSubtext = document.getElementById('hero-phase-subtext');
+      const icon = document.getElementById('icon-discreet');
+
+      if (isDiscreetMode) {
+        title.innerText = 'CJ Journal';
+        badge.innerText = 'Mode Samaran Aktif';
+        heroPhaseBadge.innerText = 'Fase 02';
+        heroPhaseTitle.innerText = 'Periode Tengah';
+        heroPhaseSubtext.innerText = 'Pencatatan normal berlangsung';
+        icon.setAttribute('data-lucide', 'eye-off');
+        showToast('Mode Samaran Aktif: Istilah sensitif disamarkan');
+      } else {
+        title.innerText = 'CycleJournal';
+        badge.innerText = 'Mode Privat Offline';
+        heroPhaseBadge.innerText = 'Jendela Subur';
+        heroPhaseTitle.innerText = 'Fase Folikuler';
+        heroPhaseSubtext.innerText = 'Ovulasi dalam 2 hari ke depan';
+        icon.setAttribute('data-lucide', 'eye');
+        showToast('Mode Standar Aktif');
+      }
+      lucide.createIcons();
+    }
+
+    /* TOGGLE OLED DARK MODE (SUBUH BBT MODE) */
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      const appFrame = document.getElementById('app-frame');
+      const icon = document.getElementById('icon-darkmode');
+
+      if (isDarkMode) {
+        appFrame.classList.add('dark-theme');
+        icon.setAttribute('data-lucide', 'sun');
+        showToast('Mode Subuh Gelap Aktif (Ramah Mata)');
+      } else {
+        appFrame.classList.remove('dark-theme');
+        icon.setAttribute('data-lucide', 'moon');
+        showToast('Mode Terang Aktif');
+      }
+      lucide.createIcons();
+    }
+
+    /* HORIZONTAL WEEKLY STRIP INTERACTION */
+    function selectWeekDay(day, phaseName, bbt, pain, mucus, phaseType) {
+      document.getElementById('dash-log-title').innerText = `Catatan Hari Ini (${day} Sep 2026)`;
+      document.getElementById('dash-bbt-val').innerText = bbt;
+      document.getElementById('dash-mucus-val').innerText = mucus;
+      document.getElementById('dash-pain-val').innerText = `${pain} \u2022 Terpantau`;
+
+      const heroBadge = document.getElementById('hero-phase-badge');
+      const heroTitle = document.getElementById('hero-phase-title');
+      if (heroBadge) heroBadge.innerText = phaseName;
+      if (heroTitle) heroTitle.innerText = `Fase ${phaseType}`;
+      showToast(`Menampilkan data ${day} Sep 2026`);
+    }
+
+    /* FUNCTIONAL IMPACT RATING (NO EMOJIS, MEDICAL-GRADE CONSISTENT) */
+    function updateVas(val) {
+      const num = parseInt(val);
+      const card = document.getElementById('vas-card');
+      const valEl = document.getElementById('vas-val');
+      const descEl = document.getElementById('vas-impact-desc');
+      const badgeEl = document.getElementById('vas-badge');
+      const iconEl = document.getElementById('vas-icon');
+      const slider = document.getElementById('vas-slider');
+
+      if (!valEl || !descEl || !badgeEl || !card) return;
+
+      valEl.innerHTML = `${num} <span class="text-xs font-bold text-slate-400">/ 10</span>`;
+
+      if (num === 0) {
+        card.className = 'p-3.5 rounded-2xl border transition-all duration-200 bg-emerald-50/70 border-emerald-200/80';
+        descEl.innerText = 'Bebas Nyeri \u2022 Nyaman beraktivitas';
+        descEl.className = 'text-[11px] font-semibold text-emerald-700 text-right';
+        valEl.className = 'text-base font-black font-mono text-emerald-700';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800';
+        badgeEl.innerText = 'Bebas Nyeri';
+        if (iconEl) iconEl.className = 'w-4 h-4 text-emerald-600';
+        slider.className = 'w-full accent-emerald-500 h-2 bg-slate-200 rounded-lg cursor-pointer';
+      } else if (num <= 3) {
+        card.className = 'p-3.5 rounded-2xl border transition-all duration-200 bg-slate-50 border-slate-200';
+        descEl.innerText = 'Nyeri Ringan \u2022 Terasa pegal, aktivitas normal';
+        descEl.className = 'text-[11px] font-semibold text-slate-600 text-right';
+        valEl.className = 'text-base font-black font-mono text-slate-800';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-slate-200 text-slate-700';
+        badgeEl.innerText = 'Ringan';
+        if (iconEl) iconEl.className = 'w-4 h-4 text-slate-500';
+        slider.className = 'w-full accent-slate-500 h-2 bg-slate-200 rounded-lg cursor-pointer';
+      } else if (num <= 6) {
+        card.className = 'p-3.5 rounded-2xl border transition-all duration-200 bg-amber-50/70 border-amber-200/80';
+        descEl.innerText = 'Nyeri Sedang \u2022 Mengganggu, butuh jeda istirahat';
+        descEl.className = 'text-[11px] font-semibold text-amber-700 text-right';
+        valEl.className = 'text-base font-black font-mono text-amber-700';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-amber-100 text-amber-800';
+        badgeEl.innerText = 'Perlu Pantauan';
+        if (iconEl) iconEl.className = 'w-4 h-4 text-amber-600';
+        slider.className = 'w-full accent-amber-500 h-2 bg-slate-200 rounded-lg cursor-pointer';
+      } else if (num <= 8) {
+        card.className = 'p-3.5 rounded-2xl border transition-all duration-200 bg-rose-50/80 border-rose-200/80';
+        descEl.innerText = 'Nyeri Berat \u2022 Membatasi gerak, butuh pereda nyeri';
+        descEl.className = 'text-[11px] font-semibold text-rose-700 text-right';
+        valEl.className = 'text-base font-black font-mono text-rose-700';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-rose-200/80 text-rose-800';
+        badgeEl.innerText = 'Perhatian SpOG';
+        if (iconEl) iconEl.className = 'w-4 h-4 text-rose-600';
+        slider.className = 'w-full accent-rose-500 h-2 bg-slate-200 rounded-lg cursor-pointer';
+      } else {
+        card.className = 'p-3.5 rounded-2xl border transition-all duration-200 bg-red-100/80 border-red-300';
+        descEl.innerText = 'Sangat Hebat \u2022 Tirah baring total / tidak bisa bangun';
+        descEl.className = 'text-[11px] font-semibold text-red-800 text-right';
+        valEl.className = 'text-base font-black font-mono text-red-800';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-red-600 text-white animate-pulse';
+        badgeEl.innerText = 'Konsultasi Segera';
+        if (iconEl) iconEl.className = 'w-4 h-4 text-red-700';
+        slider.className = 'w-full accent-red-600 h-2 bg-slate-200 rounded-lg cursor-pointer';
+      }
+    }
+
+    /* QUICK SYMPTOM CHIP TOGGLE */
+    function toggleSymptomChip(btn) {
+      const isSelected = btn.classList.contains('bg-rose-50');
+      if (isSelected) {
+        btn.className = 'symptom-chip px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-medium flex items-center gap-1';
+        const icon = btn.querySelector('svg, i');
+        if (icon) icon.remove();
+      } else {
+        btn.className = 'symptom-chip px-2.5 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 text-[11px] font-semibold flex items-center gap-1';
+        btn.innerHTML = `<span>${btn.innerText.trim()}</span><i data-lucide="check" class="w-3 h-3"></i>`;
+        lucide.createIcons();
+      }
+    }
+
+    function selectFlow(btn) {
+      document.querySelectorAll('.flow-btn').forEach(b => {
+        b.className = 'flow-btn py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-semibold';
+      });
+      btn.className = 'flow-btn py-2 rounded-xl coral-gradient text-white font-bold shadow-sm text-[11px]';
+    }
+
+    function selectMucus(btn) {
+      document.querySelectorAll('.mucus-btn').forEach(b => {
+        b.className = 'mucus-btn py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-semibold';
+      });
+      btn.className = 'mucus-btn py-2 rounded-xl border border-cyan-400 bg-cyan-50 text-cyan-800 font-bold text-[10px]';
+    }
+
+    function dismissSplash() {
+      const splash = document.getElementById('view-splash');
+      splash.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        splash.classList.add('hidden');
+        // Langsung masuk ke dashboard tanpa membebani user dengan setup PIN di depan
+        switchScreen('dashboard');
+      }, 300);
+    }
+
+    /* MODAL PIN FUNCTIONS (ISOLATED & CLEAN) */
+    function openPinModal() {
+      currentPin = '';
+      updatePinDots();
+      document.getElementById('pin-setup-modal').classList.remove('hidden');
+    }
+
+    function closePinModal() {
+      document.getElementById('pin-setup-modal').classList.add('hidden');
+      currentPin = '';
+    }
+
+    function pressPin(digit) {
+      if (currentPin.length < 4) {
+        currentPin += digit;
+        updatePinDots();
+      }
+    }
+
+    function deletePin() {
+      if (currentPin.length > 0) {
+        currentPin = currentPin.slice(0, -1);
+        updatePinDots();
+      }
+    }
+
+    function updatePinDots() {
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`modal-pin-dot-${i}`);
+        if (dot) {
+          if (i <= currentPin.length) {
+            dot.className = 'w-3.5 h-3.5 rounded-full coral-gradient scale-110 shadow-sm transition-all duration-150';
+          } else {
+            dot.className = 'w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all duration-150';
+          }
+        }
+      }
+    }
+
+    function savePinFromModal() {
+      if (currentPin.length === 4) {
+        closePinModal();
+        const status = document.getElementById('settings-pin-status');
+        if (status) {
+          status.innerText = 'Aktif (4-Digit PIN)';
+          status.className = 'text-[11px] text-emerald-600 font-bold';
+        }
+        showToast('PIN Keamanan Berhasil Diaktifkan');
+      } else {
+        showToast('Masukkan 4 digit PIN lengkap');
+      }
+    }
+
+    function toggleBiometricSetting(checkbox) {
+      if (checkbox.checked) {
+        showToast('Kunci Sidik Jari / Biometrik Aktif');
+      } else {
+        showToast('Kunci Sidik Jari Dinonaktifkan');
+      }
+    }
+
+    function finishPinSetup() {
+      document.getElementById('view-onboarding').classList.add('hidden');
+      switchScreen('dashboard');
+      showToast('PIN & Enkripsi Keystore Aktif');
+    }
+
+    function switchScreen(screen) {
+      const views = ['dashboard', 'calendar', 'report', 'settings'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.add('hidden');
+        const nav = document.getElementById(`nav-${v}`);
+        if (nav) {
+          nav.className = 'flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600';
+        }
+      });
+
+      const activeView = document.getElementById(`view-${screen}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeNav = document.getElementById(`nav-${screen}`);
+      if (activeNav) {
+        activeNav.className = 'flex flex-col items-center gap-0.5 text-coral-600 font-bold';
+      }
+      lucide.createIcons();
+    }
+
+    function selectCalendarDate(day, subtitle, tag, bbt, pain, mucus) {
+      document.getElementById('cal-inspector-day').innerText = `${day} September 2026`;
+      document.getElementById('cal-inspector-subtitle').innerText = subtitle;
+      document.getElementById('cal-inspector-tag').innerText = tag;
+      document.getElementById('cal-inspector-bbt').innerText = bbt;
+      document.getElementById('cal-inspector-pain').innerText = pain;
+      document.getElementById('cal-inspector-mucus').innerText = mucus;
+
+      // Update styling tag
+      const tagEl = document.getElementById('cal-inspector-tag');
+      if (tag.includes('Masa Subur') || tag.includes('Ovulasi')) {
+        tagEl.className = 'px-2 py-0.5 rounded-full bg-cyan-50 border border-cyan-200 text-[10px] font-bold text-cyan-700';
+      } else if (tag.includes('Haid') || tag.includes('Menstruasi')) {
+        tagEl.className = 'px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-[10px] font-bold text-rose-700';
+      } else {
+        tagEl.className = 'px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-bold text-slate-600';
+      }
+
+      showToast(`Memeriksa data ${day} September 2026`);
+    }
+
+    function openLogModal() {
+      const modal = document.getElementById('log-modal');
+      modal.classList.remove('hidden');
+      updateVas(document.getElementById('vas-slider').value);
+    }
+
+    function closeLogModal() {
+      const modal = document.getElementById('log-modal');
+      modal.classList.add('hidden');
+    }
+
+    function saveLogData() {
+      closeLogModal();
+      showToast('Jurnal Hari Ini Berhasil Disimpan');
+    }
+
+    function copyAnonymousId() {
+      showToast('Recovery Key Disalin ke Clipboard');
+    }
+
+    function triggerCloudBackup() {
+      showToast('Enkripsi & Cadangan Cloud Berhasil');
+    }
+
+    function triggerCloudRestore() {
+      showToast('Data Arsip D1 Berhasil Direkonstruksi');
+    }
+
+    function simulatePdfExport() {
+      showToast('Menonton 1 Iklan Singkat... PDF Medis Siap!');
+    }
+
+    function simulateCsvExport() {
+      showToast('Mengekspor Berkas CSV Mentah');
+    }
+
+    function buyProLicense() {
+      showToast('Google Play Billing: Berhasil Upgrade ke Lifetime Pro! Semua Iklan Dinonaktifkan.');
+      const proCard = document.getElementById('card-pro-status');
+      if (proCard) {
+        proCard.className = 'bg-gradient-to-br from-emerald-600 to-teal-700 rounded-3xl p-4 text-white shadow-md relative overflow-hidden';
+        proCard.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-extrabold uppercase tracking-wider">Status Aktif</span>
+              <h3 class="text-base font-black mt-1">Lisensi Pro Seumur Hidup</h3>
+              <p class="text-[11px] text-emerald-100 mt-0.5">Semua iklan telah dihapus & akses penuh aktif selamanya.</p>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+              <i data-lucide="check-circle-2" class="w-6 h-6 text-white"></i>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function confirmNukeData() {
+      showToast('Seluruh data lokal & cloud berhasil dibersihkan');
+      setTimeout(() => location.reload(), 1500);
+    }
+  </script>
+</body>
+</html>
