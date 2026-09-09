@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">CycleJournal</string>
+    <string name="app_tagline">Medical-Grade Cycle Journal &amp; Privacy-First Tracker</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_home">CycleJournal</string>
+    <string name="title_daily_log">Daily Biomarker Log</string>
+    <string name="title_medical_report">Clinical Cycle &amp; OB-GYN Report</string>
+    <string name="title_settings">Settings &amp; Zero-Knowledge Security</string>
+    <string name="title_onboarding">Welcome to CycleJournal</string>
+
+    <!-- Hero Card & Cycle Status -->
+    <string name="cycle_day_format">Cycle Day %d</string>
+    <string name="phase_menstruation">Menstruation</string>
+    <string name="phase_follicular">Follicular Phase</string>
+    <string name="phase_fertile_window">Fertile Window</string>
+    <string name="phase_ovulation">Predicted Ovulation</string>
+    <string name="phase_luteal">Luteal Phase</string>
+    <string name="ovulation_countdown_format">Ovulation in %d days</string>
+    <string name="ovulation_today">Ovulation expected today</string>
+    <string name="next_period_countdown_format">Next period in %d days</string>
+
+    <!-- Calendar Legend -->
+    <string name="legend_period">Period</string>
+    <string name="legend_fertile">Fertile</string>
+    <string name="legend_ovulation">Ovulation</string>
+
+    <!-- Daily Log Bottom Sheet -->
+    <string name="action_log_symptoms">Log Today\'s Symptoms</string>
+    <string name="header_flow">Menstrual Flow</string>
+    <string name="flow_none">None</string>
+    <string name="flow_spotting">Spotting</string>
+    <string name="flow_light">Light</string>
+    <string name="flow_medium">Medium</string>
+    <string name="flow_heavy">Heavy</string>
+
+    <string name="header_pain_vas">Pain Intensity (VAS 0–10)</string>
+    <string name="vas_desc_none">0: No pain at all.</string>
+    <string name="vas_desc_mild">1–3: Mild pain, does not interfere with daily activities.</string>
+    <string name="vas_desc_moderate">4–6: Moderate pain, affects focus &amp; routine activities.</string>
+    <string name="vas_desc_severe">7–10: Severe pain, limits mobility or requires bed rest.</string>
+    <string name="alert_severe_pain">High pain level detected. This will be flagged on the clinical report as suspected dysmenorrhea/endometriosis.</string>
+
+    <string name="header_bbt">Basal Body Temp (°C)</string>
+    <string name="bbt_placeholder">36.50</string>
+    <string name="analgesic_checkbox">Took Pain Medication (Analgesic)</string>
+
+    <string name="header_cervical_mucus">Cervical Mucus (Symptothermal)</string>
+    <string name="mucus_dry">Dry</string>
+    <string name="mucus_sticky">Sticky</string>
+    <string name="mucus_creamy">Creamy</string>
+    <string name="mucus_watery">Watery</string>
+    <string name="mucus_egg_white">Egg White</string>
+
+    <string name="header_notes">Clinical Notes</string>
+    <string name="notes_placeholder">Optional notes, physical symptoms, medications…</string>
+    <string name="action_save_log">Save Daily Log</string>
+
+    <!-- Medical PDF Report Screen -->
+    <string name="action_export_pdf">Export OB-GYN Clinical PDF</string>
+    <string name="action_export_csv">Export CSV (Excel Ready)</string>
+    <string name="report_preview_title">Clinical Report Preview</string>
+    <string name="pdf_generating">Generating Medical PDF…</string>
+    <string name="pdf_ready">Report ready to share</string>
+
+    <!-- Settings & Danger Zone -->
+    <string name="section_identity">Identity &amp; Recovery</string>
+    <string name="anonymous_id_label">Anonymous Patient ID</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+
+    <string name="section_backup">Zero-Knowledge Cloud Backup</string>
+    <string name="d1_status_connected">Connected to Cloudflare D1 Vault</string>
+    <string name="last_sync_format">Last backup: %s</string>
+    <string name="last_sync_never">Never backed up</string>
+    <string name="action_backup_now">Backup Now</string>
+    <string name="action_restore_backup">Restore Backup</string>
+
+    <string name="section_security">App Security</string>
+    <string name="biometric_lock">Fingerprint / Biometric Lock</string>
+    <string name="change_pin">Change 4-Digit PIN</string>
+
+    <string name="section_danger_zone">Danger Zone</string>
+    <string name="danger_zone_desc">Permanently wipe local encrypted SQLCipher database, destroy hardware Keystore keys, and delete remote cloud ciphertext.</string>
+    <string name="action_nuke_data">WIPE ALL DATA PERMANENTLY</string>
+    <string name="nuke_confirm_title">Confirm Permanent Data Destruction</string>
+    <string name="nuke_confirm_message">This action is irreversible. All local data and cloud backups will be destroyed. Type HAPUS to confirm.</string>
+    <string name="nuke_confirm_button">Destroy Everything</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Onboarding -->
+    <string name="disclaimer_title">Medical Disclaimer &amp; Privacy</string>
+    <string name="disclaimer_body">CycleJournal is a private clinical tracking tool for gynecological reference and is not a substitute for professional medical diagnosis or contraception. All data remains 100% offline and zero-knowledge encrypted on this device.</string>
+    <string name="action_agree_continue">Agree &amp; Continue</string>
+    <string name="setup_pin_title">Set 4-Digit PIN</string>
+    <string name="confirm_pin_title">Confirm 4-Digit PIN</string>
+    <string name="pin_mismatch">PINs do not match. Please try again.</string>
+    <string name="baseline_title">Baseline Menstrual History</string>
+    <string name="baseline_cycle_length">Average Cycle Length (Days)</string>
+    <string name="baseline_period_duration">Average Period Bleeding (Days)</string>
+    <string name="baseline_last_period">First Day of Last Period</string>
+    <string name="action_finish_onboarding">Start Tracking</string>
+</resources>

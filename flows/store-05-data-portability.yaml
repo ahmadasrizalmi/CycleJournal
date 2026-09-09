@@ -1,0 +1,18 @@
+steps:
+  - echo: Navigate to Data Portability and Danger Zone
+  - launch: com.app.cyclejournal
+  - await:
+      visible:
+        text: CycleJournal
+  - tap:
+      id: action_settings
+  - await:
+      visible:
+        text: Pengaturan & Privasi Mutlak
+  - tool: gesture-swipe
+    args: { fromX: 0.5, fromY: 0.8, toX: 0.5, toY: 0.3, durationMs: 600 }
+  - await:
+      visible:
+        text: ZONA BAHAYA (HAPUS SEMUA DATA)
+  - await:
+      idle: true

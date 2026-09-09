@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">CycleJournal</string>
+    <string name="app_tagline">Kalender Haid &amp; Laporan Medis SpOG Berbasis Privasi Mutlak</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_home">CycleJournal</string>
+    <string name="title_daily_log">Log Harian Biomarker</string>
+    <string name="title_medical_report">Laporan Klinis Siklus &amp; SpOG</string>
+    <string name="title_settings">Pengaturan &amp; Privasi Mutlak</string>
+    <string name="title_onboarding">Selamat Datang di CycleJournal</string>
+
+    <!-- Hero Card & Cycle Status -->
+    <string name="cycle_day_format">Hari ke-%d Siklus</string>
+    <string name="phase_menstruation">Fase Menstruasi</string>
+    <string name="phase_follicular">Fase Folikuler</string>
+    <string name="phase_fertile_window">Jendela Subur</string>
+    <string name="phase_ovulation">Prediksi Ovulasi</string>
+    <string name="phase_luteal">Fase Luteal</string>
+    <string name="ovulation_countdown_format">Ovulasi dalam %d hari</string>
+    <string name="ovulation_today">Perkiraan ovulasi hari ini</string>
+    <string name="next_period_countdown_format">Haid berikutnya dalam %d hari</string>
+
+    <!-- Calendar Legend -->
+    <string name="legend_period">Menstruasi</string>
+    <string name="legend_fertile">Masa Subur</string>
+    <string name="legend_ovulation">Ovulasi</string>
+
+    <!-- Daily Log Bottom Sheet -->
+    <string name="action_log_symptoms">Catat Gejala Hari Ini</string>
+    <string name="header_flow">Pendarahan Haid (Flow)</string>
+    <string name="flow_none">Tidak</string>
+    <string name="flow_spotting">Bercak</string>
+    <string name="flow_light">Ringan</string>
+    <string name="flow_medium">Sedang</string>
+    <string name="flow_heavy">Deras</string>
+
+    <string name="header_pain_vas">Skala Nyeri Klinis (VAS 0–10)</string>
+    <string name="vas_desc_none">0: Tidak ada nyeri sama sekali.</string>
+    <string name="vas_desc_mild">1–3: Nyeri ringan, aktivitas normal tidak terganggu.</string>
+    <string name="vas_desc_moderate">4–6: Nyeri sedang, mengganggu fokus &amp; aktivitas harian.</string>
+    <string name="vas_desc_severe">7–10: Nyeri hebat, membatasi gerak atau butuh tirah baring.</string>
+    <string name="alert_severe_pain">Nyeri level tinggi terdeteksi. Ini akan ditandai pada laporan SpOG sebagai indikasi dismenore/endometriosis.</string>
+
+    <string name="header_bbt">Suhu Basal Tubuh (°C)</string>
+    <string name="bbt_placeholder">36.50</string>
+    <string name="analgesic_checkbox">Konsumsi Obat Anti-Nyeri (Analgesik)</string>
+
+    <string name="header_cervical_mucus">Lendir Serviks (Sintotermal)</string>
+    <string name="mucus_dry">Kering</string>
+    <string name="mucus_sticky">Lengket</string>
+    <string name="mucus_creamy">Krim</string>
+    <string name="mucus_watery">Cair</string>
+    <string name="mucus_egg_white">Putih Telur</string>
+
+    <string name="header_notes">Catatan Klinis</string>
+    <string name="notes_placeholder">Catatan tambahan, gejala fisik, obat yang dikonsumsi…</string>
+    <string name="action_save_log">Simpan Catatan Harian</string>
+
+    <!-- Medical PDF Report Screen -->
+    <string name="action_export_pdf">Ekspor PDF Siap SpOG</string>
+    <string name="action_export_csv">Ekspor CSV (Excel)</string>
+    <string name="report_preview_title">Pratinjau Dokumen Medis</string>
+    <string name="pdf_generating">Memproses Laporan Medis PDF…</string>
+    <string name="pdf_ready">Laporan siap dibagikan</string>
+
+    <!-- Settings & Danger Zone -->
+    <string name="section_identity">Identitas &amp; Pemulihan</string>
+    <string name="anonymous_id_label">ID Pasien Anonim</string>
+    <string name="copied_to_clipboard">Disalin ke papan klip</string>
+
+    <string name="section_backup">Cadangan Cloud Zero-Knowledge</string>
+    <string name="d1_status_connected">Terkoneksi ke Vault Cloudflare D1</string>
+    <string name="last_sync_format">Cadangan terakhir: %s</string>
+    <string name="last_sync_never">Belum pernah dicadangkan</string>
+    <string name="action_backup_now">Cadangkan Sekarang</string>
+    <string name="action_restore_backup">Pulihkan Cadangan</string>
+
+    <string name="section_security">Keamanan Aplikasi</string>
+    <string name="biometric_lock">Kunci Sidik Jari (Biometrik)</string>
+    <string name="change_pin">Ubah PIN 4-Digit</string>
+
+    <string name="section_danger_zone">Zona Bahaya</string>
+    <string name="danger_zone_desc">Menghapus permanen database SQLCipher terenkripsi, memusnahkan kunci Keystore hardware, dan menghapus ciphertext di cloud.</string>
+    <string name="action_nuke_data">HAPUS SEMUA DATA PERMANEN</string>
+    <string name="nuke_confirm_title">Konfirmasi Pemusnahan Data</string>
+    <string name="nuke_confirm_message">Tindakan ini tidak dapat dibatalkan. Semua data lokal dan cloud akan dimusnahkan. Ketik HAPUS untuk konfirmasi.</string>
+    <string name="nuke_confirm_button">Musnahkan Sekarang</string>
+    <string name="cancel">Batal</string>
+
+    <!-- Onboarding -->
+    <string name="disclaimer_title">Penafian Medis &amp; Privasi</string>
+    <string name="disclaimer_body">CycleJournal adalah alat pencatatan mandiri untuk evaluasi ginekologi dan bukan pengganti diagnosis medis dokter spesialis atau alat kontrasepsi. Semua data tersimpan 100% offline dengan enkripsi zero-knowledge pada perangkat ini.</string>
+    <string name="action_agree_continue">Setuju &amp; Lanjutkan</string>
+    <string name="setup_pin_title">Buat PIN 4-Digit</string>
+    <string name="confirm_pin_title">Konfirmasi PIN 4-Digit</string>
+    <string name="pin_mismatch">PIN tidak cocok. Silakan ulangi.</string>
+    <string name="baseline_title">Riwayat Siklus Awal</string>
+    <string name="baseline_cycle_length">Rata-rata Panjang Siklus (Hari)</string>
+    <string name="baseline_period_duration">Rata-rata Durasi Haid (Hari)</string>
+    <string name="baseline_last_period">Hari Pertama Haid Terakhir</string>
+    <string name="action_finish_onboarding">Mulai Menggunakan</string>
+</resources>

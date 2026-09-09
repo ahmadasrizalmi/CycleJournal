@@ -1,0 +1,8 @@
+steps:
+  - echo: Launch CycleJournal to Home Dashboard
+  - launch: com.app.cyclejournal
+  - await:
+      visible:
+        text: CycleJournal
+  - await:
+      idle: true
