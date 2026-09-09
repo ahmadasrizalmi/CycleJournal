@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -475,13 +476,22 @@ fun CycleSplashScreen(onEnterApp: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "CycleJournal",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Black,
-                color = Slate900,
-                letterSpacing = (-0.5).sp
-            )
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = "Cycle",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Slate900,
+                    letterSpacing = (-0.5).sp
+                )
+                Text(
+                    text = "Journal",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = (-0.5).sp,
+                    style = TextStyle(brush = CoralPinkGradient)
+                )
+            }
 
             Text(
                 text = "PRIVASI PENUH • STANDAR DOKTER KANDUNGAN",
@@ -1247,12 +1257,18 @@ fun CalendarScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(38.dp)
-                                        .padding(1.dp)
+                                        .padding(2.dp)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(cellBg)
                                         .border(
-                                            width = if (isSelected) 2.dp else 0.dp,
-                                            color = if (isSelected) CoralLight else Color.Transparent,
+                                            width = if (isSelected) 2.dp else 1.dp,
+                                            color = when {
+                                                isSelected -> CoralLight
+                                                isMenstruation -> Color(0xFFFDA4AF)
+                                                isFertile -> Color(0xFF99F6E4)
+                                                isOvulation -> TealMedical
+                                                else -> Color(0xFFCBD5E1)
+                                            },
                                             shape = RoundedCornerShape(10.dp)
                                         )
                                         .clickable {
@@ -2108,7 +2124,7 @@ fun DailyJournalLogModal(
             ) {
                 Column {
                     Text("Jurnal Kondisi Hari Ini", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-                    Text("Senin, 14 September 2026", fontSize = 11.sp, color = Slate500)
+                    Text(formatIdDate(LocalDate.now()), fontSize = 11.sp, color = Slate500)
                 }
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Default.Close, contentDescription = null)
@@ -2349,6 +2365,21 @@ private fun shortDayName(date: LocalDate): String = when (date.dayOfWeek) {
     DayOfWeek.SUNDAY -> "Min"
 }
 
+private val idMonths = listOf("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
+
+private fun fullDayName(date: LocalDate): String = when (date.dayOfWeek) {
+    DayOfWeek.MONDAY -> "Senin"
+    DayOfWeek.TUESDAY -> "Selasa"
+    DayOfWeek.WEDNESDAY -> "Rabu"
+    DayOfWeek.THURSDAY -> "Kamis"
+    DayOfWeek.FRIDAY -> "Jumat"
+    DayOfWeek.SATURDAY -> "Sabtu"
+    DayOfWeek.SUNDAY -> "Minggu"
+}
+
+private fun formatIdDate(date: LocalDate): String =
+    "${fullDayName(date)}, ${date.dayOfMonth} ${idMonths[date.monthValue - 1]} ${date.year}"
+
 private fun painDescFor(score: Int): String = when {
     score == 0 -> "Bebas Nyeri"
     score <= 3 -> "Nyeri Ringan"
@@ -2404,18 +2435,7 @@ fun CycleBottomNavBar(
                 onClick = { onScreenSelect(AppScreen.CALENDAR) }
             )
 
-            Box(
-                modifier = Modifier
-                    .offset(y = (-14).dp)
-                    .size(52.dp)
-                    .shadow(12.dp, CircleShape, ambientColor = CoralDeep, spotColor = CoralDeep)
-                    .clip(CircleShape)
-                    .background(CoralPinkGradient)
-                    .clickable { onFabClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Isi Jurnal", tint = Color.White, modifier = Modifier.size(28.dp))
-            }
+            Spacer(modifier = Modifier.size(52.dp))
 
             NavItem(
                 icon = Icons.Default.Description,
@@ -2430,6 +2450,22 @@ fun CycleBottomNavBar(
                 isSelected = currentScreen == AppScreen.SETTINGS,
                 onClick = { onScreenSelect(AppScreen.SETTINGS) }
             )
+        }
+
+        // FAB mengambang sebagai overlay terpisah — tidak lagi terpotong garis nav
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = (-22).dp)
+                .size(54.dp)
+                .shadow(14.dp, RoundedCornerShape(18.dp), ambientColor = CoralDeep, spotColor = CoralDeep)
+                .border(3.dp, Color.White, RoundedCornerShape(18.dp))
+                .clip(RoundedCornerShape(18.dp))
+                .background(CoralPinkGradient)
+                .clickable { onFabClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Isi Jurnal", tint = Color.White, modifier = Modifier.size(30.dp))
         }
     }
 }
