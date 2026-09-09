@@ -17,7 +17,7 @@ def render_screens():
     font_small = ImageFont.truetype("C:/Windows/Fonts/segoeui.ttf", 17)
     font_tab = ImageFont.truetype("C:/Windows/Fonts/segoeuib.ttf", 17)
 
-    logo_master = Image.open("logo cyclejournal.jpg").convert("RGBA")
+    logo_master = Image.open("design/logo cyclejournal.jpg").convert("RGBA")
 
     # Colors
     c_white = (255, 255, 255, 255)
