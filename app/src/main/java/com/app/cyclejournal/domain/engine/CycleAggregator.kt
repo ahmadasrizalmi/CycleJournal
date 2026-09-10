@@ -21,7 +21,8 @@ import java.time.temporal.ChronoUnit
  */
 class CycleAggregator(
     private val dailyLogDao: DailyLogDao,
-    private val cycleDao: CycleDao
+    private val cycleDao: CycleDao,
+    private val bbtEngine: BbtEngine = BbtEngine()
 ) {
 
     companion object {
@@ -31,84 +32,20 @@ class CycleAggregator(
 
     /**
      * Primary entry point when a user saves a daily log entry.
-     * Evaluates cycle inception, duration updates, or closing previous cycle.
+     * Upserts daily log into database and deterministically reconciles all cycle records
+     * so that out-of-order date entries, edits, and retroactive cycles are immediately calculated.
      */
     suspend fun onDailyLogSaved(log: DailyLogEntity) {
         // 1. Upsert daily log into database
         dailyLogDao.upsertDailyLog(log)
 
-        // 2. Evaluate impact on cycle records
-        val isTrueBleeding = log.flow in listOf(
-            FlowIntensity.LIGHT,
-            FlowIntensity.MEDIUM,
-            FlowIntensity.HEAVY
-        )
-
-        val latestCycle = cycleDao.getLatestCycle()
-        if (latestCycle == null) {
-            // First time use: initiate first cycle if true bleeding
-            if (isTrueBleeding) {
-                cycleDao.insertCycle(
-                    CycleEntity(
-                        startDate = log.date,
-                        periodDurationDays = 1
-                    )
-                )
-            }
-            return
-        }
-
-        // Calculate days since current cycle started
-        val daysSinceLatestStart = ChronoUnit.DAYS.between(latestCycle.startDate, log.date)
-
-        when {
-            // Case A: Within initial bleeding window (Days 0..10) -> Update period duration
-            daysSinceLatestStart in 0..10 -> {
-                updateCurrentCyclePeriodDuration(latestCycle)
-            }
-
-            // Case B: Active bleeding after passing 20-day threshold -> Close cycle & Start New Cycle!
-            daysSinceLatestStart >= MIN_DAYS_FOR_NEW_CYCLE && isTrueBleeding -> {
-                // 1. Close current cycle
-                val closedCycle = latestCycle.copy(
-                    endDate = log.date.minusDays(1),
-                    cycleLengthDays = daysSinceLatestStart.toInt()
-                )
-                cycleDao.updateCycle(closedCycle)
-
-                // 2. Open new cycle
-                val newCycle = CycleEntity(
-                    startDate = log.date,
-                    periodDurationDays = 1
-                )
-                cycleDao.insertCycle(newCycle)
-            }
-
-            // Case C: Bleeding occurring on cycle days 11..19 is retained as intermenstrual bleeding
-            // without prematurely splitting the cycle.
-        }
-    }
-
-    /**
-     * Scans active bleeding days within the initial 12 days of cycle start.
-     */
-    private suspend fun updateCurrentCyclePeriodDuration(cycle: CycleEntity) {
-        val cycleLogs = dailyLogDao.getLogsBetween(
-            startDate = cycle.startDate,
-            endDate = cycle.startDate.plusDays(BLEEDING_SCAN_WINDOW_DAYS)
-        )
-        val activeBleedDays = cycleLogs.count {
-            it.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
-        }
-        val duration = maxOf(1, activeBleedDays)
-        if (duration != cycle.periodDurationDays) {
-            cycleDao.updateCycle(cycle.copy(periodDurationDays = duration))
-        }
+        // 2. Deterministically reconcile all cycles from complete chronological log history
+        reconcileAllHistory()
     }
 
     /**
      * Full deterministic reconstruction of all cycle records from ascending daily logs.
-     * Invoked after disaster recovery restore from Cloudflare D1 or retroactive date adjustments.
+     * Invoked after saving daily logs, disaster recovery restore, or retroactive date adjustments.
      */
     suspend fun reconcileAllHistory() {
         val allLogs = dailyLogDao.getAllLogsAsc()
@@ -143,7 +80,8 @@ class CycleAggregator(
                             startDate = currentCycleStart,
                             endDate = log.date.minusDays(1),
                             cycleLengthDays = daysSinceCycleStart.toInt(),
-                            periodDurationDays = calculateBleedingDuration(currentCycleStart, allLogs)
+                            periodDurationDays = calculateBleedingDuration(currentCycleStart, allLogs),
+                            confirmedOvulationDate = findConfirmedOvulation(currentCycleStart, log.date.minusDays(1), allLogs)
                         )
                         reconstructedCycles.add(previousCycle)
 
@@ -161,7 +99,8 @@ class CycleAggregator(
                 startDate = currentCycleStart,
                 endDate = null,
                 cycleLengthDays = null,
-                periodDurationDays = calculateBleedingDuration(currentCycleStart, allLogs)
+                periodDurationDays = calculateBleedingDuration(currentCycleStart, allLogs),
+                confirmedOvulationDate = findConfirmedOvulation(currentCycleStart, null, allLogs)
             )
             reconstructedCycles.add(ongoingCycle)
         }
@@ -171,9 +110,21 @@ class CycleAggregator(
         reconstructedCycles.forEach { cycleDao.insertCycle(it) }
     }
 
+    private fun findConfirmedOvulation(
+        cycleStart: LocalDate,
+        cycleEnd: LocalDate?,
+        allLogs: List<DailyLogEntity>
+    ): LocalDate? {
+        val cycleLogs = allLogs.filter {
+            !it.date.isBefore(cycleStart) && (cycleEnd == null || !it.date.isAfter(cycleEnd))
+        }
+        val bbtResult = bbtEngine.evaluateBbtShift(cycleLogs)
+        return if (bbtResult.isConfirmed) bbtResult.ovulationDate else null
+    }
+
     private fun calculateBleedingDuration(cycleStart: LocalDate, logs: List<DailyLogEntity>): Int {
         val window = logs.filter {
-            !it.date.isBefore(cycleStart) && it.date.isBefore(cycleStart.plusDays(10))
+            !it.date.isBefore(cycleStart) && it.date.isBefore(cycleStart.plusDays(BLEEDING_SCAN_WINDOW_DAYS))
         }
         val count = window.count {
             it.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)

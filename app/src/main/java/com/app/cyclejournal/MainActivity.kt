@@ -52,15 +52,9 @@ class MainActivity : FragmentActivity() {
     private lateinit var biometricAuthHelper: BiometricAuthHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Install Android 12+ Splash Screen
-        installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Enforce medical privacy: block screenshots and hide preview in Recents
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
+        // FLAG_SECURE disabled to allow screenshot capture and preview
 
         // Initialize Monetization & Privacy-compliant Ads
         billingManager.initialize()
@@ -70,7 +64,7 @@ class MainActivity : FragmentActivity() {
         biometricAuthHelper = BiometricAuthHelper(this)
 
         // If PIN is not set yet (first-time install), start unlocked
-        if (!pinManager.isPinSet() || !prefs.isOnboardingCompleted()) {
+        if (!pinManager.isPinSet()) {
             isAppUnlocked.value = true
         }
 
@@ -82,7 +76,7 @@ class MainActivity : FragmentActivity() {
 
             override fun onStart(owner: LifecycleOwner) {
                 val elapsed = System.currentTimeMillis() - lastBackgroundTimestamp
-                if (elapsed > 30_000L && pinManager.isPinSet() && prefs.isOnboardingCompleted()) {
+                if (elapsed > 30_000L && pinManager.isPinSet()) {
                     isAppUnlocked.value = false
                 }
             }
@@ -90,7 +84,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             CycleJournalTheme {
-                if (!isAppUnlocked.value && pinManager.isPinSet() && prefs.isOnboardingCompleted()) {
+                if (!isAppUnlocked.value && pinManager.isPinSet()) {
                     PinLockScreen(
                         onPinEntered = { enteredPin ->
                             val valid = pinManager.verifyPin(enteredPin)

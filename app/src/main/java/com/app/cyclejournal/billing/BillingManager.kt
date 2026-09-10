@@ -29,7 +29,7 @@ class BillingManager @Inject constructor(
 
     private var billingClient: BillingClient = BillingClient.newBuilder(context)
         .setListener(this)
-        .enablePendingPurchases()
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
         .build()
 
     private var productDetails: ProductDetails? = null
@@ -67,9 +67,9 @@ class BillingManager @Inject constructor(
             .setProductList(productList)
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsList ->
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                productDetails = queryProductDetailsList.firstOrNull { it.productId == SKU_LIFETIME_PRO }
+                productDetails = queryProductDetailsResult.productDetailsList.firstOrNull { it.productId == SKU_LIFETIME_PRO }
             }
         }
     }

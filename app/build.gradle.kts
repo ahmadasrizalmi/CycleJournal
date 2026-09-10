@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "com.app.cyclejournal"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.app.cyclejournal"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -119,8 +119,8 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    // Google Play Billing (v6+)
-    implementation("com.android.billingclient:billing-ktx:6.2.1")
+    // Google Play Billing (v8.0.0)
+    implementation("com.android.billingclient:billing:8.0.0")
 
     // Google Mobile Ads (AdMob)
     implementation("com.google.android.gms:play-services-ads:23.3.0")

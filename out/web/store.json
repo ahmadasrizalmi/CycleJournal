@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T11:36:04.701Z",
+  "generatedAt": "2026-09-09T16:25:12.410Z",
   "app": {
     "name": "CycleJournal",
     "icon": "store_assets/play_store_icon_512.png",
@@ -61,35 +61,35 @@
             "url": "screenshots/pixel-10-pro/en-US/01-dashboard.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 256304
+            "bytes": 304069
           },
           {
             "sceneId": "daily-log",
             "url": "screenshots/pixel-10-pro/en-US/02-daily-log.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 224894
+            "bytes": 289760
           },
           {
             "sceneId": "medical-report",
             "url": "screenshots/pixel-10-pro/en-US/03-medical-report.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 268713
+            "bytes": 420957
           },
           {
             "sceneId": "privacy-security",
             "url": "screenshots/pixel-10-pro/en-US/04-privacy-security.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 276705
+            "bytes": 307787
           },
           {
             "sceneId": "data-portability",
             "url": "screenshots/pixel-10-pro/en-US/05-data-portability.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 274101
+            "bytes": 334036
           }
         ],
         "preview": null
@@ -101,35 +101,35 @@
             "url": "screenshots/pixel-10-pro/id-ID/01-dashboard.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 255133
+            "bytes": 300443
           },
           {
             "sceneId": "daily-log",
             "url": "screenshots/pixel-10-pro/id-ID/02-daily-log.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 235511
+            "bytes": 289297
           },
           {
             "sceneId": "medical-report",
             "url": "screenshots/pixel-10-pro/id-ID/03-medical-report.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 270261
+            "bytes": 421016
           },
           {
             "sceneId": "privacy-security",
             "url": "screenshots/pixel-10-pro/id-ID/04-privacy-security.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 273712
+            "bytes": 304473
           },
           {
             "sceneId": "data-portability",
             "url": "screenshots/pixel-10-pro/id-ID/05-data-portability.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 277309
+            "bytes": 334036
           }
         ],
         "preview": null
@@ -140,11 +140,13 @@
     "theme": {
       "background": "linear-gradient(145deg, #FF8A71 0%, #FF5E7D 100%)",
       "headlineColor": "#FFFFFF",
-      "subheadColor": "#FFF1F2",
+      "subheadColor": "#D9E1EA",
       "fontFamily": "-apple-system, \"SF Pro Display\", \"Montserrat\", \"DM Sans\", system-ui, sans-serif",
       "copyHeightRatio": 0.22,
       "deviceWidthRatio": 0.86,
-      "layout": "classic"
+      "layout": "classic",
+      "template": "magazine",
+      "screenOnly": false
     },
     "frameVariant": "17-pro-blue",
     "frameVariants": [
@@ -381,7 +383,7 @@
         ]
       }
     ],
-    "template": null,
+    "template": "magazine",
     "layout": "classic",
     "screenOnly": false,
     "decorations": [],
@@ -437,8 +439,8 @@
           "id-ID": "Kedaulatan Penuh Atas Data Anda"
         },
         "subhead": {
-          "en-US": "Export raw data to Excel CSV anytime or permanently destroy all records in one tap.",
-          "id-ID": "Ekspor data mentah ke CSV Excel kapan saja atau musnahkan total dalam satu sentuhan."
+          "en-US": "Store your private recovery key, sync zero-knowledge cloud backups, or permanently purge all data in one tap.",
+          "id-ID": "Simpan kunci pemulihan unik, cadangkan ke cloud terenkripsi, atau musnahkan total data dalam satu sentuhan."
         }
       }
     ],

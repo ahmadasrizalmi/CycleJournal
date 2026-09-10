@@ -1,0 +1,11 @@
+{
+  "background": "linear-gradient(145deg, #FF8A71 0%, #FF5E7D 100%)",
+  "frame": "17-pro-blue",
+  "fontFamily": "-apple-system, \"SF Pro Display\", \"Montserrat\", \"DM Sans\", system-ui, sans-serif",
+  "template": "magazine",
+  "layout": "classic",
+  "screenOnly": false,
+  "sceneLayouts": {
+    "privacy-security": "copy-below"
+  }
+}

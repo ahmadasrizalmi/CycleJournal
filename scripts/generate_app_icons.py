@@ -1,7 +1,7 @@
 import os
 from PIL import Image, ImageDraw
 
-def generate_icons(logo_path="design/logo cyclejournal.jpg", res_dir="app/src/main/res", store_dir="store_assets"):
+def generate_icons(logo_path="app/src/main/res/drawable/ic_cyclejournal_logo.png", res_dir="app/src/main/res", store_dir="store_assets"):
     os.makedirs(store_dir, exist_ok=True)
     if not os.path.exists(logo_path):
         print(f"Error: {logo_path} not found.")

@@ -11,9 +11,9 @@ Klik ganda file `.bat` di folder utama:
 
 | File Batch | Fungsi | Output |
 |---|---|---|
-| 🚀 **`BUILD_ALL.bat`** | Build APK & AAB sekaligus | `release/CycleJournal_v1.0.0.apk` + `.aab` |
-| 📱 **`BUILD_APK.bat`** | Build APK saja | `release/CycleJournal_v1.0.0.apk` |
-| 📦 **`BUILD_AAB.bat`** | Build AAB saja | `release/CycleJournal_v1.0.0.aab` |
+| 🚀 **`BUILD_ALL.bat`** | Build APK & AAB sekaligus | `release/CycleJournal_v1.1.2.apk` + `.aab` |
+| 📱 **`BUILD_APK.bat`** | Build APK saja | `release/CycleJournal_v1.1.2.apk` |
+| 📦 **`BUILD_AAB.bat`** | Build AAB saja | `release/CycleJournal_v1.1.2.aab` |
 
 > Alternatif manual via terminal: `./gradlew assembleRelease bundleRelease`
 
@@ -21,10 +21,11 @@ Klik ganda file `.bat` di folder utama:
 
 ## 📦 Folder Rilis Siap Pakai (`release/`)
 
-1. **`CycleJournal_v1.0.0.aab` (19 MB)** — Android App Bundle ter-sign, langsung di-upload ke Google Play Console.
-2. **`CycleJournal_v1.0.0.apk` (27 MB)** — Installer APK untuk uji coba di HP fisik/emulator.
+1. **`CycleJournal_v1.1.2.aab` (18 MB)** — Android App Bundle ter-sign (VersionCode: 4), langsung di-upload ke Google Play Console.
+2. **`CycleJournal_v1.1.2.apk` (26 MB)** — Installer APK untuk uji coba di HP fisik/emulator.
 3. **`DOKUMEN_UPLOAD_PLAY_STORE.md`** — Panduan lengkap pengisian Google Play Console (teknis, listing ID/EN, Data Safety, IARC, IAP, aset).
 4. **`PRIVACY_POLICY.html`** — Kebijakan privasi siap hosting publik (URL: `https://asridigital.com/cyclejournal/privacy`).
+5. 📖 **`docs/DOKUMENTASI_RESMI_CYCLEJOURNAL.md`** — Dokumentasi resmi lengkap sistem klinis, mekanisme prediksi FIGO dinamis, arsitektur, dan panduan fitur.
 
 ---
 
@@ -33,8 +34,8 @@ Klik ganda file `.bat` di folder utama:
 ```
 CycleJournal/
 ├── release/                                <-- FOLDER FILE SIAP PAKAI
-│   ├── CycleJournal_v1.0.0.aab             <-- AAB (Upload ke Play Console)
-│   ├── CycleJournal_v1.0.0.apk             <-- APK (Instal di HP)
+│   ├── CycleJournal_v1.1.2.aab             <-- AAB (Upload ke Play Console)
+│   ├── CycleJournal_v1.1.2.apk             <-- APK (Instal di HP)
 │   ├── DOKUMEN_UPLOAD_PLAY_STORE.md        <-- Panduan form Play Console
 │   └── PRIVACY_POLICY.html                 <-- Dokumen Kebijakan Privasi
 │
@@ -47,7 +48,9 @@ CycleJournal/
 ├── out/                                    <-- Screenshot Goldie (raw + framed)
 ├── flows/                                  <-- Alur Goldie (auto capture Play Store)
 ├── design/                                 <-- Blueprint PDF, prototipe UI, logo master, analysis_chunks
-├── docs/                                   <-- PROMPT_GOAL_CYCLEJOURNAL.md (misi)
+├── docs/                                   <-- DOKUMENTASI_RESMI_CYCLEJOURNAL.md & PROMPT_GOAL_CYCLEJOURNAL.md
+│   ├── DOKUMENTASI_RESMI_CYCLEJOURNAL.md   <-- Spesifikasi klinis & dokumentasi sistem lengkap
+│   └── PROMPT_GOAL_CYCLEJOURNAL.md         <-- Misi & arsitektur teknis asli
 └── scripts/                                <-- generate_app_icons.py, render_realistic_screens.py
 ```
 

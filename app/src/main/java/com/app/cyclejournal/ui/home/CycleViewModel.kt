@@ -36,6 +36,12 @@ class CycleViewModel @Inject constructor(
     private val pinManager: SecurityPinManager
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            cycleAggregator.reconcileAllHistory()
+        }
+    }
+
     // 1. Reactive flow of all cycles
     val allCyclesFlow: StateFlow<List<CycleEntity>> = cycleDao.getAllCyclesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

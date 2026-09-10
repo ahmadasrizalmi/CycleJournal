@@ -124,4 +124,42 @@ class CycleAggregatorTest {
         assertNull(sortedCycles[1].endDate)
         assertEquals(2, sortedCycles[1].periodDurationDays)
     }
+
+    @Test
+    fun testOnDailyLogSaved_retroactiveOutofOrderEntry() = runBlocking {
+        val aug1 = LocalDate.of(2026, 8, 1)
+        val aug29 = LocalDate.of(2026, 8, 29) // Cycle 2, 28 days later
+
+        // User logs August 29 FIRST
+        aggregator.onDailyLogSaved(DailyLogEntity(date = aug29, flow = FlowIntensity.HEAVY))
+        assertEquals(1, fakeCycles.size)
+        assertEquals(aug29, fakeCycles[0].startDate)
+        assertNull(fakeCycles[0].cycleLengthDays)
+
+        // Then user retroactively logs past cycle on August 1
+        aggregator.onDailyLogSaved(DailyLogEntity(date = aug1, flow = FlowIntensity.HEAVY))
+        assertEquals(2, fakeCycles.size)
+
+        val sorted = fakeCycles.sortedBy { it.startDate }
+        // Past cycle (August 1) is now closed and calculated
+        assertEquals(aug1, sorted[0].startDate)
+        assertEquals(aug29.minusDays(1), sorted[0].endDate)
+        assertEquals(28, sorted[0].cycleLengthDays)
+
+        // Latest cycle (August 29) is ongoing
+        assertEquals(aug29, sorted[1].startDate)
+        assertNull(sorted[1].endDate)
+    }
+
+    @Test
+    fun testOnDailyLogSaved_removingBleedingCleansCycle() = runBlocking {
+        val date = LocalDate.of(2026, 9, 10)
+        // User logs bleeding
+        aggregator.onDailyLogSaved(DailyLogEntity(date = date, flow = FlowIntensity.LIGHT))
+        assertEquals(1, fakeCycles.size)
+
+        // User edits log to remove bleeding
+        aggregator.onDailyLogSaved(DailyLogEntity(date = date, flow = FlowIntensity.NONE))
+        assertEquals(0, fakeCycles.size)
+    }
 }

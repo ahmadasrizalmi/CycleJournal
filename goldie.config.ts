@@ -22,6 +22,7 @@ export default {
     copyHeightRatio: 0.22,
     deviceWidthRatio: 0.86,
     layout: "classic",
+    template: "uniform",
   },
   store: {
     name: "CycleJournal",
@@ -105,8 +106,8 @@ export default {
         "id-ID": "Kedaulatan Penuh Atas Data Anda",
       },
       subhead: {
-        "en-US": "Export raw data to Excel CSV anytime or permanently destroy all records in one tap.",
-        "id-ID": "Ekspor data mentah ke CSV Excel kapan saja atau musnahkan total dalam satu sentuhan.",
+        "en-US": "Store your private recovery key, sync zero-knowledge cloud backups, or permanently purge all data in one tap.",
+        "id-ID": "Simpan kunci pemulihan unik, cadangkan ke cloud terenkripsi, atau musnahkan total data dalam satu sentuhan.",
       },
     },
   ],

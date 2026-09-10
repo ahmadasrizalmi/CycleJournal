@@ -36,3 +36,9 @@ node_modules/
 # Analysis temporary files
 analysis_chunks/
 out/raw/
+out/*.raw
+out/*.zip
+out/*.png
+!out/screenshots/**
+!out/web/**
+out/xml/
