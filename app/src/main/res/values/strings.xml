@@ -382,8 +382,8 @@ Log your first period day to get started.</string>
     <string name="settings_copy">Copy</string>
     <string name="settings_create_backup">Create Backup</string>
     <string name="settings_creating_backup_file">Creating backup file...</string>
-    <string name="settings_delete_all_data_button">Delete All Data on Device</string>
-    <string name="settings_delete_all_data_description">Permanently deletes all cycle records, daily symptoms, and settings from this device. Deleted data cannot be recovered unless you have a backup file.</string>
+    <string name="settings_delete_all_data_button">Delete All Data Permanently</string>
+    <string name="settings_delete_all_data_description">Permanently deletes all cycle records, daily symptoms, settings, your app PIN and the device encryption keys from this device, plus the encrypted backup on our cloud server. Deleted data cannot be recovered unless you have a backup file.</string>
     <string name="settings_delete_now">Delete Now</string>
     <string name="settings_discreet_mode">Discreet Mode (Anti-Peek)</string>
     <string name="settings_discreet_mode_subtitle">Mask sensitive terms in public</string>
@@ -432,7 +432,7 @@ Make sure you have backed up your data if you want to keep it.</string>
     <string name="settings_quick_guide_subtitle">How to log periods, cycle predictions &amp; color meanings</string>
     <string name="settings_restore_data">Restore Data</string>
     <string name="settings_section_backup">SELF-MANAGED DATA BACKUP</string>
-    <string name="settings_section_delete_all_data">DELETE ALL LOCAL DATA</string>
+    <string name="settings_section_delete_all_data">DELETE ALL DATA</string>
     <string name="settings_section_display">DISPLAY &amp; NOTIFICATIONS</string>
     <string name="settings_section_preferences">PREFERENCES &amp; CONTROLS</string>
     <string name="settings_section_security">SECURITY &amp; APP LOCK</string>

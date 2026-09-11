@@ -5,6 +5,7 @@ import com.app.cyclejournal.ui.report.CycleHistoryRow
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +38,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.painterResource
@@ -50,6 +53,7 @@ import com.app.cyclejournal.BuildConfig
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.app.cyclejournal.data.local.entity.CervicalMucusType
 import com.app.cyclejournal.data.local.entity.CycleEntity
@@ -74,6 +78,11 @@ enum class AppScreen {
 enum class CyclePhase {
     MENSTRUATION, FOLLICULAR, FERTILE, OVULATION, LUTEAL
 }
+
+private enum class NukeStage { Closed, Confirm, Wiping }
+
+/** Typed proof of intent; the localized hint (nuke_confirm_hint) mirrors one of these words. */
+private val NUKE_KEYWORDS = listOf("HAPUS", "DELETE")
 
 data class DayStripItem(
     val dayOfMonth: Int,
@@ -110,7 +119,7 @@ fun CycleJournalApp(
     onBuyPro: (() -> Unit)? = null,
     onBackupLocal: ((Boolean, String?) -> Unit)? = null,
     onRestoreLocal: (() -> Unit)? = null,
-    onNukeData: (() -> Unit)? = null,
+    onNukeData: ((String) -> Boolean)? = null,
     isProUserActive: Boolean = false,
     anonymousRecoveryKey: String = "px-7f9a2b1c4e0d",
     onSaveDailyLog: (DailyLogEntity) -> Unit = {},
@@ -335,12 +344,7 @@ fun CycleJournalApp(
                         },
                         onBackupLocal = onBackupLocal,
                         onRestoreLocal = onRestoreLocal,
-                        onNukeData = {
-                            onNukeData?.invoke() ?: run {
-                                showToast(resources.getString(R.string.app_toast_local_data_cleared))
-                                currentScreen = AppScreen.DASHBOARD
-                            }
-                        },
+                        onNukeData = { pin -> onNukeData?.invoke(pin) ?: false },
                         onToast = showToast
                     )
                 }
@@ -2781,7 +2785,7 @@ fun SettingsScreenView(
     onCopyRecoveryKey: (() -> Unit)? = null,
     onBackupLocal: ((Boolean, String?) -> Unit)? = null,
     onRestoreLocal: (() -> Unit)? = null,
-    onNukeData: () -> Unit,
+    onNukeData: (String) -> Boolean,
     onToast: (String) -> Unit
 ) {
     val resources = LocalContext.current.resources
@@ -2793,7 +2797,10 @@ fun SettingsScreenView(
     var isBackupOptionsDialogOpen by remember { mutableStateOf(false) }
     var isBackupEncrypted by remember { mutableStateOf(false) }
     var backupPinInput by remember { mutableStateOf("") }
-    var isNukeConfirmDialogOpen by remember { mutableStateOf(false) }
+    var nukeStage by remember { mutableStateOf(NukeStage.Closed) }
+    var nukeKeyword by remember { mutableStateOf("") }
+    var nukePin by remember { mutableStateOf("") }
+    var isNukePinWrong by remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     LazyColumn(
         modifier = Modifier
@@ -3363,7 +3370,12 @@ fun SettingsScreenView(
                         lineHeight = 14.sp
                     )
                     Button(
-                        onClick = { isNukeConfirmDialogOpen = true },
+                        onClick = {
+                            nukeKeyword = ""
+                            nukePin = ""
+                            isNukePinWrong = false
+                            nukeStage = NukeStage.Confirm
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = MedicalRose),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -3485,37 +3497,119 @@ fun SettingsScreenView(
                 }
             )
         }
-        if (isNukeConfirmDialogOpen) {
+        val isNukeKeywordMatched = NUKE_KEYWORDS.any { it.equals(nukeKeyword.trim(), ignoreCase = true) }
+        val canConfirmNuke = isNukeKeywordMatched && (!isPinConfigured || nukePin.length == 4)
+        if (nukeStage == NukeStage.Confirm) {
             AlertDialog(
-                onDismissRequest = { isNukeConfirmDialogOpen = false },
+                onDismissRequest = { nukeStage = NukeStage.Closed },
                 title = {
                     Text(stringResource(R.string.nuke_confirm_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                 },
                 text = {
-                    Text(
-                        text = stringResource(R.string.settings_nuke_local_message),
-                        fontSize = 12.sp,
-                        color = textSecondary,
-                        lineHeight = 16.sp
-                    )
+                    Column(
+                        modifier = Modifier.verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_nuke_local_message),
+                            fontSize = 12.sp,
+                            color = textSecondary,
+                            lineHeight = 16.sp
+                        )
+                        Text(
+                            text = stringResource(R.string.nuke_confirm_consequences),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MedicalRose,
+                            lineHeight = 15.sp
+                        )
+                        OutlinedTextField(
+                            value = nukeKeyword,
+                            onValueChange = { nukeKeyword = it },
+                            label = { Text(stringResource(R.string.nuke_confirm_hint), fontSize = 11.sp) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (isPinConfigured) {
+                            Text(
+                                text = stringResource(R.string.nuke_pin_prompt),
+                                fontSize = 11.sp,
+                                color = textSecondary
+                            )
+                            OutlinedTextField(
+                                value = nukePin,
+                                onValueChange = { input ->
+                                    if (input.length <= 4 && input.all { it.isDigit() }) {
+                                        nukePin = input
+                                        isNukePinWrong = false
+                                    }
+                                },
+                                placeholder = { Text("\u2022\u2022\u2022\u2022", fontSize = 12.sp) },
+                                isError = isNukePinWrong,
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            if (isNukePinWrong) {
+                                Text(
+                                    text = stringResource(R.string.nuke_wrong_pin),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MedicalRose
+                                )
+                            }
+                        }
+                    }
                 },
                 confirmButton = {
                     Button(
                         onClick = {
-                            isNukeConfirmDialogOpen = false
-                            onNukeData()
+                            if (onNukeData(nukePin)) {
+                                nukeStage = NukeStage.Wiping
+                            } else {
+                                isNukePinWrong = true
+                                nukePin = ""
+                            }
                         },
+                        enabled = canConfirmNuke,
                         colors = ButtonDefaults.buttonColors(containerColor = MedicalRose),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text(stringResource(R.string.settings_delete_now), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.nuke_confirm_action), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { isNukeConfirmDialogOpen = false }) {
-                        Text(stringResource(R.string.settings_cancel))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(
+                            onClick = {
+                                nukeStage = NukeStage.Closed
+                                isBackupOptionsDialogOpen = true
+                            }
+                        ) {
+                            Text(stringResource(R.string.nuke_backup_first), fontSize = 12.sp, color = Coral600)
+                        }
+                        TextButton(onClick = { nukeStage = NukeStage.Closed }) {
+                            Text(stringResource(R.string.settings_cancel), fontSize = 12.sp)
+                        }
                     }
                 }
+            )
+        }
+        if (nukeStage == NukeStage.Wiping) {
+            AlertDialog(
+                onDismissRequest = { },
+                properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+                title = {
+                    Text(stringResource(R.string.nuke_wiping_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MedicalRose, strokeWidth = 2.dp)
+                        Text(stringResource(R.string.nuke_wiping_message), fontSize = 12.sp, color = textSecondary)
+                    }
+                },
+                confirmButton = { }
             )
         }
 }

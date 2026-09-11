@@ -102,6 +102,10 @@
   • Seluruh antarmuka, laporan PDF klinis, ekspor CSV, nama kanal notifikasi, dan analisis anomali FIGO tersedia dalam Bahasa Indonesia dan Bahasa Inggris.
   • Ganti bahasa kapan saja melalui Pengaturan → Pilihan Bahasa (Ikuti Sistem / Indonesia / English) tanpa perlu menginstal ulang aplikasi.
 
+  7. PROTEKSI PENGHAPUSAN DATA (ANTI-SALAH-KETUK)
+  • Tombol hapus seluruh data dilindungi dua lapis: wajib mengetik kata konfirmasi (HAPUS) dan verifikasi ulang PIN 4-digit bila PIN aplikasi aktif.
+  • Dialog merinci apa saja yang dimusnahkan (basis data lokal, kunci enkripsi, PIN, berkas laporan, dan cadangan terenkripsi di cloud) serta menyediakan tombol "Cadangkan Dulu" sebagai jalan keluar sebelum penghapusan dijalankan.
+
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   💎 PILIHAN LISENSI
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -184,6 +188,10 @@
   • Custom Symptoms: Add and persist your own specific symptoms (e.g. Migraine, Joint Pain, Insomnia).
   • Free-form clinical notes for medication dosages and physician instructions.
 
+  6. GUARDED DATA DELETION (ANTI-MISTAP)
+  • The delete-all-data action requires two layers: typing the confirmation keyword (DELETE) and re-verifying your 4-digit PIN whenever an app PIN is active.
+  • The dialog itemises what is destroyed (local database, encryption keys, PIN, exported reports, and the encrypted cloud backup) and offers a "Back Up First" escape hatch before anything is erased.
+
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   💎 LICENSING OPTIONS
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -231,7 +239,7 @@ Isi kuesioner IARC di Play Console dengan parameter:
 | **Apakah data dibagikan ke pihak ketiga?** | **Tidak (Shared: No)** | Data 100% lokal. Tidak ada pihak ketiga yang memiliki akses ke plaintext. |
 | **Enkripsi dalam transit?** | **Ya (In transit: Yes)** | HTTPS / TLS 1.3 pada cadangan cloud opsional. |
 | **Enkripsi saat disimpan (At rest)?** | **Ya (At rest: Yes)** | Hardware-backed AES-256 SQLCipher pada penyimpanan lokal ponsel. |
-| **Penghapusan data pengguna?** | **Ya (Deletion Request: Yes)** | Tombol *"Hapus Seluruh Data Permanen"* memusnahkan database dan master key seketika. |
+| **Penghapusan data pengguna?** | **Ya (Deletion Request: Yes)** | Tombol *"Hapus Semua Data Permanen"* dilindungi konfirmasi ketik (HAPUS/DELETE) + verifikasi ulang PIN 4-digit, lalu memusnahkan database SQLCipher, master key Keystore, berkas laporan, dan cadangan terenkripsi di server cloud. |
 | **Tipe Data Kesehatan (Health & Fitness):** | **Ya** | Kategori: Menstruasi, Suhu Tubuh Basal, Skala Nyeri, Gejala Reproduksi. |
 | **Tujuan Pengumpulan:** | **App Functionality** | Hanya untuk operasional aplikasi, BUKAN untuk analitik/iklan pihak ketiga. |
 | **Iklan (Google AdMob):** | **Device or other IDs** | Hanya mengaktifkan **Non-Personalized Ads (`npa = 1`)** tanpa tracking lintas aplikasi. |

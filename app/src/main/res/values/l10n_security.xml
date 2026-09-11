@@ -20,4 +20,15 @@
     <string name="security_restore_backup_not_found">No backup file found in Cloudflare D1 for this ID.</string>
     <string name="security_restore_integrity_failed">Data integrity corrupted (SHA-256 checksum mismatch).</string>
     <string name="security_restore_network_error">Network error: %1$s</string>
+
+    <!-- Destructive "delete all data" guard -->
+    <string name="nuke_confirm_hint">Type DELETE to confirm</string>
+    <string name="nuke_confirm_consequences">This permanently destroys: every cycle record and daily symptom, app settings, your app PIN, the device encryption keys, exported report files, and the encrypted backup on our cloud server.</string>
+    <string name="nuke_confirm_action">Delete Permanently</string>
+    <string name="nuke_backup_first">Back Up First</string>
+    <string name="nuke_pin_prompt">Enter your 4-digit PIN to proceed</string>
+    <string name="nuke_wrong_pin">Wrong PIN. Nothing was deleted.</string>
+    <string name="nuke_wiping_title">Deleting data…</string>
+    <string name="nuke_wiping_message">Please wait and do not close the app.</string>
+    <string name="nuke_wipe_incomplete">Deletion did not finish. Some data may still remain on this device.</string>
 </resources>

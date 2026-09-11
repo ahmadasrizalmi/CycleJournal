@@ -210,11 +210,11 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun wipeAllUserData(onComplete: () -> Unit) {
+    fun wipeAllUserData(onComplete: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            wipeManager.executeCompleteWipe(purgeRemoteCloud = true)
+            val result = wipeManager.executeCompleteWipe(purgeRemoteCloud = true)
             withContext(Dispatchers.Main) {
-                onComplete()
+                onComplete(result.isSuccess)
             }
         }
     }

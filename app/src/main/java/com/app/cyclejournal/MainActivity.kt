@@ -205,9 +205,25 @@ class MainActivity : FragmentActivity() {
                         onRestoreLocal = {
                             backupFilePicker.launch(arrayOf("*/*"))
                         },
-                        onNukeData = {
-                            settingsViewModel.wipeAllUserData {
-                                Process.killProcess(Process.myPid())
+                        onNukeData = { pin ->
+                            // Destructive and irreversible: re-verify identity at the boundary that
+                            // actually starts the wipe, so no UI path can bypass the guard.
+                            if (pinManager.isPinSet() && !pinManager.verifyPin(pin)) {
+                                false
+                            } else {
+                                settingsViewModel.wipeAllUserData { success ->
+                                    if (success) {
+                                        Process.killProcess(Process.myPid())
+                                    } else {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            localizedContext.getString(R.string.nuke_wipe_incomplete),
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        recreate()
+                                    }
+                                }
+                                true
                             }
                         },
                         isProUserActive = isProUser,

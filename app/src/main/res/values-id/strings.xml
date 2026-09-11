@@ -386,8 +386,8 @@ Catat hari pertama haid untuk memulai.</string>
     <string name="settings_copy">Salin</string>
     <string name="settings_create_backup">Buat Cadangan</string>
     <string name="settings_creating_backup_file">Membuat berkas cadangan...</string>
-    <string name="settings_delete_all_data_button">Hapus Semua Data di Perangkat</string>
-    <string name="settings_delete_all_data_description">Menghapus seluruh catatan siklus, gejala harian, dan pengaturan dari perangkat ini secara permanen. Data yang telah dihapus tidak dapat dipulihkan kecuali Anda memiliki berkas cadangan.</string>
+    <string name="settings_delete_all_data_button">Hapus Semua Data Permanen</string>
+    <string name="settings_delete_all_data_description">Menghapus permanen seluruh catatan siklus, gejala harian, pengaturan, PIN aplikasi, dan kunci enkripsi dari perangkat ini, plus cadangan terenkripsi di server cloud. Data yang telah dihapus tidak dapat dipulihkan kecuali Anda memiliki berkas cadangan.</string>
     <string name="settings_delete_now">Hapus Sekarang</string>
     <string name="settings_discreet_mode">Mode Samaran (Anti-Intip)</string>
     <string name="settings_discreet_mode_subtitle">Samarkan istilah sensitif di publik</string>
@@ -407,7 +407,7 @@ Catat hari pertama haid untuk memulai.</string>
     <string name="settings_faq_4_title">4. Siklus Normal &amp; Tanda yang Perlu Diperhatikan</string>
     <string name="settings_free_version_ads">VERSI GRATIS (DIDUKUNG IKLAN)</string>
     <string name="settings_language_follow_system">Mengikuti bahasa sistem ponsel</string>
-    <string name="settings_language_set_english">Bahasa diubah ke Indonesia</string>
+    <string name="settings_language_set_english">Bahasa diubah ke Inggris</string>
     <string name="settings_language_set_indonesian">Bahasa diubah ke Indonesia</string>
     <string name="settings_normal_mode_enabled">Mode Biasa (Pantau Siklus) Aktif</string>
     <string name="settings_nuke_local_message">Tindakan ini akan mengosongkan seluruh jurnal, catatan harian, dan riwayat siklus dari perangkat ini secara permanen.
@@ -436,7 +436,7 @@ Pastikan Anda sudah mencadangkan data jika ingin menyimpannya.</string>
     <string name="settings_quick_guide_subtitle">Cara input haid, prediksi siklus &amp; arti warna</string>
     <string name="settings_restore_data">Pulihkan Data</string>
     <string name="settings_section_backup">CADANGAN DATA MANDIRI</string>
-    <string name="settings_section_delete_all_data">HAPUS SEMUA DATA LOKAL</string>
+    <string name="settings_section_delete_all_data">HAPUS SEMUA DATA</string>
     <string name="settings_section_display">TAMPILAN &amp; NOTIFIKASI</string>
     <string name="settings_section_preferences">PREFERENSI &amp; KONTROL</string>
     <string name="settings_section_security">KEAMANAN &amp; KUNCI APLIKASI</string>

@@ -24,4 +24,15 @@
     <string name="security_restore_backup_not_found">Tidak ada berkas cadangan di Cloudflare D1 untuk ID ini.</string>
     <string name="security_restore_integrity_failed">Integritas data rusak (SHA-256 Checksum mismatch).</string>
     <string name="security_restore_network_error">Kesalahan jaringan: %1$s</string>
+
+    <!-- Destructive "delete all data" guard -->
+    <string name="nuke_confirm_hint">Ketik HAPUS untuk mengonfirmasi</string>
+    <string name="nuke_confirm_consequences">Tindakan ini memusnahkan permanen: seluruh catatan siklus dan gejala harian, pengaturan aplikasi, PIN aplikasi, kunci enkripsi perangkat, berkas laporan hasil ekspor, dan cadangan terenkripsi di server cloud.</string>
+    <string name="nuke_confirm_action">Hapus Permanen</string>
+    <string name="nuke_backup_first">Cadangkan Dulu</string>
+    <string name="nuke_pin_prompt">Masukkan PIN 4 digit Anda untuk melanjutkan</string>
+    <string name="nuke_wrong_pin">PIN salah. Tidak ada data yang dihapus.</string>
+    <string name="nuke_wiping_title">Menghapus data…</string>
+    <string name="nuke_wiping_message">Mohon tunggu dan jangan tutup aplikasi.</string>
+    <string name="nuke_wipe_incomplete">Penghapusan tidak selesai. Sebagian data mungkin masih tersisa di perangkat ini.</string>
 </resources>
