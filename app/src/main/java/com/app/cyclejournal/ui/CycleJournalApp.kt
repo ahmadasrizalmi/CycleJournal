@@ -60,6 +60,7 @@ import kotlinx.coroutines.delay
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 enum class AppScreen {
@@ -295,6 +296,11 @@ fun CycleJournalApp(
                                 isProLicenseActive = true
                                 showToast("Google Play Billing: Lisensi Pro Aktif Selamanya!")
                             }
+                        },
+                        onNavigateToCalendar = { date ->
+                            selectedCalendarDate = date
+                            currentScreen = AppScreen.CALENDAR
+                            showToast("Membuka ${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} di Kalender")
                         },
                         onToast = showToast
                     )
@@ -1977,8 +1983,10 @@ fun SpOgReportScreenView(
     onSharePdf: (() -> Unit)? = null,
     onExportCsv: (() -> Unit)? = null,
     onBuyPro: () -> Unit = {},
+    onNavigateToCalendar: (LocalDate) -> Unit = {},
     onToast: (String) -> Unit = {}
 ) {
+    var selectedCycleForDetail by remember { mutableStateOf<CycleEntity?>(null) }
     val cardBg = if (isDarkMode) DarkCardBackground else Color.White
     val borderCol = if (isDarkMode) DarkBorder else Slate100
     val textPrimary = if (isDarkMode) Color.White else Slate900
@@ -2243,7 +2251,7 @@ fun SpOgReportScreenView(
                             Text("Haid", fontSize = 10.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFFFB300)))
+                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF67E8F9)))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Masa Subur", fontSize = 10.sp, color = textSecondary)
                         }
@@ -2253,7 +2261,7 @@ fun SpOgReportScreenView(
                                     .size(8.dp)
                                     .clip(CircleShape)
                                     .background(Color.White)
-                                    .border(1.5.dp, Color(0xFFFF9800), CircleShape)
+                                    .border(1.5.dp, Color(0xFF0891B2), CircleShape)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Ovulasi", fontSize = 10.sp, color = textSecondary)
@@ -2290,6 +2298,7 @@ fun SpOgReportScreenView(
                                         textColor = textPrimary,
                                         subTextColor = textSecondary,
                                         trackColor = if (isDarkMode) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                        onClick = { selectedCycleForDetail = latestCycle },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                     if (completedCycles.isNotEmpty()) {
@@ -2305,6 +2314,7 @@ fun SpOgReportScreenView(
                                         textColor = textPrimary,
                                         subTextColor = textSecondary,
                                         trackColor = if (isDarkMode) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                        onClick = { selectedCycleForDetail = c },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
@@ -2453,6 +2463,249 @@ fun SpOgReportScreenView(
                 }
             }
         }
+    }
+
+    if (selectedCycleForDetail != null) {
+        CycleDetailBottomSheet(
+            cycle = selectedCycleForDetail!!,
+            allLogs = allLogs,
+            isDarkMode = isDarkMode,
+            onDismiss = { selectedCycleForDetail = null },
+            onOpenCalendar = { date ->
+                selectedCycleForDetail = null
+                onNavigateToCalendar(date)
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CycleDetailBottomSheet(
+    cycle: CycleEntity,
+    allLogs: List<DailyLogEntity>,
+    isDarkMode: Boolean,
+    onDismiss: () -> Unit,
+    onOpenCalendar: (LocalDate) -> Unit
+) {
+    val fmt = DateTimeFormatter.ofPattern("d MMM yyyy")
+    val isOngoing = cycle.endDate == null
+    val today = remember { LocalDate.now() }
+    val cycleLength = if (isOngoing) {
+        maxOf(28, (ChronoUnit.DAYS.between(cycle.startDate, today) + 1L).toInt())
+    } else {
+        cycle.cycleLengthDays ?: 28
+    }
+
+    val periodEnd = cycle.startDate.plusDays((cycle.periodDurationDays - 1).toLong().coerceAtLeast(0L))
+    val ovulationDay = (cycleLength - 14).coerceIn(1, cycleLength)
+    val ovulationDate = cycle.startDate.plusDays((ovulationDay - 1).toLong())
+    val fertileStart = cycle.startDate.plusDays((ovulationDay - 6).toLong().coerceAtLeast(0L))
+
+    val cycleLogs = remember(cycle, allLogs) {
+        allLogs.filter {
+            !it.date.isBefore(cycle.startDate) && (cycle.endDate == null || !it.date.isAfter(cycle.endDate))
+        }
+    }
+
+    val bbtValues = cycleLogs.mapNotNull { it.basalBodyTempCelsius }
+    val avgBbtStr = if (bbtValues.isNotEmpty()) String.format(Locale.US, "%.2f °C", bbtValues.average()) else "Tidak tercatat"
+
+    val symptomsList = remember(cycleLogs) {
+        cycleLogs.mapNotNull { it.painLocation }
+            .flatMap { it.split(",") }
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+    }
+
+    val peakPain = remember(cycleLogs) {
+        cycleLogs.maxOfOrNull { it.painVasScore } ?: 0
+    }
+
+    val textPrimary = if (isDarkMode) Color.White else Slate900
+    val textSecondary = if (isDarkMode) Slate400 else Slate500
+    val cardBg = if (isDarkMode) DarkCardBackground else Color.White
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = cardBg,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .padding(bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = if (isOngoing) "Siklus Berjalan" else "Detail Riwayat Siklus",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Black,
+                        color = textPrimary
+                    )
+                    Text(
+                        text = "${cycle.startDate.format(fmt)} – ${if (isOngoing) "Hari Ini (Aktif)" else cycle.endDate!!.format(fmt)}",
+                        fontSize = 11.sp,
+                        color = textSecondary
+                    )
+                }
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.Close, contentDescription = null, tint = textSecondary)
+                }
+            }
+
+            // Summary Pill Cards
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = if (isDarkMode) DarkBackground else Slate50,
+                border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Row 1: Total Siklus & Status
+                    DetailMetricRow(
+                        icon = Icons.Rounded.Sync,
+                        iconTint = Coral600,
+                        label = "Total Panjang Siklus",
+                        value = "$cycleLength Hari",
+                        valueColor = Coral600
+                    )
+                    HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
+
+                    // Row 2: Masa Haid
+                    DetailMetricRow(
+                        icon = Icons.Rounded.WaterDrop,
+                        iconTint = Coral500,
+                        label = "Masa Perdarahan Haid",
+                        value = "${cycle.periodDurationDays} Hari (${cycle.startDate.dayOfMonth} – ${periodEnd.dayOfMonth} ${cycle.startDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }})",
+                        valueColor = textPrimary
+                    )
+                    HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
+
+                    // Row 3: Masa Subur
+                    DetailMetricRow(
+                        icon = Icons.Rounded.Favorite,
+                        iconTint = Color(0xFF0891B2),
+                        label = "Jendela Masa Subur",
+                        value = "${fertileStart.dayOfMonth} – ${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}",
+                        valueColor = Color(0xFF0891B2)
+                    )
+                    HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
+
+                    // Row 4: Ovulasi
+                    DetailMetricRow(
+                        icon = Icons.Rounded.WbSunny,
+                        iconTint = Color(0xFF0891B2),
+                        label = "Estimasi Puncak Ovulasi",
+                        value = "Hari ke-$ovulationDay (${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }})",
+                        valueColor = Color(0xFF0891B2)
+                    )
+                    HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
+
+                    // Row 5: BBT & Nyeri
+                    DetailMetricRow(
+                        icon = Icons.Rounded.Thermostat,
+                        iconTint = Coral600,
+                        label = "Rata-rata Suhu (BBT)",
+                        value = avgBbtStr,
+                        valueColor = textPrimary
+                    )
+                    HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
+
+                    DetailMetricRow(
+                        icon = Icons.Rounded.Bolt,
+                        iconTint = if (peakPain >= 7) Coral600 else Slate500,
+                        label = "Skala Nyeri Puncak",
+                        value = if (peakPain > 0) "VAS $peakPain / 10" else "Bebas Nyeri",
+                        valueColor = if (peakPain >= 7) Coral600 else textPrimary
+                    )
+                }
+            }
+
+            // Symptoms tags if any
+            if (symptomsList.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Gejala Tercatat dalam Siklus Ini:", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textSecondary)
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        symptomsList.forEach { sym ->
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFFFFF1F2),
+                                border = BorderStroke(1.dp, Coral400)
+                            ) {
+                                Text(
+                                    text = sym,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Coral600,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Teleport to Calendar Button
+            Button(
+                onClick = {
+                    onOpenCalendar(cycle.startDate)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Coral500)
+            ) {
+                Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Buka ${cycle.startDate.month.name.lowercase().replaceFirstChar { it.uppercase() }} di Kalender",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailMetricRow(
+    icon: ImageVector,
+    iconTint: Color,
+    label: String,
+    value: String,
+    valueColor: Color
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(15.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(label, fontSize = 11.sp, color = Slate500)
+        }
+        Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = valueColor)
     }
 }
 

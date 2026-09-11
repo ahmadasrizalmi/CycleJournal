@@ -13,10 +13,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.app.cyclejournal.ui.home.CycleFilter
 
-private val PinkHot     = Color(0xFFFF5A85)
-private val GoldMustard = Color(0xFFFFB300)
-private val OrangeDot   = Color(0xFFFF9800)
-private val TrackBg     = Color(0xFFF2ECEE)
+private val PinkHot       = Color(0xFFFF5A85)
+private val FertileCyan   = Color(0xFF67E8F9) // Cyan Muda (SSOT Kalender)
+private val OvulationTeal = Color(0xFF0891B2) // Teal / Cyan Pekat (SSOT Kalender)
+private val TrackBg       = Color(0xFFF2ECEE)
 
 /**
  * Canvas-based horizontal timeline bar for a single cycle.
@@ -87,7 +87,7 @@ fun CycleTimelineCanvas(
             val w = (right - left).coerceAtLeast(0f)
             if (w > 0f) {
                 drawRoundRect(
-                    color = GoldMustard,
+                    color = FertileCyan,
                     topLeft = Offset(left, 0f),
                     size = Size(w, barHeight),
                     cornerRadius = radius
@@ -108,7 +108,7 @@ fun CycleTimelineCanvas(
                 center = Offset(cx, cy)
             )
             drawCircle(
-                color = OrangeDot,
+                color = OvulationTeal,
                 radius = dotRadius,
                 center = Offset(cx, cy),
                 style = Stroke(width = 2.5f)

@@ -1,5 +1,9 @@
 package com.app.cyclejournal.ui.report
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +34,7 @@ fun CycleHistoryRow(
     textColor: Color = TextPrimary,
     subTextColor: Color = TextSecondary,
     trackColor: Color = Color(0xFFF2ECEE),
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val fmt = DateTimeFormatter.ofPattern("d MMM")
@@ -48,17 +53,35 @@ fun CycleHistoryRow(
     val periodTitle = if (isOngoing) "$startStr – Aktif" else "$startStr – ${periodEnd.format(fmt)}"
     val lengthLabel = if (isOngoing) "Hari ke-$elapsedDaysIfActive (Aktif)" else "$cycleLength hari"
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (onClick != null) {
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onClick() }
+                        .padding(vertical = 4.dp)
+                } else Modifier
+            )
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = periodTitle,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textColor
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = periodTitle,
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textColor
+                )
+                if (onClick != null) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("›", fontSize = 14.sp, color = subTextColor, fontWeight = FontWeight.Bold)
+                }
+            }
             Text(
                 text = lengthLabel,
                 fontSize = 12.sp,
@@ -66,7 +89,6 @@ fun CycleHistoryRow(
                 color = subTextColor
             )
         }
-
         Spacer(modifier = Modifier.height(5.dp))
 
         CycleTimelineCanvas(
