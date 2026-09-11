@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">CycleJournal</string>
-    <string name="app_tagline">Kalender Haid &amp; Laporan Medis SpOG Berbasis Privasi Mutlak</string>
+    <string name="app_tagline">Kalender Haid &amp; Pemantau Siklus Pribadi</string>
 
     <!-- Navigation & Titles -->
     <string name="title_home">CycleJournal</string>
     <string name="title_daily_log">Log Harian Biomarker</string>
-    <string name="title_medical_report">Laporan Klinis Siklus &amp; SpOG</string>
+    <string name="title_medical_report">Analisis Siklus</string>
     <string name="title_settings">Pengaturan &amp; Privasi Mutlak</string>
     <string name="title_onboarding">Selamat Datang di CycleJournal</string>
 
@@ -34,12 +34,12 @@
     <string name="flow_medium">Sedang</string>
     <string name="flow_heavy">Deras</string>
 
-    <string name="header_pain_vas">Skala Nyeri Klinis (VAS 0–10)</string>
+    <string name="header_pain_vas">Skala Nyeri (VAS 0–10)</string>
     <string name="vas_desc_none">0: Tidak ada nyeri sama sekali.</string>
     <string name="vas_desc_mild">1–3: Nyeri ringan, aktivitas normal tidak terganggu.</string>
     <string name="vas_desc_moderate">4–6: Nyeri sedang, mengganggu fokus &amp; aktivitas harian.</string>
     <string name="vas_desc_severe">7–10: Nyeri hebat, membatasi gerak atau butuh tirah baring.</string>
-    <string name="alert_severe_pain">Nyeri level tinggi terdeteksi. Ini akan ditandai pada laporan SpOG sebagai indikasi dismenore/endometriosis.</string>
+    <string name="alert_severe_pain">Nyeri level tinggi tercatat. Pertimbangkan konsultasi dengan dokter jika ini terjadi berulang.</string>
 
     <string name="header_bbt">Suhu Basal Tubuh (°C)</string>
     <string name="bbt_placeholder">36.50</string>
@@ -52,15 +52,15 @@
     <string name="mucus_watery">Cair</string>
     <string name="mucus_egg_white">Putih Telur</string>
 
-    <string name="header_notes">Catatan Klinis</string>
+    <string name="header_notes">Catatan Harian</string>
     <string name="notes_placeholder">Catatan tambahan, gejala fisik, obat yang dikonsumsi…</string>
     <string name="action_save_log">Simpan Catatan Harian</string>
 
     <!-- Medical PDF Report Screen -->
-    <string name="action_export_pdf">Ekspor PDF Siap SpOG</string>
+    <string name="action_export_pdf">Unduh Rekap Siklus (PDF)</string>
     <string name="action_export_csv">Ekspor CSV (Excel)</string>
-    <string name="report_preview_title">Pratinjau Dokumen Medis</string>
-    <string name="pdf_generating">Memproses Laporan Medis PDF…</string>
+    <string name="report_preview_title">Ringkasan Siklus</string>
+    <string name="pdf_generating">Menyiapkan PDF…</string>
     <string name="pdf_ready">Laporan siap dibagikan</string>
 
     <!-- Settings & Danger Zone -->
@@ -89,7 +89,7 @@
 
     <!-- Onboarding -->
     <string name="disclaimer_title">Penafian Medis &amp; Privasi</string>
-    <string name="disclaimer_body">CycleJournal adalah alat pencatatan mandiri untuk evaluasi ginekologi dan bukan pengganti diagnosis medis dokter spesialis atau alat kontrasepsi. Semua data tersimpan 100% offline dengan enkripsi zero-knowledge pada perangkat ini.</string>
+    <string name="disclaimer_body">CycleJournal adalah alat pencatatan pribadi untuk memantau siklus haid dan bukan pengganti saran atau diagnosis dari tenaga medis. Semua data tersimpan 100% offline dengan enkripsi pada perangkat ini.</string>
     <string name="action_agree_continue">Setuju &amp; Lanjutkan</string>
     <string name="setup_pin_title">Buat PIN 4-Digit</string>
     <string name="confirm_pin_title">Konfirmasi PIN 4-Digit</string>

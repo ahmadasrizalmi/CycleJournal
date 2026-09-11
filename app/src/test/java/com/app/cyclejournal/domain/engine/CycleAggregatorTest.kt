@@ -25,6 +25,7 @@ class CycleAggregatorTest {
             fakeDailyLogs.add(log)
         }
         override suspend fun getLogByDate(date: LocalDate): DailyLogEntity? = fakeDailyLogs.find { it.date == date }
+        override fun getLogByDateFlow(date: LocalDate): Flow<DailyLogEntity?> = flowOf(fakeDailyLogs.find { it.date == date })
         override suspend fun getLogsBetween(startDate: LocalDate, endDate: LocalDate): List<DailyLogEntity> =
             fakeDailyLogs.filter { !it.date.isBefore(startDate) && !it.date.isAfter(endDate) }.sortedBy { it.date }
         override suspend fun getRecentLogs(limit: Int): List<DailyLogEntity> = fakeDailyLogs.sortedByDescending { it.date }.take(limit)
@@ -40,6 +41,9 @@ class CycleAggregatorTest {
             val assigned = cycle.copy(id = if (cycle.id == 0L) idCounter++ else cycle.id)
             fakeCycles.add(assigned)
             return assigned.id
+        }
+        override suspend fun insertCycles(cycles: List<CycleEntity>) {
+            cycles.forEach { insertCycle(it) }
         }
         override suspend fun updateCycle(cycle: CycleEntity) {
             fakeCycles.removeAll { it.id == cycle.id }

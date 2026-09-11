@@ -103,7 +103,7 @@ class MainActivity : FragmentActivity() {
                         }
                     )
                 } else {
-                    val isProUser = billingManager.isProUser.value
+                    val isProUser by billingManager.isProUser.collectAsState()
 
                     val latestCycle by cycleViewModel.latestCycleFlow.collectAsState()
                     val fertilePrediction by cycleViewModel.fertilePredictionFlow.collectAsState()
@@ -112,20 +112,15 @@ class MainActivity : FragmentActivity() {
                     val allLogs by cycleViewModel.allLogsFlow.collectAsState()
                     val completedCycles by cycleViewModel.completedCyclesFlow.collectAsState()
                     val anomalies by cycleViewModel.anomaliesFlow.collectAsState()
-
+                    val downloadedReport by cycleViewModel.downloadedReport.collectAsState()
                     CycleJournalApp(
                         onSharePdf = {
-                            // Free-tier rewarded ad gate / Pro direct export
-                            adMobManager.showRewardedVideo(
-                                activity = this@MainActivity,
-                                onRewardEarned = {
-                                    cycleViewModel.exportAndSharePdfReport(this@MainActivity)
-                                },
-                                onDismissedOrFailed = {}
-                            )
+                            cycleViewModel.exportAndSharePdfReport(this@MainActivity)
                         },
                         onExportCsv = {
-                            settingsViewModel.exportAndShareCsv(this@MainActivity)
+                            settingsViewModel.exportAndDownloadCsv(this@MainActivity) { saveResult ->
+                                cycleViewModel.setDownloadedReport(saveResult)
+                            }
                         },
                         onBuyPro = {
                             billingManager.launchPurchaseFlow(this@MainActivity)
@@ -152,6 +147,8 @@ class MainActivity : FragmentActivity() {
                         allLogs = allLogs,
                         completedCycles = completedCycles,
                         anomalies = anomalies,
+                        downloadedReport = downloadedReport,
+                        onDismissDownloadDialog = { cycleViewModel.clearDownloadedReport() },
                         isPinSet = pinManager.isPinSet()
                     )
                 }

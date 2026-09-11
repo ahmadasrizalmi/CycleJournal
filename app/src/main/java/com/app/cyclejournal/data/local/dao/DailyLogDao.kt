@@ -16,6 +16,8 @@ interface DailyLogDao {
     @Query("SELECT * FROM daily_logs WHERE date = :date LIMIT 1")
     suspend fun getLogByDate(date: LocalDate): DailyLogEntity?
 
+    @Query("SELECT * FROM daily_logs WHERE date = :date LIMIT 1")
+    fun getLogByDateFlow(date: LocalDate): Flow<DailyLogEntity?>
     @Query("SELECT * FROM daily_logs WHERE date BETWEEN :startDate AND :endDate ORDER BY date ASC")
     suspend fun getLogsBetween(startDate: LocalDate, endDate: LocalDate): List<DailyLogEntity>
 

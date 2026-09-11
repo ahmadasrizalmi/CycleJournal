@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">CycleJournal</string>
-    <string name="app_tagline">Medical-Grade Cycle Journal &amp; Privacy-First Tracker</string>
+    <string name="app_tagline">Cycle Journal &amp; Privacy-First Tracker</string>
 
     <!-- Navigation & Titles -->
     <string name="title_home">CycleJournal</string>
     <string name="title_daily_log">Daily Biomarker Log</string>
-    <string name="title_medical_report">Clinical Cycle &amp; OB-GYN Report</string>
+    <string name="title_medical_report">Analisis Siklus</string>
     <string name="title_settings">Settings &amp; Zero-Knowledge Security</string>
     <string name="title_onboarding">Welcome to CycleJournal</string>
 
@@ -39,7 +39,7 @@
     <string name="vas_desc_mild">1–3: Mild pain, does not interfere with daily activities.</string>
     <string name="vas_desc_moderate">4–6: Moderate pain, affects focus &amp; routine activities.</string>
     <string name="vas_desc_severe">7–10: Severe pain, limits mobility or requires bed rest.</string>
-    <string name="alert_severe_pain">High pain level detected. This will be flagged on the clinical report as suspected dysmenorrhea/endometriosis.</string>
+    <string name="alert_severe_pain">Nyeri level tinggi tercatat. Pertimbangkan konsultasi dengan dokter jika ini terjadi berulang.</string>
 
     <string name="header_bbt">Basal Body Temp (°C)</string>
     <string name="bbt_placeholder">36.50</string>
@@ -52,15 +52,15 @@
     <string name="mucus_watery">Watery</string>
     <string name="mucus_egg_white">Egg White</string>
 
-    <string name="header_notes">Clinical Notes</string>
+    <string name="header_notes">Catatan Harian</string>
     <string name="notes_placeholder">Optional notes, physical symptoms, medications…</string>
     <string name="action_save_log">Save Daily Log</string>
 
     <!-- Medical PDF Report Screen -->
-    <string name="action_export_pdf">Export OB-GYN Clinical PDF</string>
-    <string name="action_export_csv">Export CSV (Excel Ready)</string>
-    <string name="report_preview_title">Clinical Report Preview</string>
-    <string name="pdf_generating">Generating Medical PDF…</string>
+    <string name="action_export_pdf">Unduh Rekap Siklus (PDF)</string>
+    <string name="action_export_csv">Ekspor CSV (Excel)</string>
+    <string name="report_preview_title">Ringkasan Siklus</string>
+    <string name="pdf_generating">Menyiapkan PDF…</string>
     <string name="pdf_ready">Report ready to share</string>
 
     <!-- Settings & Danger Zone -->
@@ -89,7 +89,7 @@
 
     <!-- Onboarding -->
     <string name="disclaimer_title">Medical Disclaimer &amp; Privacy</string>
-    <string name="disclaimer_body">CycleJournal is a private clinical tracking tool for gynecological reference and is not a substitute for professional medical diagnosis or contraception. All data remains 100% offline and zero-knowledge encrypted on this device.</string>
+    <string name="disclaimer_body">CycleJournal adalah alat pencatatan pribadi untuk memantau siklus haid dan bukan pengganti saran atau diagnosis dari tenaga medis. Semua data tersimpan 100% offline dengan enkripsi pada perangkat ini.</string>
     <string name="action_agree_continue">Agree &amp; Continue</string>
     <string name="setup_pin_title">Set 4-Digit PIN</string>
     <string name="confirm_pin_title">Confirm 4-Digit PIN</string>

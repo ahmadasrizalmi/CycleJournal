@@ -6,6 +6,8 @@ import com.android.billingclient.api.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,10 +25,13 @@ class BillingManager @Inject constructor(
 
     companion object {
         const val SKU_LIFETIME_PRO = UserEntitlementManager.SKU_LIFETIME_PRO
+        private const val MAX_RETRY_ATTEMPTS = 5
     }
 
     val isProUser: StateFlow<Boolean> = entitlementManager.isProUserFlow
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var retryAttempt = 0
     private var billingClient: BillingClient = BillingClient.newBuilder(context)
         .setListener(this)
         .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
@@ -46,13 +51,23 @@ class BillingManager @Inject constructor(
 
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            retryAttempt = 0
             queryProductDetails()
             queryExistingPurchases()
         }
     }
 
     override fun onBillingServiceDisconnected() {
-        // Retry connection logic with exponential backoff if necessary
+        if (retryAttempt < MAX_RETRY_ATTEMPTS) {
+            val delayMs = (1000L * (1L shl retryAttempt)).coerceAtMost(30_000L)
+            retryAttempt++
+            scope.launch {
+                delay(delayMs)
+                if (!billingClient.isReady) {
+                    billingClient.startConnection(this@BillingManager)
+                }
+            }
+        }
     }
 
     private fun queryProductDetails() {
@@ -91,11 +106,13 @@ class BillingManager @Inject constructor(
     }
 
     fun launchPurchaseFlow(activity: Activity): Boolean {
-        val details = productDetails ?: return false
+        val details = productDetails ?: run {
+            if (!billingClient.isReady) initialize() else queryProductDetails()
+            return false
+        }
         val productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
             .build()
-
         val billingFlowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productDetailsParams))
             .build()
@@ -123,7 +140,7 @@ class BillingManager @Inject constructor(
                         .setPurchaseToken(purchase.purchaseToken)
                         .build()
 
-                    CoroutineScope(Dispatchers.IO).launch {
+                    scope.launch {
                         billingClient.acknowledgePurchase(acknowledgePurchaseParams) { }
                     }
                 }

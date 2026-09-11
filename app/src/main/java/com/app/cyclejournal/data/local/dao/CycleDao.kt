@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.app.cyclejournal.data.local.entity.CycleEntity
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +15,9 @@ import java.time.LocalDate
 interface CycleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCycle(cycle: CycleEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCycles(cycles: List<CycleEntity>)
 
     @Update
     suspend fun updateCycle(cycle: CycleEntity)
@@ -38,4 +42,12 @@ interface CycleDao {
 
     @Delete
     suspend fun deleteCycle(cycle: CycleEntity)
+
+    @Transaction
+    suspend fun replaceAllCycles(cycles: List<CycleEntity>) {
+        clearAllCycles()
+        if (cycles.isNotEmpty()) {
+            insertCycles(cycles)
+        }
+    }
 }

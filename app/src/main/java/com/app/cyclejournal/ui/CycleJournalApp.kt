@@ -1,4 +1,7 @@
 package com.app.cyclejournal.ui
+import com.app.cyclejournal.export.pdf.PdfShareHelper
+import com.app.cyclejournal.ui.home.CycleFilter
+import com.app.cyclejournal.ui.report.CycleHistoryRow
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -108,7 +111,9 @@ fun CycleJournalApp(
     completedCycles: List<CycleEntity> = emptyList(),
     anomalies: List<AnomalyAlert> = emptyList(),
     isPinSet: Boolean = false,
-    onSavePin: (String) -> Unit = {}
+    onSavePin: (String) -> Unit = {},
+    downloadedReport: PdfShareHelper.SaveResult? = null,
+    onDismissDownloadDialog: () -> Unit = {}
 ) {
     var currentScreen by remember { mutableStateOf(AppScreen.DASHBOARD) }
     var isDarkMode by remember { mutableStateOf(false) }
@@ -121,7 +126,7 @@ fun CycleJournalApp(
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
     val today = remember { LocalDate.now() }
-
+    var selectedCalendarDate by remember { mutableStateOf(today) }
     // Dynamically build week days from real backend data (Monday to Sunday around today)
     val weekDays = remember(today, allLogs, periodDates, fertilePrediction, latestCycle) {
         val monday = today.minusDays((today.dayOfWeek.value - 1).toLong())
@@ -216,7 +221,7 @@ fun CycleJournalApp(
                     isDarkMode = isDarkMode,
                     onSelect = { currentScreen = it },
                     onOpenFab = {
-                        logModalDate = selectedDay.date
+                        logModalDate = if (currentScreen == AppScreen.CALENDAR) selectedCalendarDate else selectedDay.date
                         isLogModalOpen = true
                     }
                 )
@@ -255,6 +260,8 @@ fun CycleJournalApp(
                         latestCycle = latestCycle,
                         completedCycles = completedCycles,
                         cycleStats = cycleStats,
+                        selectedCalendarDate = selectedCalendarDate,
+                        onSelectDate = { selectedCalendarDate = it },
                         onOpenLog = { date ->
                             logModalDate = date
                             isLogModalOpen = true
@@ -273,11 +280,7 @@ fun CycleJournalApp(
                         fertilePrediction = fertilePrediction,
                         onSharePdf = {
                             onSharePdf?.invoke() ?: run {
-                                if (isProLicenseActive) {
-                                    showToast("Membuka PDF Medis SpOG (Tanpa Iklan)")
-                                } else {
-                                    showToast("Menonton 1 Iklan Singkat... PDF Medis Siap!")
-                                }
+                                showToast("Menyiapkan Berkas Rekap Siklus...")
                             }
                         },
                         onExportCsv = {
@@ -375,6 +378,87 @@ fun CycleJournalApp(
                     isLogModalOpen = false
                     val isBleed = logEntity.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
                     showToast(if (isBleed) "Hari Haid Disimpan • Prediksi Berhasil Dihitung!" else "Catatan Harian Disimpan (Bukan Hari Haid)")
+                }
+            )
+        }
+        if (downloadedReport != null) {
+            val res = downloadedReport
+            val context = LocalContext.current
+            val isCsv = res.fileName.endsWith(".csv", ignoreCase = true)
+            val fileTypeTitle = if (isCsv) "Data CSV (Excel)" else "Rekap Siklus PDF"
+            val openButtonLabel = if (isCsv) "Buka CSV" else "Buka PDF"
+
+            AlertDialog(
+                onDismissRequest = onDismissDownloadDialog,
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Unduhan Selesai", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "$fileTypeTitle berhasil disimpan di folder Download perangkat:",
+                            fontSize = 12.sp,
+                            color = if (isDarkMode) Slate400 else Slate600
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isDarkMode) DarkBackground else Slate100,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Download/CycleJournal/${res.fileName}",
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Coral600,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (isCsv) {
+                                com.app.cyclejournal.export.csv.CsvExportHelper.openCsv(context, res)
+                            } else {
+                                PdfShareHelper.openPdf(context, res)
+                            }
+                            onDismissDownloadDialog()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Coral500),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(Icons.Rounded.Visibility, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(openButtonLabel, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                if (isCsv) {
+                                    com.app.cyclejournal.export.csv.CsvExportHelper.shareCsv(context, res)
+                                } else {
+                                    PdfShareHelper.sharePdf(context, res.localFile)
+                                }
+                                onDismissDownloadDialog()
+                            },
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Bagikan")
+                        }
+                        TextButton(onClick = onDismissDownloadDialog) {
+                            Text("Tutup")
+                        }
+                    }
                 }
             )
         }
@@ -504,12 +588,14 @@ fun DashboardScreenView(
     val isFertileToday = selectedDay.phase == CyclePhase.FERTILE || selectedDay.phase == CyclePhase.OVULATION
 
     val phaseBadge = when {
-        isDiscreet -> if (hasActiveCycle) "FASE 02" else "FASE 00"
-        !hasActiveCycle -> "MEMULAI SIKLUS"
-        isBleedingToday -> "MENSTRUASI"
-        selectedDay.phase == CyclePhase.OVULATION -> "PUNCAK OVULASI"
-        isFertileToday -> "JENDELA SUBUR"
-        else -> "FASE FOLIKULER"
+        isDiscreet -> if (hasActiveCycle) "FASE AKTIF" else "SIKLUS BARU"
+        !hasActiveCycle -> "SIKLUS BARU"
+        selectedDay.date == today && currentCycleDay != null -> "HARI KE-$currentCycleDay"
+        latestCycle != null -> {
+            val dayNum = ChronoUnit.DAYS.between(latestCycle.startDate, selectedDay.date) + 1L
+            if (dayNum > 0) "HARI KE-$dayNum" else "FASE SAAT INI"
+        }
+        else -> "FASE SAAT INI"
     }
 
     val phaseTitle = when {
@@ -526,7 +612,7 @@ fun DashboardScreenView(
     }
     val subtitleText = when {
         isDiscreet -> "Pencatatan normal berlangsung"
-        !hasActiveCycle -> "Catat hari pertama haid untuk mengaktifkan kalkulasi otomatis FIGO."
+        !hasActiveCycle -> "Catat hari pertama haid untuk mengaktifkan prediksi siklus."
         ovulationCountdown != null && ovulationCountdown > 0 -> "Ovulasi dalam $ovulationCountdown hari ke depan"
         ovulationCountdown == 0 -> "Ovulasi berlangsung hari ini!"
         else -> "Pencatatan siklus normal berlangsung"
@@ -534,10 +620,10 @@ fun DashboardScreenView(
 
     val conceptionChance = when {
         !hasActiveCycle -> "--"
-        selectedDay.phase == CyclePhase.OVULATION -> "Maksimal (95%)"
-        isFertileToday -> "Tinggi (85%)"
-        isBleedingToday -> "Sangat Rendah (<5%)"
-        else -> "Rendah (15%)"
+        selectedDay.phase == CyclePhase.OVULATION -> "Puncak Subur"
+        isFertileToday -> "Tinggi"
+        isBleedingToday -> "Sangat Rendah"
+        else -> "Rendah"
     }
 
     val progressRatio = if (currentCycleDay != null && hasActiveCycle) {
@@ -640,7 +726,7 @@ fun DashboardScreenView(
                                     Text(
                                         text = when {
                                             cycleStats != null -> String.format(Locale.US, "%.0f Hari (±%.1f)", cycleStats.averageLength, stdDev ?: 1.5)
-                                            hasActiveCycle -> "28 Hari (Standar FIGO)"
+                                            hasActiveCycle -> "28 Hari (Estimasi Awal)"
                                             else -> "-- Hari"
                                         },
                                         fontSize = 12.5.sp,
@@ -984,7 +1070,7 @@ fun DashboardScreenView(
                             )
                             Spacer(modifier = Modifier.height(3.dp))
                             Text(
-                                text = "Ukur suhu basal pagi hari sebelum beranjak dari tempat tidur untuk memantau pergeseran ovulasi (Aturan 3-over-6 FIGO).",
+                                text = "Ukur suhu basal pagi hari sebelum beranjak dari tempat tidur untuk memantau pergeseran ovulasi.",
                                 fontSize = 10.sp,
                                 color = textSecondary,
                                 textAlign = TextAlign.Center,
@@ -1115,7 +1201,7 @@ fun DashboardScreenView(
                         else -> Color(0xFFF59E0B)
                     }
                     val vasBadgeText = when {
-                        isPainAlert -> "SpOG Alert"
+                        isPainAlert -> "Nyeri Tinggi"
                         isPainFree -> "Bebas Nyeri"
                         else -> "Ringan"
                     }
@@ -1181,6 +1267,8 @@ fun CalendarScreenView(
     latestCycle: CycleEntity?,
     completedCycles: List<CycleEntity>,
     cycleStats: CycleStats? = null,
+    selectedCalendarDate: LocalDate = LocalDate.now(),
+    onSelectDate: (LocalDate) -> Unit = {},
     onOpenLog: (LocalDate) -> Unit = {},
     onToast: (String) -> Unit
 ) {
@@ -1190,8 +1278,7 @@ fun CalendarScreenView(
     val textSecondary = if (isDarkMode) Slate400 else Slate500
 
     val today = remember { LocalDate.now() }
-    var currentYearMonth by remember { mutableStateOf(java.time.YearMonth.from(today)) }
-    var selectedCalendarDate by remember { mutableStateOf(today) }
+    var currentYearMonth by remember { mutableStateOf(java.time.YearMonth.from(selectedCalendarDate)) }
 
     // Multi-Cycle Predictions (FIGO Standard - Projects up to 6 cycles / 6 months ahead)
     val avgCycleLength = (cycleStats?.averageLength ?: 28.0).toLong().coerceIn(21L, 45L)
@@ -1252,7 +1339,7 @@ fun CalendarScreenView(
                 Surface(
                     onClick = {
                         currentYearMonth = java.time.YearMonth.from(today)
-                        selectedCalendarDate = today
+                        onSelectDate(today)
                         onToast("Kembali ke hari ini: ${today.dayOfMonth} ${today.month.name.lowercase()} ${today.year}")
                     },
                     shape = RoundedCornerShape(12.dp),
@@ -1282,7 +1369,12 @@ fun CalendarScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(
-                            onClick = { currentYearMonth = currentYearMonth.minusMonths(1) },
+                            onClick = {
+                                currentYearMonth = currentYearMonth.minusMonths(1)
+                                val maxDay = currentYearMonth.lengthOfMonth()
+                                val targetDay = selectedCalendarDate.dayOfMonth.coerceIn(1, maxDay)
+                                onSelectDate(currentYearMonth.atDay(targetDay))
+                            },
                             modifier = Modifier.size(34.dp)
                         ) {
                             Icon(Icons.Default.ChevronLeft, contentDescription = "Bulan Lalu", tint = textPrimary)
@@ -1308,7 +1400,12 @@ fun CalendarScreenView(
                             )
                         }
                         IconButton(
-                            onClick = { currentYearMonth = currentYearMonth.plusMonths(1) },
+                            onClick = {
+                                currentYearMonth = currentYearMonth.plusMonths(1)
+                                val maxDay = currentYearMonth.lengthOfMonth()
+                                val targetDay = selectedCalendarDate.dayOfMonth.coerceIn(1, maxDay)
+                                onSelectDate(currentYearMonth.atDay(targetDay))
+                            },
                             modifier = Modifier.size(34.dp)
                         ) {
                             Icon(Icons.Default.ChevronRight, contentDescription = "Bulan Depan", tint = textPrimary)
@@ -1379,8 +1476,12 @@ fun CalendarScreenView(
                                             .background(cellBg)
                                             .then(if (cellBorder != null) Modifier.border(cellBorder, RoundedCornerShape(10.dp)) else Modifier)
                                             .clickable {
-                                                selectedCalendarDate = cellDate
-                                                onToast("Memeriksa data $dayNum ${cellDate.month.name.lowercase()} ${cellDate.year}")
+                                                if (selectedCalendarDate == cellDate) {
+                                                    onOpenLog(cellDate)
+                                                } else {
+                                                    onSelectDate(cellDate)
+                                                    onToast("Dipilih: $dayNum ${cellDate.month.name.lowercase()} (Ketuk lagi untuk isi jurnal)")
+                                                }
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {
@@ -1461,7 +1562,7 @@ fun CalendarScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "${selectedCalendarDate.dayOfMonth} ${selectedCalendarDate.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${selectedCalendarDate.year}",
@@ -1495,7 +1596,7 @@ fun CalendarScreenView(
                                 text = when {
                                     !hasActiveCycle -> "Belum ada siklus aktif. Silakan isi jurnal pada hari haid pertama."
                                     isActualHaid -> "Pendarahan Menstruasi Aktif"
-                                    isPredictedHaid -> "Estimasi Mulai Haid Berdasarkan Kalkulasi FIGO"
+                                    isPredictedHaid -> "Estimasi Mulai Haid Berikutnya"
                                     isPeakOvulation -> "Peluang Konsepsi Tertinggi Siklus Ini"
                                     isFertile -> "Jendela Subur Siklus"
                                     selectedCalendarDate == today && cycleDayForSelected != null -> "Hari Ini • Hari ke-$cycleDayForSelected Siklus"
@@ -1507,16 +1608,15 @@ fun CalendarScreenView(
                                 color = textSecondary
                             )
                         }
-
                         Button(
                             onClick = { onOpenLog(selectedCalendarDate) },
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Coral500),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Default.EditCalendar, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Isi Jurnal", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(if (log != null) "Ubah Jurnal" else "Isi Jurnal", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -1641,7 +1741,7 @@ fun CyclePredictionInsightCard(
                             maxLines = 1
                         )
                         Text(
-                            text = "Kalkulasi Standar Klinis FIGO / ACOG",
+                            text = "Estimasi berdasarkan rata-rata siklus tercatat",
                             fontSize = 10.sp,
                             color = textSecondary,
                             maxLines = 1
@@ -1802,7 +1902,7 @@ fun CyclePredictionInsightCard(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Metode Kalender FIGO: Asumsi fase luteal 14 hari dengan rata-rata siklus ${cycleStats?.averageLength?.let { String.format(Locale.US, "%.0f", it) } ?: "28"} hari.",
+                    text = "Estimasi berdasarkan asumsi fase luteal 14 hari dengan rata-rata siklus ${cycleStats?.averageLength?.let { String.format(Locale.US, "%.0f", it) } ?: "28"} hari.",
                     fontSize = 9.sp,
                     color = Color(0xFF065F46)
                 )
@@ -1847,12 +1947,12 @@ fun SpOgReportScreenView(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Laporan Medis SpOG", fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                Text("Analisis Siklus", fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isDarkMode) DarkCardBackground else Slate100
                 ) {
-                    Text("FIGO Compliant", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                    Text("Ringkasan Data", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                 }
             }
         }
@@ -1886,7 +1986,7 @@ fun SpOgReportScreenView(
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         val rStr = cycleStats?.averageLength?.let { String.format(Locale.US, "%.1f Hari", it) } ?: if (latestCycle != null) "28.0 Hari*" else "-- Hari"
-                        val vStr = cycleStats?.standardDeviation?.let { String.format(Locale.US, "±%.1f Hari", it) } ?: if (latestCycle != null) "Standar FIGO" else "-- Hari"
+                        val vStr = cycleStats?.standardDeviation?.let { String.format(Locale.US, "±%.1f Hari", it) } ?: if (latestCycle != null) "Estimasi Awal" else "-- Hari"
                         val dStr = cycleStats?.averagePeriodDuration?.let { String.format(Locale.US, "%.1f Hari", it) } ?: if (latestCycle != null) "${latestCycle.periodDurationDays}.0 Hari" else "-- Hari"
                         ParameterBox("Rata-rata", rStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
                         ParameterBox("Variasi Siklus", vStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
@@ -1958,7 +2058,7 @@ fun SpOgReportScreenView(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Belum ada rekaman suhu BBT yang cukup untuk memetakan kurva pergeseran ovulasi. Catat suhu basal harian di menu catatan harian untuk menyertakan grafik biphasik pada laporan SpOG.",
+                                    text = "Belum ada rekaman suhu BBT. Catat suhu basal harian di menu catatan harian untuk menyertakan grafik suhu pada rekap.",
                                     fontSize = 9.sp,
                                     color = textSecondary,
                                     lineHeight = 13.sp
@@ -2006,7 +2106,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Status Siklus Normal: Tidak terdeteksi anomali klinis FIGO", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
+                                Text("Siklus berjalan normal: tidak ada catatan yang perlu diperhatikan", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
                             }
                         }
                     } else {
@@ -2022,96 +2122,158 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Outlined.Shield, contentDescription = null, tint = Coral600, modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Skrining FIGO Siap: Deteksi anomali aktif saat siklus dicatat", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
+                                Text("Pemantauan aktif: catatan akan dianalisis setiap kali kamu mencatat haid baru", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    // Clinical History Table (Real Room DB Completed Cycles)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "VISUALISASI TIMELINE SIKLUS",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = textSecondary
+                        )
+                        Text(
+                            text = "${completedCycles.size + if (latestCycle != null) 1 else 0} siklus",
+                            fontSize = 10.sp,
+                            color = textSecondary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    var activeFilter by remember { mutableStateOf(CycleFilter.ALL) }
+
+                    // Filter Chips Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CycleFilter.entries.forEach { filter ->
+                            val isSelected = activeFilter == filter
+                            Surface(
+                                onClick = { activeFilter = filter },
+                                shape = RoundedCornerShape(18.dp),
+                                color = if (isSelected) Coral500 else if (isDarkMode) DarkBackground else Slate100,
+                                border = if (!isSelected) BorderStroke(1.dp, borderCol) else null
+                            ) {
+                                Text(
+                                    text = filter.label,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Color.White else textSecondary,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Color Legend Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Coral500))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Haid", fontSize = 10.sp, color = textSecondary)
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFFFB300)))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Masa Subur", fontSize = 10.sp, color = textSecondary)
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White)
+                                    .border(1.5.dp, Color(0xFFFF9800), CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Ovulasi", fontSize = 10.sp, color = textSecondary)
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.width(2.dp).height(8.dp).background(if (isDarkMode) Color.White else Color(0xFF1E293B)))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Hari Ini", fontSize = 10.sp, color = textSecondary)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Cycle Timeline List (Canvas-based Visual Bar)
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+                        shape = RoundedCornerShape(14.dp),
+                        color = if (isDarkMode) DarkBackground else Slate50,
+                        border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                     ) {
-                        Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(if (isDarkMode) DarkBackground else Slate50)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Mulai", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary)
-                                Text("Panjang", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary)
-                                Text("Durasi", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary)
-                                Text("Ovulasi", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary)
-                            }
-                            HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
-
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
                             if (completedCycles.isNotEmpty() || latestCycle != null) {
                                 if (latestCycle != null) {
-                                    val startStr = "${latestCycle.startDate.dayOfMonth} ${latestCycle.startDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}"
-                                    val currentDay = ChronoUnit.DAYS.between(latestCycle.startDate, today) + 1
-                                    val lenStr = "Hari ke-$currentDay (Aktif)"
-                                    val durStr = "${latestCycle.periodDurationDays} Hari"
-                                    val ovDate = fertilePrediction?.predictedOvulationDate ?: latestCycle.startDate.plusDays(14)
-                                    val ovStr = "${ovDate.dayOfMonth} ${ovDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}*"
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFFFF1F2).copy(alpha = 0.5f))
-                                            .padding(horizontal = 10.dp, vertical = 6.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(startStr, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                                        Text(lenStr, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Coral600)
-                                        Text(durStr, fontSize = 10.sp, color = textPrimary)
-                                        Text(ovStr, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalCyan)
-                                    }
+                                    val currentDay = ChronoUnit.DAYS.between(latestCycle.startDate, today).toInt() + 1
+                                    val expLen = (cycleStats?.averageLength ?: 28.0).toInt().coerceIn(21, 45)
+                                    CycleHistoryRow(
+                                        cycle = latestCycle,
+                                        activeFilter = activeFilter,
+                                        elapsedDaysIfActive = currentDay,
+                                        expectedCycleLength = expLen,
+                                        textColor = textPrimary,
+                                        subTextColor = textSecondary,
+                                        trackColor = if (isDarkMode) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                     if (completedCycles.isNotEmpty()) {
                                         HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                                     }
                                 }
-                                completedCycles.takeLast(5).reversed().forEach { c ->
-                                    val startStr = "${c.startDate.dayOfMonth} ${c.startDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}"
-                                    val lenStr = "${c.cycleLengthDays ?: 28} Hari"
-                                    val durStr = "${c.periodDurationDays} Hari"
-                                    val ovStr = "${c.startDate.plusDays(14).dayOfMonth} ${c.startDate.plusDays(14).month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}"
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 10.dp, vertical = 6.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(startStr, fontSize = 10.sp, color = textPrimary)
-                                        Text(lenStr, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                        Text(durStr, fontSize = 10.sp, color = textPrimary)
-                                        Text(ovStr, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalCyan)
-                                    }
+                                val expLen = (cycleStats?.averageLength ?: 28.0).toInt().coerceIn(21, 45)
+                                completedCycles.takeLast(6).reversed().forEach { c ->
+                                    CycleHistoryRow(
+                                        cycle = c,
+                                        activeFilter = activeFilter,
+                                        expectedCycleLength = expLen,
+                                        textColor = textPrimary,
+                                        subTextColor = textSecondary,
+                                        trackColor = if (isDarkMode) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                 }
                             } else {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 14.dp, vertical = 18.dp),
+                                        .padding(vertical = 16.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Belum ada riwayat siklus yang tercatat.\nCatat hari pertama haid Anda untuk memulai pemantauan historis medis SpOG.",
-                                        fontSize = 10.sp,
+                                        text = "Belum ada riwayat siklus yang tercatat.\nCatat hari pertama haid untuk memulai.",
+                                        fontSize = 11.sp,
                                         color = textSecondary,
                                         textAlign = TextAlign.Center,
-                                        lineHeight = 14.sp
+                                        lineHeight = 15.sp
                                     )
                                 }
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Recent Daily Logs Table (Real Historical Log Entries)
@@ -2195,14 +2357,14 @@ fun SpOgReportScreenView(
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 // 1. Primary Button: PDF Medis
                 Button(
-                    onClick = { onSharePdf?.invoke() ?: onToast(if (isPro) "Mengunduh PDF Medis Instan" else "Menonton 1 Iklan Singkat... PDF Medis Siap!") },
+                    onClick = { onSharePdf?.invoke() ?: onToast("Menyiapkan Berkas Rekap Siklus...") },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                 ) {
                     Icon(Icons.Rounded.PictureAsPdf, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isPro) "Unduh PDF Medis (Pro)" else "Unduh PDF Medis (Tonton 1 Iklan)", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Unduh Rekap Siklus (PDF)", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // 2. Secondary Button: CSV Mentah (Excel / Sheets)
@@ -2214,7 +2376,7 @@ fun SpOgReportScreenView(
                 ) {
                     Icon(Icons.Rounded.TableView, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Ekspor CSV Mentah (Excel / Sheets)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                    Text("Unduh CSV Mentah (Excel / Sheets)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                 }
 
                 // 3. Subtle Pro Text Link (Placemarked underneath both action buttons)
@@ -2265,8 +2427,10 @@ fun SettingsScreenView(
     val textPrimary = if (isDarkMode) Color.White else Slate900
     val textSecondary = if (isDarkMode) Slate400 else Slate500
     var isBiometricEnabled by remember { mutableStateOf(false) }
+    var isCloudPinDialogOpen by remember { mutableStateOf(false) }
+    var cloudPinActionType by remember { mutableStateOf("") }
+    var cloudPinInput by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -2330,7 +2494,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Color(0xFFB45309), modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Beli Putus Rp 49.000", color = Color(0xFFB45309), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Buka Lisensi Pro", color = Color(0xFFB45309), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -2477,7 +2641,11 @@ fun SettingsScreenView(
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
-                            onClick = { onBackupCloud?.invoke("1234") ?: onToast("Enkripsi & Cadangan Cloud Berhasil") },
+                            onClick = {
+                                cloudPinActionType = "backup"
+                                cloudPinInput = ""
+                                isCloudPinDialogOpen = true
+                            },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -2486,7 +2654,11 @@ fun SettingsScreenView(
                             Text("Cadangkan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
-                            onClick = { onRestoreCloud?.invoke("1234") ?: onToast("Data Arsip Berhasil Dipulihkan") },
+                            onClick = {
+                                cloudPinActionType = "restore"
+                                cloudPinInput = ""
+                                isCloudPinDialogOpen = true
+                            },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -2592,7 +2764,7 @@ fun SettingsScreenView(
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text("Panduan Singkat & FAQ", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                Text("Cara input haid, prediksi FIGO & arti warna", fontSize = 10.sp, color = textSecondary)
+                                Text("Cara input haid, prediksi siklus & arti warna", fontSize = 10.sp, color = textSecondary)
                             }
                         }
                         Icon(
@@ -2623,7 +2795,7 @@ fun SettingsScreenView(
                             Column {
                                 Text("2. Mekanisme Prediksi Siklus (Dinamis)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "• Siklus ke-1: Menggunakan baseline FIGO 28 hari sebagai estimasi awal.\n• Siklus ke-2 ke atas: Sepenuhnya dinamis menghitung rata-rata riil tubuh Anda sendiri dan deviasi standarnya. Bukan angka saklek 28 hari.",
+                                    text = "• Siklus ke-1: Menggunakan baseline 28 hari sebagai estimasi awal.\n• Siklus ke-2 ke atas: Sepenuhnya dinamis menghitung rata-rata riil tubuh Anda sendiri. Bukan angka saklek 28 hari.",
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -2643,9 +2815,9 @@ fun SettingsScreenView(
 
                             // Point 4: Standar Medis FIGO
                             Column {
-                                Text("4. Standar Kesehatan Medis FIGO", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text("4. Siklus Normal & Tanda yang Perlu Diperhatikan", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "Siklus sehat normal wanita berjarak 24 hingga 38 hari. Jika siklus Anda <24 hari (polimenorea), >38 hari (oligomenorea), atau bervariasi ≥8 hari, aplikasi otomatis memberi peringatan skrining anomali di tab Laporan.",
+                                    text = "Siklus normal wanita berjarak 24 hingga 38 hari. Jika siklus Anda <24 hari, >38 hari, atau sangat tidak teratur (selisih ≥8 hari), aplikasi akan memberi peringatan di tab Analisis Siklus.",
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -2675,7 +2847,7 @@ fun SettingsScreenView(
                                         Icon(Icons.Default.MenuBook, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
-                                            Text("Dokumentasi Resmi & Sains FIGO", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                            Text("Dokumentasi & Referensi Siklus", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                                             Text("asridigital.com/cyclejournal/docs", fontSize = 9.sp, color = textSecondary)
                                         }
                                     }
@@ -2713,7 +2885,7 @@ fun SettingsScreenView(
         // App Version Footer
         item {
             Text(
-                text = "CycleJournal v${BuildConfig.VERSION_NAME} • Standar Klinis FIGO",
+                text = "CycleJournal v${BuildConfig.VERSION_NAME} • Pemantau Siklus Pribadi",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 color = Slate400,
@@ -2722,6 +2894,60 @@ fun SettingsScreenView(
             )
         }
     }
+        if (isCloudPinDialogOpen) {
+            val isBackup = cloudPinActionType == "backup"
+            AlertDialog(
+                onDismissRequest = { isCloudPinDialogOpen = false },
+                title = {
+                    Text(
+                        if (isBackup) "Kunci PIN Cadangan Cloud" else "PIN Dekripsi Pemulihan",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Column {
+                        Text(
+                            if (isBackup)
+                                "Masukkan PIN 4-digit untuk mengenkripsi cadangan data Anda secara aman di Cloud:"
+                            else
+                                "Masukkan PIN 4-digit yang Anda gunakan saat mencadangkan data:",
+                            fontSize = 12.sp,
+                            color = textSecondary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = cloudPinInput,
+                            onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) cloudPinInput = it },
+                            placeholder = { Text("4 Digit Angka") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        enabled = cloudPinInput.length == 4,
+                        onClick = {
+                            val pin = cloudPinInput
+                            isCloudPinDialogOpen = false
+                            if (isBackup) {
+                                onBackupCloud?.invoke(pin) ?: onToast("Enkripsi & Cadangan Cloud Berhasil")
+                            } else {
+                                onRestoreCloud?.invoke(pin) ?: onToast("Data Arsip Berhasil Dipulihkan")
+                            }
+                        }
+                    ) {
+                        Text(if (isBackup) "Cadangkan" else "Pulihkan", fontWeight = FontWeight.Bold, color = Coral600)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { isCloudPinDialogOpen = false }) {
+                        Text("Batal")
+                    }
+                }
+            )
+        }
 }
 
 // 6. DAILY LOG BOTTOM SHEET: Pre-populated with real database record
@@ -2734,6 +2960,8 @@ fun DailyLogBottomSheet(
     onDismiss: () -> Unit,
     onSave: (DailyLogEntity) -> Unit
 ) {
+    val textPrimary = if (isDarkMode) Color.White else Slate900
+    val textSecondary = if (isDarkMode) Slate400 else Slate500
     var vasScore by remember(initialLog) { mutableStateOf((initialLog?.painVasScore ?: 0).toFloat()) }
     var selectedFlow by remember(initialLog) {
         mutableStateOf(
@@ -2750,17 +2978,23 @@ fun DailyLogBottomSheet(
         mutableStateOf(
             when (initialLog?.cervicalMucus) {
                 CervicalMucusType.DRY -> "Kering"
+                CervicalMucusType.STICKY -> "Lengket"
                 CervicalMucusType.CREAMY -> "Krim"
                 CervicalMucusType.WATERY -> "Cair"
                 CervicalMucusType.EGG_WHITE -> "Putih Telur"
-                else -> "Putih Telur"
+                else -> "Tidak"
             }
         )
     }
     var hasTakenAnalgesic by remember(initialLog) { mutableStateOf(initialLog?.takenAnalgesic ?: false) }
+    var isBbtRecorded by remember(initialLog) {
+        mutableStateOf(initialLog?.basalBodyTempCelsius != null)
+    }
     var bbtInputText by remember(initialLog) {
         mutableStateOf(initialLog?.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f", it) } ?: "36.50")
     }
+    var isBbtDialogOpen by remember { mutableStateOf(false) }
+    var tempBbtDialogInput by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val customPrefs = remember { context.getSharedPreferences("custom_symptoms_store", Context.MODE_PRIVATE) }
@@ -2849,7 +3083,7 @@ fun DailyLogBottomSheet(
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Pilih Ringan, Sedang, atau Deras untuk mencatat hari haid & mengaktifkan kalkulasi prediksi siklus FIGO.",
+                    text = "Pilih Ringan, Sedang, atau Deras untuk mencatat hari haid dan mengaktifkan prediksi siklus.",
                     fontSize = 9.5.sp,
                     color = Slate400,
                     lineHeight = 13.sp
@@ -2882,7 +3116,7 @@ fun DailyLogBottomSheet(
                 num == 0 -> Quadruple("Bebas Nyeri", Color(0xFFECFDF5), Color(0xFF047857), "Bebas Nyeri • Nyaman beraktivitas")
                 num <= 3 -> Quadruple("Ringan", Slate100, Slate700, "Nyeri Ringan • Terasa pegal, aktivitas normal")
                 num <= 6 -> Quadruple("Perlu Pantauan", Color(0xFFFFFBEB), Color(0xFFB45309), "Nyeri Sedang • Mengganggu, butuh jeda istirahat")
-                num <= 8 -> Quadruple("Perhatian SpOG", Color(0xFFFFF1F2), Color(0xFFBE123C), "Nyeri Berat • Membatasi gerak, butuh pereda nyeri")
+                num <= 8 -> Quadruple("Perhatian", Color(0xFFFFF1F2), Color(0xFFBE123C), "Nyeri Berat • Membatasi gerak, butuh pereda nyeri")
                 else -> Quadruple("Konsultasi Segera", Color(0xFFFEE2E2), Color(0xFF991B1B), "Sangat Hebat • Tirah baring total / darurat")
             }
 
@@ -3004,7 +3238,7 @@ fun DailyLogBottomSheet(
                             Icon(Icons.Default.Add, contentDescription = null, tint = Coral500, modifier = Modifier.size(13.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "+ Tambah Gejala",
+                                text = "Tambah Gejala",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Coral500
@@ -3022,15 +3256,95 @@ fun DailyLogBottomSheet(
                     color = if (isDarkMode) DarkBackground else Slate50,
                     border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
                 ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
-                        Text("Suhu Basal Tubuh (°C)", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
-                        Text(
-                            text = "$bbtInputText °C",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace,
-                            color = if (isDarkMode) Color.White else Slate900
-                        )
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Suhu Basal (°C)", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                            Text(
+                                text = if (isBbtRecorded) "Hapus" else "+ Catat",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isBbtRecorded) Coral600 else Color(0xFF059669),
+                                modifier = Modifier.clickable {
+                                    isBbtRecorded = !isBbtRecorded
+                                    if (isBbtRecorded && bbtInputText.isBlank()) {
+                                        bbtInputText = "36.50"
+                                    }
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        if (isBbtRecorded) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (isDarkMode) DarkCardBackground else Slate200,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clickable {
+                                            val current = bbtInputText.toDoubleOrNull() ?: 36.50
+                                            val next = (current - 0.10).coerceAtLeast(35.00)
+                                            bbtInputText = String.format(Locale.US, "%.2f", next)
+                                        }
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("-", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isDarkMode) DarkCardBackground else Color(0xFFFFF1F2),
+                                    border = BorderStroke(1.dp, Coral400),
+                                    modifier = Modifier.clickable {
+                                        tempBbtDialogInput = bbtInputText
+                                        isBbtDialogOpen = true
+                                    }
+                                ) {
+                                    Text(
+                                        text = "$bbtInputText °C",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Black,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = Coral600,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    )
+                                }
+
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (isDarkMode) DarkCardBackground else Slate200,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clickable {
+                                            val current = bbtInputText.toDoubleOrNull() ?: 36.50
+                                            val next = (current + 0.10).coerceAtMost(39.50)
+                                            bbtInputText = String.format(Locale.US, "%.2f", next)
+                                        }
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("+", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                                    }
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = "-- °C (Belum diukur)",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Slate400,
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                                    .clickable { isBbtRecorded = true }
+                            )
+                        }
                     }
                 }
 
@@ -3063,20 +3377,19 @@ fun DailyLogBottomSheet(
                 Text("Lendir Serviks (Sintotermal)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Kering", "Krim", "Cair", "Putih Telur").forEach { mucus ->
+                    listOf("Tidak", "Kering", "Lengket", "Krim", "Cair", "Putih Telur").forEach { mucus ->
                         val isSelected = mucus == selectedMucus
                         Surface(
                             modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
                             shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) Color(0xFFCFFAFE) else if (isDarkMode) DarkBackground else Slate100,
-                            border = BorderStroke(1.dp, if (isSelected) MedicalCyan else Color.Transparent)
+                            color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                            border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
                         ) {
                             Text(
                                 mucus,
                                 fontSize = 10.sp,
                                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                                color = if (isSelected) Color(0xFF0E7490) else Slate600,
-                                textAlign = TextAlign.Center,
+                                color = if (isSelected) Coral600 else Slate600,
                                 modifier = Modifier.padding(vertical = 7.dp)
                             )
                         }
@@ -3111,12 +3424,13 @@ fun DailyLogBottomSheet(
                     }
                     val mucusEnum = when (selectedMucus) {
                         "Kering" -> CervicalMucusType.DRY
+                        "Lengket" -> CervicalMucusType.STICKY
                         "Krim" -> CervicalMucusType.CREAMY
                         "Cair" -> CervicalMucusType.WATERY
                         "Putih Telur" -> CervicalMucusType.EGG_WHITE
                         else -> CervicalMucusType.NONE
                     }
-                    val bbtVal = bbtInputText.toDoubleOrNull() ?: 36.50
+                    val bbtVal = if (isBbtRecorded) bbtInputText.replace(",", ".").toDoubleOrNull() else null
                     val logEntity = DailyLogEntity(
                         date = targetDate,
                         flow = flowEnum,
@@ -3185,6 +3499,42 @@ fun DailyLogBottomSheet(
                 dismissButton = {
                     TextButton(onClick = { isAddCustomDialogOpen = false }) {
                         Text("Batal", fontSize = 12.sp)
+                    }
+                }
+            )
+        }
+        if (isBbtDialogOpen) {
+            AlertDialog(
+                onDismissRequest = { isBbtDialogOpen = false },
+                title = { Text("Masukkan Suhu Basal", fontSize = 15.sp, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column {
+                        Text("Ketik suhu tubuh pagi hari (misal: 36.65):", fontSize = 12.sp, color = textSecondary)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = tempBbtDialogInput,
+                            onValueChange = { tempBbtDialogInput = it },
+                            placeholder = { Text("36.50") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val parsed = tempBbtDialogInput.replace(",", ".").toDoubleOrNull()
+                        if (parsed != null && parsed in 34.0..42.0) {
+                            bbtInputText = String.format(Locale.US, "%.2f", parsed)
+                            isBbtRecorded = true
+                        }
+                        isBbtDialogOpen = false
+                    }) {
+                        Text("Simpan", fontWeight = FontWeight.Bold, color = Coral600)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { isBbtDialogOpen = false }) {
+                        Text("Batal")
                     }
                 }
             )

@@ -26,6 +26,13 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
+enum class CycleFilter(val label: String) {
+    ALL("Semua"),
+    PERIOD("Haid"),
+    OVULATION("Ovulasi"),
+    FERTILE("Masa Subur")
+}
+
 @HiltViewModel
 class CycleViewModel @Inject constructor(
     private val dailyLogDao: DailyLogDao,
@@ -96,9 +103,7 @@ class CycleViewModel @Inject constructor(
         clinicalEngine.evaluateAnomalies(latest, completed, logs)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun getLogForDate(date: LocalDate): Flow<DailyLogEntity?> = flow {
-        emit(dailyLogDao.getLogByDate(date))
-    }
+    fun getLogForDate(date: LocalDate): Flow<DailyLogEntity?> = dailyLogDao.getLogByDateFlow(date)
 
     fun saveDailyLog(log: DailyLogEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -106,7 +111,17 @@ class CycleViewModel @Inject constructor(
         }
     }
 
-    fun exportAndSharePdfReport(context: Context) {
+    private val _downloadedReport = MutableStateFlow<PdfShareHelper.SaveResult?>(null)
+    val downloadedReport: StateFlow<PdfShareHelper.SaveResult?> = _downloadedReport.asStateFlow()
+
+    fun clearDownloadedReport() {
+        _downloadedReport.value = null
+    }
+
+    fun setDownloadedReport(result: PdfShareHelper.SaveResult) {
+        _downloadedReport.value = result
+    }
+    fun exportAndDownloadPdfReport(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val patientId = pinManager.getOrCreateAnonymousUserId()
             val stats = cycleStatsFlow.value
@@ -115,7 +130,8 @@ class CycleViewModel @Inject constructor(
 
             val cacheDir = File(context.cacheDir, "reports")
             cacheDir.mkdirs()
-            val pdfFile = File(cacheDir, "CycleJournal_${patientId}_${System.currentTimeMillis()}.pdf")
+            val fileName = "Rekap_Siklus_${LocalDate.now().toString().replace("-", "")}_${System.currentTimeMillis().toString().takeLast(4)}.pdf"
+            val pdfFile = File(cacheDir, fileName)
 
             val generator = ClinicalPdfReportGenerator(context)
             generator.generateReport(
@@ -126,14 +142,29 @@ class CycleViewModel @Inject constructor(
                 anomalies = anomalies
             )
 
+            // Save to public Downloads directory
+            val saveResult = PdfShareHelper.saveToDownloads(context, pdfFile, fileName)
+
             viewModelScope.launch(Dispatchers.Main) {
-                PdfShareHelper.sharePdf(context, pdfFile)
+                _downloadedReport.value = saveResult
             }
         }
+    }
+
+    fun exportAndSharePdfReport(context: Context) {
+        exportAndDownloadPdfReport(context)
     }
 
     fun getCurrentCycleDay(startDate: LocalDate?): Long {
         if (startDate == null) return 1L
         return ChronoUnit.DAYS.between(startDate, LocalDate.now()) + 1L
+    }
+
+    // Report page filter
+    private val _activeFilter = MutableStateFlow(CycleFilter.ALL)
+    val activeFilter: StateFlow<CycleFilter> = _activeFilter.asStateFlow()
+
+    fun setFilter(filter: CycleFilter) {
+        _activeFilter.value = filter
     }
 }

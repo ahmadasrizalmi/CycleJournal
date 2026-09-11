@@ -30,6 +30,7 @@ class AdMobManager @Inject constructor(
 ) {
 
     companion object {
+        const val ENABLE_ADS = false
         // Official Google AdMob Test Rewarded Ad Unit ID
         const val TEST_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
     }
@@ -58,7 +59,7 @@ class AdMobManager @Inject constructor(
      * Pre-loads rewarded video ad for Free tier users exporting clinical reports.
      */
     fun loadRewardedVideo(onLoaded: (() -> Unit)? = null, onFailed: (() -> Unit)? = null) {
-        if (entitlementManager.isProUserFlow.value || isAdLoading) return
+        if (!ENABLE_ADS || entitlementManager.isProUserFlow.value || isAdLoading) return
 
         isAdLoading = true
         RewardedAd.load(
@@ -90,8 +91,8 @@ class AdMobManager @Inject constructor(
         onRewardEarned: () -> Unit,
         onDismissedOrFailed: () -> Unit
     ) {
-        // Hard Kill-Switch: Pro users bypass ads immediately
-        if (entitlementManager.isProUserFlow.value) {
+        // Graceful ad bypass: if ads are disabled or user is Pro, unlock export immediately
+        if (!ENABLE_ADS || entitlementManager.isProUserFlow.value) {
             onRewardEarned()
             return
         }

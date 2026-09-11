@@ -2,7 +2,7 @@
 **Aplikasi:** CycleJournal — Kalender Haid, Kesuburan & Laporan Dokter SpOG  
 **Pengembang:** Asri Digital (Ahmad Asrizalmi)  
 **Status File Rilis:** Siap Upload (Production Track / Closed Testing)  
-**Versi Rilis Saat Ini:** `1.1.2` (Version Code: `4`)
+**Versi Rilis Saat Ini:** `1.1.3` (Version Code: `5`)
 
 ---
 
@@ -11,14 +11,14 @@
 | Parameter | Nilai / Value | Keterangan |
 |---|---|---|
 | **Application ID / Package Name** | `com.app.cyclejournal` | Pengenal unik aplikasi di Google Play Console |
-| **Version Name** | `1.1.2` | Nomor versi yang tampil kepada pengguna di toko |
-| **Version Code** | `4` | Nomor integer inkremental untuk Play Console |
+| **Version Name** | `1.1.3` | Nomor versi yang tampil kepada pengguna di toko |
+| **Version Code** | `5` | Nomor integer inkremental untuk Play Console |
 | **Target SDK** | `36` (Android 16) | Wajib sesuai kepatuhan Google Play terbaru |
 | **Compile SDK** | `36` (Android 16) | Mendukung API Android 16 |
 | **Minimum SDK** | `26` (Android 8.0) | Mendukung 95%+ perangkat Android aktif |
 | **Google Play Billing** | `8.0.0` | Wajib sesuai kepatuhan Play Billing terbaru Google |
-| **Format File Upload** | **Android App Bundle (`.aab`)** | File: `release/CycleJournal_v1.1.2.aab` (18 MB) |
-| **Format File Testing Fisik** | **Release APK (`.apk`)** | File: `release/CycleJournal_v1.1.2.apk` (26 MB) |
+| **Format File Upload** | **Android App Bundle (`.aab`)** | File: `release/CycleJournal_v1.1.3.aab` |
+| **Format File Testing Fisik** | **Release APK (`.apk`)** | File: `release/CycleJournal_v1.1.3.apk` |
 | **Keystore Signing** | `cyclejournal-release.jks` | Alias: `cyclejournal`, Signed & ZipAligned |
 
 ---

@@ -125,8 +125,8 @@ class ClinicalCycleEngine {
     ): List<AnomalyAlert> {
         val alerts = mutableListOf<AnomalyAlert>()
 
-        // A. Oligomenorrhea & Polymenorrhea (Length Abnormalities)
-        historicalCycles.filter { it.cycleLengthDays != null }.forEach { cycle ->
+        // A. Oligomenorrhea & Polymenorrhea (Length Abnormalities in recent cycles)
+        historicalCycles.take(6).filter { it.cycleLengthDays != null }.forEach { cycle ->
             val length = cycle.cycleLengthDays!!
             if (length > MAX_NORMAL_CYCLE_DAYS) {
                 alerts.add(
@@ -148,7 +148,7 @@ class ClinicalCycleEngine {
         }
 
         // B. Cycle Irregularity (FIGO Standard: delta >= 8 days across >= 3 cycles in 6 months)
-        val validHistLengths = historicalCycles.mapNotNull { it.cycleLengthDays }
+        val validHistLengths = historicalCycles.take(6).mapNotNull { it.cycleLengthDays }
         if (validHistLengths.size >= 3) {
             val delta = (validHistLengths.maxOrNull() ?: 0) - (validHistLengths.minOrNull() ?: 0)
             if (delta >= IRREGULARITY_THRESHOLD_DAYS) {
@@ -163,40 +163,81 @@ class ClinicalCycleEngine {
         }
 
         // C. Prolonged Bleeding (> 8 consecutive days of active bleeding)
-        var consecutiveBleedingDays = 0
-        recentDailyLogs.sortedBy { it.date }.forEach { log ->
-            if (log.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) {
-                consecutiveBleedingDays++
-                if (consecutiveBleedingDays > MAX_NORMAL_PERIOD_DAYS) {
+        // Groups consecutive bleeding streaks and emits one alert per episode
+        val sortedLogs = recentDailyLogs.sortedBy { it.date }
+        var streakCount = 0
+        var streakStart: LocalDate? = null
+        var lastBleedDate: LocalDate? = null
+
+        for (i in sortedLogs.indices) {
+            val log = sortedLogs[i]
+            val isBleed = log.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
+
+            if (isBleed) {
+                if (streakCount == 0) streakStart = log.date
+                streakCount++
+                lastBleedDate = log.date
+            }
+
+            val nextContinues = if (isBleed && i + 1 < sortedLogs.size) {
+                val nextLog = sortedLogs[i + 1]
+                val isNextDay = ChronoUnit.DAYS.between(log.date, nextLog.date) == 1L
+                val nextBleeds = nextLog.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
+                isNextDay && nextBleeds
+            } else false
+
+            if (isBleed && !nextContinues) {
+                if (streakCount > MAX_NORMAL_PERIOD_DAYS && streakStart != null && lastBleedDate != null) {
                     alerts.add(
                         AnomalyAlert(
                             AnomalyType.PROLONGED_BLEEDING,
-                            log.date,
-                            "Perdarahan aktif berlangsung $consecutiveBleedingDays hari berturut-turut pada tanggal ${log.date}."
+                            lastBleedDate,
+                            "Perdarahan aktif berlangsung $streakCount hari berturut-turut ($streakStart s/d $lastBleedDate)."
                         )
                     )
                 }
-            } else {
-                consecutiveBleedingDays = 0
+                streakCount = 0
+                streakStart = null
+                lastBleedDate = null
+            } else if (!isBleed) {
+                streakCount = 0
+                streakStart = null
+                lastBleedDate = null
             }
         }
 
-        // D. Intermenstrual Bleeding (Spotting after Day 8, excluding ovulatory egg-white spotting)
+        // D. Intermenstrual Bleeding (Spotting after Day 8 within current cycle, excluding ovulatory spotting)
         if (currentCycle != null) {
-            recentDailyLogs.forEach { log ->
+            val currentCycleLogs = recentDailyLogs.filter {
+                !it.date.isBefore(currentCycle.startDate) &&
+                        (currentCycle.endDate == null || !it.date.isAfter(currentCycle.endDate))
+            }
+            val imbDates = mutableListOf<LocalDate>()
+            currentCycleLogs.forEach { log ->
                 val dayOfCycle = ChronoUnit.DAYS.between(currentCycle.startDate, log.date) + 1
                 if (dayOfCycle > 8 && log.flow == FlowIntensity.SPOTTING) {
                     val isOvulationSpotting = log.cervicalMucus == CervicalMucusType.EGG_WHITE
                     if (!isOvulationSpotting) {
-                        alerts.add(
-                            AnomalyAlert(
-                                AnomalyType.INTERMENSTRUAL_BLEEDING,
-                                log.date,
-                                "Pendarahan bercak (spotting) terdeteksi pada hari ke-$dayOfCycle siklus."
-                            )
-                        )
+                        imbDates.add(log.date)
                     }
                 }
+            }
+            if (imbDates.isNotEmpty()) {
+                val latestImb = imbDates.last()
+                val count = imbDates.size
+                val dayOfCycle = ChronoUnit.DAYS.between(currentCycle.startDate, latestImb) + 1
+                val detailStr = if (count == 1) {
+                    "Pendarahan bercak (spotting) terdeteksi pada hari ke-$dayOfCycle siklus ($latestImb)."
+                } else {
+                    "Pendarahan bercak (spotting) terdeteksi $count kali dalam siklus ini (terakhir hari ke-$dayOfCycle, $latestImb)."
+                }
+                alerts.add(
+                    AnomalyAlert(
+                        AnomalyType.INTERMENSTRUAL_BLEEDING,
+                        latestImb,
+                        detailStr
+                    )
+                )
             }
         }
 
@@ -218,13 +259,24 @@ class ClinicalCycleEngine {
         }
 
         // F. Severe Dysmenorrhea (VAS >= 7, or VAS >= 5 with analgesic medication)
-        recentDailyLogs.forEach { log ->
-            if (log.painVasScore >= 7 || (log.painVasScore >= 5 && log.takenAnalgesic)) {
+        // Group pain logs by clusters (within 3 days) to avoid repeated duplicate alerts
+        val severePainLogs = recentDailyLogs.filter {
+            it.painVasScore >= 7 || (it.painVasScore >= 5 && it.takenAnalgesic)
+        }.sortedByDescending { it.date }
+
+        val clusteredAlertDates = mutableSetOf<LocalDate>()
+        for (log in severePainLogs) {
+            val isAlreadyCovered = clusteredAlertDates.any {
+                kotlin.math.abs(ChronoUnit.DAYS.between(log.date, it)) <= 3
+            }
+            if (!isAlreadyCovered) {
+                clusteredAlertDates.add(log.date)
+                val locationStr = if (!log.painLocation.isNullOrBlank()) " pada area ${log.painLocation}" else ""
                 alerts.add(
                     AnomalyAlert(
                         AnomalyType.SEVERE_DYSMENORRHEA,
                         log.date,
-                        "Skor nyeri skala VAS ${log.painVasScore}/10 terdeteksi pada area: ${log.painLocation ?: "umum"}."
+                        "Skor nyeri skala VAS ${log.painVasScore}/10 terdeteksi$locationStr pada tanggal ${log.date}."
                     )
                 )
             }

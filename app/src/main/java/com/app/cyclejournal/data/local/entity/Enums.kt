@@ -29,11 +29,11 @@ enum class CervicalMucusType {
  * FIGO-compliant clinical anomaly red flags.
  */
 enum class AnomalyType(val code: String, val description: String) {
-    OLIGOMENORRHEA("ANO_01", "Siklus memanjang (> 38 hari)"),
-    POLYMENORRHEA("ANO_02", "Siklus terlalu pendek (< 24 hari)"),
-    CYCLE_IRREGULARITY("ANO_03", "Variabilitas siklus signifikan (rentang >= 8 hari)"),
-    PROLONGED_BLEEDING("ANO_04", "Durasi perdarahan haid melebihi 8 hari berturut-turut"),
-    INTERMENSTRUAL_BLEEDING("ANO_05", "Pendarahan / spotting di luar jadwal haid"),
-    SHORT_LUTEAL_PHASE("ANO_06", "Fase luteal pendek (< 10 hari)"),
-    SEVERE_DYSMENORRHEA("ANO_07", "Nyeri haid intensitas berat (Skor VAS >= 7)")
+    OLIGOMENORRHEA("ANO_01", "Siklus lebih panjang dari biasanya (lebih dari 38 hari)"),
+    POLYMENORRHEA("ANO_02", "Siklus lebih pendek dari biasanya (kurang dari 24 hari)"),
+    CYCLE_IRREGULARITY("ANO_03", "Panjang siklus tidak teratur (selisih antar siklus ≥ 8 hari)"),
+    PROLONGED_BLEEDING("ANO_04", "Haid berlangsung lebih dari 8 hari berturut-turut"),
+    INTERMENSTRUAL_BLEEDING("ANO_05", "Perdarahan atau bercak di luar jadwal haid"),
+    SHORT_LUTEAL_PHASE("ANO_06", "Jeda antara ovulasi dan haid berikutnya sangat pendek"),
+    SEVERE_DYSMENORRHEA("ANO_07", "Nyeri haid yang dilaporkan cukup berat")
 }

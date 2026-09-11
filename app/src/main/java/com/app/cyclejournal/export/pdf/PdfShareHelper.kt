@@ -1,20 +1,112 @@
 package com.app.cyclejournal.export.pdf
 
 import android.content.ClipData
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
 
 /**
- * Utility helper converting generated PDF files to content:// URIs and launching the Android Sharesheet.
+ * Utility helper saving generated PDF reports directly to the public Download folder
+ * and providing Open & Share intents.
  */
 object PdfShareHelper {
+
+    data class SaveResult(
+        val publicUri: Uri?,
+        val localFile: File,
+        val fileName: String,
+        val savedToPublicDownload: Boolean
+    )
+
+    /**
+     * Saves generated PDF file into public Download/CycleJournal/ folder via MediaStore (Android 10+)
+     * or standard Downloads directory (Android 8-9).
+     */
+    fun saveToDownloads(context: Context, sourcePdfFile: File, displayName: String): SaveResult {
+        var publicUri: Uri? = null
+        var savedPublic = false
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/CycleJournal")
+                }
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                if (uri != null) {
+                    resolver.openOutputStream(uri)?.use { out ->
+                        sourcePdfFile.inputStream().use { input ->
+                            input.copyTo(out)
+                        }
+                    }
+                    publicUri = uri
+                    savedPublic = true
+                }
+            } else {
+                try {
+                    val downloadDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "CycleJournal")
+                    downloadDir.mkdirs()
+                    val destFile = File(downloadDir, displayName)
+                    sourcePdfFile.copyTo(destFile, overwrite = true)
+                    publicUri = Uri.fromFile(destFile)
+                    savedPublic = true
+                } catch (e: Exception) {
+                    val fallbackDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "CycleJournal")
+                    fallbackDir.mkdirs()
+                    val destFile = File(fallbackDir, displayName)
+                    sourcePdfFile.copyTo(destFile, overwrite = true)
+                    publicUri = Uri.fromFile(destFile)
+                    savedPublic = true
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return SaveResult(
+            publicUri = publicUri,
+            localFile = sourcePdfFile,
+            fileName = displayName,
+            savedToPublicDownload = savedPublic
+        )
+    }
+
+    /**
+     * Directly opens the PDF in an external viewer.
+     */
+    fun openPdf(context: Context, saveResult: SaveResult) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            if (saveResult.publicUri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                setDataAndType(saveResult.publicUri, "application/pdf")
+            } else {
+                val authority = "${context.packageName}.fileprovider"
+                val contentUri = FileProvider.getUriForFile(context, authority, saveResult.localFile)
+                setDataAndType(contentUri, "application/pdf")
+            }
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Tidak ada aplikasi pembaca PDF terpasang", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     /**
      * Dispatches an Android Sharesheet Intent granting transient read permissions to recipient apps.
      */
-    fun sharePdf(context: Context, pdfFile: File, title: String = "Laporan Klinis Siklus & SpOG") {
+    fun sharePdf(context: Context, pdfFile: File, title: String = "Rekap Siklus") {
         if (!pdfFile.exists()) return
 
         val authority = "${context.packageName}.fileprovider"
@@ -29,7 +121,7 @@ object PdfShareHelper {
             clipData = ClipData.newRawUri(title, contentUri)
         }
 
-        val chooser = Intent.createChooser(shareIntent, "Bagikan Laporan Medis via...")
+        val chooser = Intent.createChooser(shareIntent, "Bagikan Rekap Siklus via...")
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooser)
     }

@@ -8,6 +8,7 @@ import com.app.cyclejournal.data.local.AppDatabase
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
 import com.app.cyclejournal.data.remote.model.BackupUploadRequest
+import com.app.cyclejournal.export.pdf.PdfShareHelper
 import com.app.cyclejournal.domain.manager.DataRestoreManager
 import com.app.cyclejournal.domain.manager.DataRestoreOutcome
 import com.app.cyclejournal.domain.manager.DataWipeManager
@@ -112,11 +113,21 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun exportAndShareCsv(context: Context) {
+    fun exportAndDownloadCsv(context: Context, onDownloaded: (PdfShareHelper.SaveResult) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val cycles = database.cycleDao().getAllCycles()
             val logs = database.dailyLogDao().getAllLogsDesc()
-            CsvExportHelper.exportAndShareCsv(context, cycles, logs)
+            val file = CsvExportHelper.generateCsvFile(context, cycles, logs)
+            val saveResult = CsvExportHelper.saveCsvToDownloads(context, file)
+            withContext(Dispatchers.Main) {
+                onDownloaded(saveResult)
+            }
+        }
+    }
+
+    fun exportAndShareCsv(context: Context) {
+        exportAndDownloadCsv(context) {
+            CsvExportHelper.shareCsv(context, it)
         }
     }
 

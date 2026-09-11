@@ -105,9 +105,8 @@ class CycleAggregator(
             reconstructedCycles.add(ongoingCycle)
         }
 
-        // Atomically replace cycles in database
-        cycleDao.clearAllCycles()
-        reconstructedCycles.forEach { cycleDao.insertCycle(it) }
+        // Atomically replace cycles in database within a single transaction
+        cycleDao.replaceAllCycles(reconstructedCycles)
     }
 
     private fun findConfirmedOvulation(

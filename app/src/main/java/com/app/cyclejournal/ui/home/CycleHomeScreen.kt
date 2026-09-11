@@ -76,7 +76,7 @@ fun CycleHomeScreen(
                 actions = {
                     // Actions moved to bottom navigation bar or top quick actions
                     IconButton(onClick = onNavigateToReport) {
-                        Icon(Icons.Outlined.PictureAsPdf, contentDescription = "Laporan SpOG", tint = PrimaryPink)
+                        Icon(Icons.Outlined.PictureAsPdf, contentDescription = "Analisis Siklus", tint = PrimaryPink)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundWhite)
