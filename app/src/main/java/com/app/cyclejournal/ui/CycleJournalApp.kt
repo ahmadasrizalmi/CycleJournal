@@ -514,15 +514,17 @@ fun AppHeader(
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(
-                    text = if (isDiscreetMode) "MODE SAMARAN AKTIF" else "MODE PRIVAT OFFLINE",
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDiscreetMode) Slate400 else Coral600
-                )
+                if (isDiscreetMode) {
+                    Text(
+                        text = "Mode Samaran",
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Slate400
+                    )
+                }
                 Text(
                     text = if (isDiscreetMode) "CJ Journal" else "CycleJournal",
-                    fontSize = 17.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = textPrimary
                 )
@@ -2779,6 +2781,7 @@ fun SettingsScreenView(
     var isBackupOptionsDialogOpen by remember { mutableStateOf(false) }
     var isBackupEncrypted by remember { mutableStateOf(false) }
     var backupPinInput by remember { mutableStateOf("") }
+    var isNukeConfirmDialogOpen by remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     LazyColumn(
         modifier = Modifier
@@ -3017,8 +3020,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Cadangan Berkas (.cjbackup)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Simpan di HP, Google Drive, atau kirim ke chat pribadi", fontSize = 10.sp, color = textSecondary)
+                            Text("Cadangan Data Pribadi", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text("Simpan salinan data siklus ke memori HP atau Google Drive pribadi Anda.", fontSize = 10.5.sp, color = textSecondary, lineHeight = 14.sp)
                         }
                     }
 
@@ -3028,7 +3031,7 @@ fun SettingsScreenView(
                         border = BorderStroke(1.dp, Color(0xFFA7F3D0))
                     ) {
                         Text(
-                            text = "100% Bebas Server • Data Milik Anda Sepenuhnya",
+                            text = "Tersimpan Lokal • Privasi Terjaga 100%",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF065F46),
@@ -3048,7 +3051,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Default.CloudUpload, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Cadangkan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Cadangkan Data", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
                             onClick = {
@@ -3059,7 +3062,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Default.CloudDownload, contentDescription = null, tint = MedicalTeal, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Pulihkan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Pulihkan Data", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -3263,15 +3266,20 @@ fun SettingsScreenView(
                 border = BorderStroke(1.dp, Color(0xFFFFE4E6))
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("HAPUS DATA & RESET", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
-                    Text("Menghapus seluruh catatan siklus lokal di ponsel dan cadangan cloud secara permanen sesuai hak privasi Anda.", fontSize = 10.sp, color = Color(0xFF9F1239))
+                    Text("HAPUS SEMUA DATA LOKAL", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                    Text(
+                        text = "Menghapus seluruh catatan siklus, gejala harian, dan pengaturan dari perangkat ini secara permanen. Data yang telah dihapus tidak dapat dipulihkan kecuali Anda memiliki berkas cadangan.",
+                        fontSize = 10.sp,
+                        color = Color(0xFF9F1239),
+                        lineHeight = 14.sp
+                    )
                     Button(
-                        onClick = onNukeData,
+                        onClick = { isNukeConfirmDialogOpen = true },
                         colors = ButtonDefaults.buttonColors(containerColor = MedicalRose),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Hapus Seluruh Data Permanen", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Hapus Semua Data di Perangkat", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -3383,6 +3391,39 @@ fun SettingsScreenView(
                 },
                 dismissButton = {
                     TextButton(onClick = { isBackupOptionsDialogOpen = false }) {
+                        Text("Batal")
+                    }
+                }
+            )
+        }
+        if (isNukeConfirmDialogOpen) {
+            AlertDialog(
+                onDismissRequest = { isNukeConfirmDialogOpen = false },
+                title = {
+                    Text("Hapus Semua Data?", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                },
+                text = {
+                    Text(
+                        text = "Tindakan ini akan mengosongkan seluruh jurnal, catatan harian, dan riwayat siklus dari perangkat ini secara permanen.\n\nPastikan Anda sudah mencadangkan data jika ingin menyimpannya.",
+                        fontSize = 12.sp,
+                        color = textSecondary,
+                        lineHeight = 16.sp
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            isNukeConfirmDialogOpen = false
+                            onNukeData()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MedicalRose),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Hapus Sekarang", fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { isNukeConfirmDialogOpen = false }) {
                         Text("Batal")
                     }
                 }
