@@ -813,8 +813,54 @@ fun DashboardScreenView(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 if (isPromilMode) {
+                                    val ovDate = fertilePrediction?.predictedOvulationDate
+                                    val fertileStart = fertilePrediction?.fertileWindowStart
+                                    val daysUntilOvulation = ovDate?.let { ChronoUnit.DAYS.between(today, it).toInt() }
+
+                                    val ovDateStr = ovDate?.let {
+                                        val m = it.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }
+                                        "${it.dayOfMonth} $m"
+                                    } ?: "--"
+
+                                    val (headerText, valueText, subText, valueColor) = when {
+                                        ovDate == null -> Quadruple(
+                                            "MASA SUBUR & OVULASI",
+                                            "--",
+                                            "Catat haid untuk prediksi",
+                                            Color.White
+                                        )
+                                        // State 3: HARI-H PUNCAK OVULASI
+                                        today == ovDate -> Quadruple(
+                                            "PUNCAK OVULASI HARI INI",
+                                            "Waktu Terbaik Promil",
+                                            "Peluang Hamil Maksimal",
+                                            Color(0xFFFEF08A)
+                                        )
+                                        // State 2: JENDELA SUBUR (H-5 s/d H-1 sebelum ovulasi)
+                                        fertileStart != null && !today.isBefore(fertileStart) && today.isBefore(ovDate) -> Quadruple(
+                                            "JENDELA MASA SUBUR",
+                                            "Peluang Tinggi",
+                                            "Puncak ovulasi: $ovDateStr (H-${daysUntilOvulation ?: 1})",
+                                            Color(0xFFA5F3FC)
+                                        )
+                                        // State 4: PASCA OVULASI (Masa subur lewat)
+                                        today.isAfter(ovDate) -> Quadruple(
+                                            "MASA SUBUR SELESAI",
+                                            "Peluang Rendah",
+                                            "Menunggu siklus baru",
+                                            Color.White.copy(alpha = 0.9f)
+                                        )
+                                        // State 1: MENUJU MASA SUBUR (Countdown)
+                                        else -> Quadruple(
+                                            "MASA SUBUR & OVULASI",
+                                            ovDateStr,
+                                            "${daysUntilOvulation ?: 0} hari lagi",
+                                            Color(0xFFA5F3FC)
+                                        )
+                                    }
+
                                     Text(
-                                        text = "MASA SUBUR & OVULASI",
+                                        text = headerText,
                                         fontSize = 8.5.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White.copy(alpha = 0.85f),
@@ -822,19 +868,15 @@ fun DashboardScreenView(
                                         maxLines = 1
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
-                                    val ovDateStr = fertilePrediction?.predictedOvulationDate?.let {
-                                        val m = it.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }
-                                        "${it.dayOfMonth} $m"
-                                    } ?: "--"
                                     Text(
-                                        text = ovDateStr,
-                                        fontSize = 13.sp,
+                                        text = valueText,
+                                        fontSize = if (valueText.length > 10) 11.5.sp else 13.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFFEF08A),
+                                        color = valueColor,
                                         maxLines = 1
                                     )
                                     Text(
-                                        text = "Peluang: $conceptionChance",
+                                        text = subText,
                                         fontSize = 9.sp,
                                         color = Color(0xFFFFE4E6),
                                         maxLines = 1
