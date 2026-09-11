@@ -1,0 +1,33 @@
+<resources>
+    <!-- FIGO anomaly type descriptions -->
+    <string name="anomaly_oligomenorrhea">Cycle longer than usual (over 38 days)</string>
+    <string name="anomaly_polymenorrhea">Cycle shorter than usual (under 24 days)</string>
+    <string name="anomaly_cycle_irregularity">Irregular cycle length (≥8-day difference between cycles)</string>
+    <string name="anomaly_prolonged_bleeding">Period lasts more than 8 consecutive days</string>
+    <string name="anomaly_intermenstrual_bleeding">Bleeding or spotting outside the period schedule</string>
+    <string name="anomaly_short_luteal_phase">Very short gap between ovulation and the next period</string>
+    <string name="anomaly_severe_dysmenorrhea">Reported period pain is severe</string>
+
+    <!-- VAS pain categories -->
+    <string name="vas_category_none">No Pain (Normal)</string>
+    <string name="vas_category_mild">Mild Pain (Normal Activity)</string>
+    <string name="vas_category_moderate">Moderate Pain (Activity Disrupted, Rest Needed)</string>
+    <string name="vas_category_severe">Severe Pain (Dysmenorrhea Indication / Red Flag)</string>
+    <string name="vas_category_extreme">Extreme Pain (Immediate Medical Evaluation Advised)</string>
+
+    <!-- Anomaly detail templates -->
+    <string name="anomaly_detail_oligomenorrhea_pcos">Cycle lasted %1$d days (&gt; 38 days, possible anovulation/PCOS).</string>
+    <string name="anomaly_detail_polymenorrhea">Cycle lasted %1$d days (&lt; 24 days).</string>
+    <string name="anomaly_detail_irregularity_figo">Cycle length variation reached %1$d days (FIGO threshold ≥ 8 days).</string>
+    <string name="anomaly_detail_prolonged_bleeding_single">Active period bleeding lasted %1$d consecutive days on %2$s.</string>
+    <string name="anomaly_detail_imb_day">Spotting outside the period schedule on cycle day %1$d.</string>
+    <string name="anomaly_detail_vas_category_area">VAS pain score %1$d/10 (%2$s) in area: %3$s.</string>
+    <string name="anomaly_detail_oligomenorrhea">Cycle lasted %1$d days (&gt; 38 days).</string>
+    <string name="anomaly_detail_irregularity_delta">Difference between the longest and shortest cycle is %1$d days (threshold ≥ 8 days).</string>
+    <string name="anomaly_detail_prolonged_bleeding_range">Active bleeding lasted %1$d consecutive days (%2$s to %3$s).</string>
+    <string name="anomaly_detail_imb_single">Spotting detected on cycle day %1$d (%2$s).</string>
+    <string name="anomaly_detail_imb_multiple">Spotting detected %1$d times in this cycle (last on day %2$d, %3$s).</string>
+    <string name="anomaly_detail_short_luteal">Luteal phase lasted only %1$d days (&lt; 10 days).</string>
+    <string name="anomaly_detail_vas_date_area">VAS pain score %1$d/10 detected in the area %2$s on %3$s.</string>
+    <string name="anomaly_detail_vas_date">VAS pain score %1$d/10 detected on %2$s.</string>
+</resources>

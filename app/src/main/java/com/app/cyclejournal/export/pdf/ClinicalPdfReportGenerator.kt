@@ -146,11 +146,11 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         }
 
         val textStartX = MARGIN_HORIZONTAL + 44f
-        canvas.drawText("LAPORAN KLINIS SIKLUS MENSTRUASI & BIOMARKER", textStartX, y + 14f, titlePaint)
+        canvas.drawText(context.getString(R.string.pdf_title), textStartX, y + 14f, titlePaint)
 
         textPaint.color = COLOR_TEXT_MUTED
         textPaint.textSize = 8f
-        canvas.drawText("Dokumen rekam mandiri untuk evaluasi ginekologi & rujukan SpOG (FIGO Standard)", textStartX, y + 26f, textPaint)
+        canvas.drawText(context.getString(R.string.pdf_subtitle), textStartX, y + 26f, textPaint)
 
         y += 44f
         // Horizontal divider line
@@ -159,9 +159,9 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
         textPaint.color = COLOR_TEXT_PRIMARY
         textPaint.textSize = 8.5f
-        canvas.drawText("ID Pasien / Anonim: $patientId", MARGIN_HORIZONTAL, y, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_patient_id, patientId), MARGIN_HORIZONTAL, y, boldTextPaint)
 
-        val dateText = "Tanggal Ekspor: ${LocalDate.now().format(dateFormatter)}"
+        val dateText = context.getString(R.string.pdf_export_date, LocalDate.now().format(dateFormatter))
         val dateWidth = textPaint.measureText(dateText)
         canvas.drawText(dateText, (MARGIN_HORIZONTAL + CONTENT_WIDTH) - dateWidth, y, textPaint)
 
@@ -170,7 +170,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
     private fun drawMetricsSummary(canvas: Canvas, startY: Float, stats: CycleStats?): Float {
         var y = startY
-        canvas.drawText("1. RINGKASAN METRIK SIKLUS (FIGO STANDARD)", MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        canvas.drawText(context.getString(R.string.pdf_section_metrics), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 8f
 
         val boxHeight = 44f
@@ -184,10 +184,14 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         val subTextY = y + 34f
 
         val metricLabels = listOf(
-            "Rata-rata Siklus" to "${String.format(Locale.US, "%.1f", stats?.averageLength ?: 0.0)} Hari",
-            "Variabilitas (SD σ)" to "±${String.format(Locale.US, "%.1f", stats?.standardDeviation ?: 0.0)} Hari",
-            "Rentang (Min-Max)" to "${stats?.minLength ?: 0} - ${stats?.maxLength ?: 0} Hari",
-            "Rata-rata Durasi Haid" to "${String.format(Locale.US, "%.1f", stats?.averagePeriodDuration ?: 0.0)} Hari"
+            context.getString(R.string.pdf_metric_avg_cycle) to
+                context.getString(R.string.pdf_value_days, String.format(Locale.US, "%.1f", stats?.averageLength ?: 0.0)),
+            context.getString(R.string.pdf_metric_variability) to
+                context.getString(R.string.pdf_value_days_plusminus, String.format(Locale.US, "%.1f", stats?.standardDeviation ?: 0.0)),
+            context.getString(R.string.pdf_metric_range) to
+                context.getString(R.string.pdf_value_range_days, stats?.minLength ?: 0, stats?.maxLength ?: 0),
+            context.getString(R.string.pdf_metric_avg_period) to
+                context.getString(R.string.pdf_value_days, String.format(Locale.US, "%.1f", stats?.averagePeriodDuration ?: 0.0))
         )
 
         metricLabels.forEachIndexed { i, pair ->
@@ -206,7 +210,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
     private fun drawAnomaliesSection(canvas: Canvas, startY: Float, anomalies: List<AnomalyAlert>): Float {
         var y = startY
-        canvas.drawText("2. INDIKASI ANOMALI & RED FLAGS KLINIS", MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        canvas.drawText(context.getString(R.string.pdf_section_anomalies), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 8f
 
         if (anomalies.isEmpty()) {
@@ -217,7 +221,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
             textPaint.color = COLOR_TEXT_MUTED
             textPaint.textSize = 8f
-            canvas.drawText("Tidak ada anomali atau deviasi signifikan yang terdeteksi pada periode ini.", MARGIN_HORIZONTAL + 10f, y + 15f, textPaint)
+            canvas.drawText(context.getString(R.string.pdf_anomalies_none), MARGIN_HORIZONTAL + 10f, y + 15f, textPaint)
             return y + 36f
         }
 
@@ -231,11 +235,11 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
             boldTextPaint.color = COLOR_ALERT_TEXT
             boldTextPaint.textSize = 8f
-            canvas.drawText("[!] ${alert.type.code} - ${alert.type.description}", MARGIN_HORIZONTAL + 8f, y + 11f, boldTextPaint)
+            canvas.drawText(context.getString(R.string.pdf_anomaly_line, alert.type.code, context.getString(alert.type.descriptionRes)), MARGIN_HORIZONTAL + 8f, y + 11f, boldTextPaint)
 
             textPaint.color = COLOR_ALERT_TEXT
             textPaint.textSize = 7.5f
-            canvas.drawText("Detail: ${alert.details} (${alert.detectedDate.format(dateFormatter)})", MARGIN_HORIZONTAL + 8f, y + 21f, textPaint)
+            canvas.drawText(context.getString(R.string.pdf_anomaly_detail_line, alert.localizedDetail(context.resources), alert.detectedDate.format(dateFormatter)), MARGIN_HORIZONTAL + 8f, y + 21f, textPaint)
 
             y += 30f
         }
@@ -245,7 +249,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
     private fun drawCycleHistoryTable(canvas: Canvas, startY: Float, cycles: List<CycleEntity>): Float {
         var y = startY
-        canvas.drawText("3. LOG HISTORIS SIKLUS (MAKS. 6 SIKLUS TERAKHIR)", MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        canvas.drawText(context.getString(R.string.pdf_section_history), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 10f
 
         val rowHeight = 18f
@@ -264,11 +268,11 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
         boldTextPaint.color = COLOR_TEXT_PRIMARY
         boldTextPaint.textSize = 7.5f
-        canvas.drawText("TANGGAL AWAL", colX[0], y + 12f, boldTextPaint)
-        canvas.drawText("TANGGAL AKHIR", colX[1], y + 12f, boldTextPaint)
-        canvas.drawText("PANJANG SIKLUS", colX[2], y + 12f, boldTextPaint)
-        canvas.drawText("DURASI HAID", colX[3], y + 12f, boldTextPaint)
-        canvas.drawText("ESTIMASI OVULASI", colX[4], y + 12f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_start), colX[0], y + 12f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_end), colX[1], y + 12f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_length), colX[2], y + 12f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_period), colX[3], y + 12f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_ovulation), colX[4], y + 12f, boldTextPaint)
 
         y += rowHeight
 
@@ -280,10 +284,10 @@ class ClinicalPdfReportGenerator(private val context: Context) {
             canvas.drawRect(rowRect, strokePaint)
 
             canvas.drawText(cycle.startDate.format(dateFormatter), colX[0], y + 12f, textPaint)
-            canvas.drawText(cycle.endDate?.format(dateFormatter) ?: "Berjalan", colX[1], y + 12f, textPaint)
-            canvas.drawText("${cycle.cycleLengthDays ?: "-"} Hari", colX[2], y + 12f, textPaint)
-            canvas.drawText("${cycle.periodDurationDays} Hari", colX[3], y + 12f, textPaint)
-            canvas.drawText(cycle.confirmedOvulationDate?.format(dateFormatter) ?: "Tidak tercatat", colX[4], y + 12f, textPaint)
+            canvas.drawText(cycle.endDate?.format(dateFormatter) ?: context.getString(R.string.pdf_value_ongoing), colX[1], y + 12f, textPaint)
+            canvas.drawText(context.getString(R.string.pdf_value_days, (cycle.cycleLengthDays ?: "-").toString()), colX[2], y + 12f, textPaint)
+            canvas.drawText(context.getString(R.string.pdf_value_days, cycle.periodDurationDays.toString()), colX[3], y + 12f, textPaint)
+            canvas.drawText(cycle.confirmedOvulationDate?.format(dateFormatter) ?: context.getString(R.string.report_value_not_recorded), colX[4], y + 12f, textPaint)
 
             y += rowHeight
         }
@@ -293,7 +297,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
     private fun drawDoctorNotesSection(canvas: Canvas, startY: Float) {
         var y = startY
-        canvas.drawText("4. CATATAN & VERIFIKASI KLINIS DOKTER (SpOG)", MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        canvas.drawText(context.getString(R.string.pdf_section_doctor_notes), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 8f
 
         val boxHeight = 90f
@@ -302,7 +306,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
         textPaint.color = COLOR_TEXT_MUTED
         textPaint.textSize = 7.5f
-        canvas.drawText("Diagnosa Medis / Rekomendasi Terapi:", MARGIN_HORIZONTAL + 10f, y + 16f, textPaint)
+        canvas.drawText(context.getString(R.string.pdf_doctor_notes_prompt), MARGIN_HORIZONTAL + 10f, y + 16f, textPaint)
 
         // Signature line in bottom right corner
         val sigLineStartX = MARGIN_HORIZONTAL + CONTENT_WIDTH - 150f
@@ -310,7 +314,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         val sigLineY = y + boxHeight - 24f
         canvas.drawLine(sigLineStartX, sigLineY, sigLineEndX, sigLineY, strokePaint)
 
-        val sigText = "Tanda Tangan & Cap Dokter"
+        val sigText = context.getString(R.string.pdf_doctor_signature)
         val textWidth = textPaint.measureText(sigText)
         val textStartX = sigLineStartX + ((sigLineEndX - sigLineStartX - textWidth) / 2)
         canvas.drawText(sigText, textStartX, sigLineY + 14f, textPaint)

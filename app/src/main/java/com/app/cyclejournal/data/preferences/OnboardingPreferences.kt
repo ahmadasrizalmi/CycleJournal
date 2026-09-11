@@ -13,6 +13,7 @@ class OnboardingPreferences(context: Context) {
         private const val KEY_IS_ONBOARDING_COMPLETED = "is_onboarding_completed"
         private const val KEY_LAST_SYNC_TIMESTAMP = "last_sync_timestamp"
         private const val KEY_IS_PROMIL_MODE = "is_promil_mode"
+        private const val KEY_APP_LANGUAGE = "app_language"
     }
 
     private val prefs: SharedPreferences =
@@ -40,6 +41,14 @@ class OnboardingPreferences(context: Context) {
 
     fun setPromilMode(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_IS_PROMIL_MODE, enabled).apply()
+    }
+
+    fun getAppLanguage(): String {
+        return prefs.getString(KEY_APP_LANGUAGE, "system") ?: "system"
+    }
+
+    fun setAppLanguage(language: String) {
+        prefs.edit().putString(KEY_APP_LANGUAGE, language).apply()
     }
     fun clear() {
         prefs.edit().clear().commit()

@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.export.pdf.PdfShareHelper
@@ -46,16 +47,16 @@ object CsvExportHelper {
                 writer.write("\uFEFF")
 
                 // Section 1: Cycle Records
-                writer.write("# RIWAYAT SIKLUS MENSTRUASI\n")
-                writer.write("ID,Tanggal Mulai,Tanggal Akhir,Panjang Siklus (Hari),Durasi Haid (Hari),Estimasi Ovulasi\n")
+                writer.write(context.getString(R.string.export_csv_section_cycles) + "\n")
+                writer.write(context.getString(R.string.export_csv_header_cycles) + "\n")
                 for (cycle in cycles) {
                     val row = listOf(
                         cycle.id.toString(),
                         cycle.startDate.format(dateFormatter),
-                        cycle.endDate?.format(dateFormatter) ?: "Berjalan",
+                        cycle.endDate?.format(dateFormatter) ?: context.getString(R.string.export_csv_cell_ongoing),
                         cycle.cycleLengthDays?.toString() ?: "-",
                         cycle.periodDurationDays.toString(),
-                        cycle.confirmedOvulationDate?.format(dateFormatter) ?: "Tidak tercatat"
+                        cycle.confirmedOvulationDate?.format(dateFormatter) ?: context.getString(R.string.export_csv_cell_not_recorded)
                     ).joinToString(",") { escapeCsv(it) }
                     writer.write(row + "\n")
                 }
@@ -63,8 +64,8 @@ object CsvExportHelper {
                 writer.write("\n")
 
                 // Section 2: Daily Biomarker Logs
-                writer.write("# LOG HARIAN BIOMARKER & GEJALA\n")
-                writer.write("Tanggal,Intensitas Aliran (Flow),Suhu Basal BBT (°C),Karakteristik Lendir Serviks,Skala Nyeri (VAS),Lokasi Nyeri,Konsumsi Analgesik,Catatan Tambahan\n")
+                writer.write(context.getString(R.string.export_csv_section_logs) + "\n")
+                writer.write(context.getString(R.string.export_csv_header_logs) + "\n")
                 for (log in logs) {
                     val row = listOf(
                         log.date.format(dateFormatter),
@@ -73,7 +74,7 @@ object CsvExportHelper {
                         log.cervicalMucus.name,
                         log.painVasScore.toString(),
                         log.painLocation ?: "-",
-                        if (log.takenAnalgesic) "Ya" else "Tidak",
+                        if (log.takenAnalgesic) context.getString(R.string.export_csv_cell_yes) else context.getString(R.string.export_csv_cell_no),
                         log.notes ?: ""
                     ).joinToString(",") { escapeCsv(it) }
                     writer.write(row + "\n")
@@ -160,23 +161,24 @@ object CsvExportHelper {
         try {
             context.startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(context, "Tidak ada aplikasi pembaca CSV/Excel terpasang", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.export_csv_empty_reader_toast), Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun shareCsv(context: Context, saveResult: PdfShareHelper.SaveResult, title: String = "Data CycleJournal") {
+    fun shareCsv(context: Context, saveResult: PdfShareHelper.SaveResult, title: String? = null) {
+        val shareTitle = title ?: context.getString(R.string.export_csv_share_title)
         val authority = "${context.packageName}.fileprovider"
         val contentUri = FileProvider.getUriForFile(context, authority, saveResult.localFile)
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/csv"
             putExtra(Intent.EXTRA_STREAM, contentUri)
-            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_SUBJECT, shareTitle)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            clipData = ClipData.newRawUri(title, contentUri)
+            clipData = ClipData.newRawUri(shareTitle, contentUri)
         }
 
-        val chooser = Intent.createChooser(shareIntent, "Bagikan Berkas CSV via...")
+        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.export_csv_share_chooser_title))
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooser)
     }

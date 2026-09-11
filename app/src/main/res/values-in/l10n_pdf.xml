@@ -1,0 +1,32 @@
+<!--
+  Indonesian resources. Mirrored in values-id/ and values-in/, which MUST stay byte-identical:
+  older Android platforms only match the legacy "in" qualifier, newer platforms match "id".
+-->
+<resources>
+    <string name="pdf_title">LAPORAN KLINIS SIKLUS MENSTRUASI &amp; BIOMARKER</string>
+    <string name="pdf_subtitle">Dokumen rekam mandiri untuk evaluasi ginekologi &amp; rujukan SpOG (FIGO Standard)</string>
+    <string name="pdf_patient_id">ID Pasien / Anonim: %1$s</string>
+    <string name="pdf_export_date">Tanggal Ekspor: %1$s</string>
+    <string name="pdf_section_metrics">1. RINGKASAN METRIK SIKLUS (FIGO STANDARD)</string>
+    <string name="pdf_metric_avg_cycle">Rata-rata Siklus</string>
+    <string name="pdf_metric_variability">Variabilitas (SD σ)</string>
+    <string name="pdf_metric_range">Rentang (Min-Max)</string>
+    <string name="pdf_metric_avg_period">Rata-rata Durasi Haid</string>
+    <string name="pdf_value_days">%1$s Hari</string>
+    <string name="pdf_value_days_plusminus">±%1$s Hari</string>
+    <string name="pdf_value_range_days">%1$d - %2$d Hari</string>
+    <string name="pdf_section_anomalies">2. INDIKASI ANOMALI &amp; RED FLAGS KLINIS</string>
+    <string name="pdf_anomalies_none">Tidak ada anomali atau deviasi signifikan yang terdeteksi pada periode ini.</string>
+    <string name="pdf_anomaly_line">[!] %1$s - %2$s</string>
+    <string name="pdf_anomaly_detail_line">Detail: %1$s (%2$s)</string>
+    <string name="pdf_section_history">3. LOG HISTORIS SIKLUS (MAKS. 6 SIKLUS TERAKHIR)</string>
+    <string name="pdf_col_start">TANGGAL AWAL</string>
+    <string name="pdf_col_end">TANGGAL AKHIR</string>
+    <string name="pdf_col_length">PANJANG SIKLUS</string>
+    <string name="pdf_col_period">DURASI HAID</string>
+    <string name="pdf_col_ovulation">ESTIMASI OVULASI</string>
+    <string name="pdf_value_ongoing">Berjalan</string>
+    <string name="pdf_section_doctor_notes">4. CATATAN &amp; VERIFIKASI KLINIS DOKTER (SpOG)</string>
+    <string name="pdf_doctor_notes_prompt">Diagnosa Medis / Rekomendasi Terapi:</string>
+    <string name="pdf_doctor_signature">Tanda Tangan &amp; Cap Dokter</string>
+</resources>

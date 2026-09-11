@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.app.cyclejournal.R
 import java.io.File
 
 /**
@@ -99,29 +100,30 @@ object PdfShareHelper {
         try {
             context.startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(context, "Tidak ada aplikasi pembaca PDF terpasang", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.export_pdf_empty_reader_toast), Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
      * Dispatches an Android Sharesheet Intent granting transient read permissions to recipient apps.
      */
-    fun sharePdf(context: Context, pdfFile: File, title: String = "Rekap Siklus") {
+    fun sharePdf(context: Context, pdfFile: File, title: String? = null) {
         if (!pdfFile.exists()) return
 
+        val shareTitle = title ?: context.getString(R.string.export_pdf_share_title)
         val authority = "${context.packageName}.fileprovider"
         val contentUri = FileProvider.getUriForFile(context, authority, pdfFile)
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, contentUri)
-            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_SUBJECT, shareTitle)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             // ClipData ensures permission persistence on Android 10+
-            clipData = ClipData.newRawUri(title, contentUri)
+            clipData = ClipData.newRawUri(shareTitle, contentUri)
         }
 
-        val chooser = Intent.createChooser(shareIntent, "Bagikan Rekap Siklus via...")
+        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.export_pdf_share_chooser_title))
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooser)
     }

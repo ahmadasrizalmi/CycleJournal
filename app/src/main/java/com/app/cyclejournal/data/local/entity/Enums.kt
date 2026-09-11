@@ -1,5 +1,8 @@
 package com.app.cyclejournal.data.local.entity
 
+import androidx.annotation.StringRes
+import com.app.cyclejournal.R
+
 /**
  * Intensity of menstrual bleeding.
  * Only LIGHT, MEDIUM, and HEAVY are classified as true menstruation by CycleAggregator.
@@ -28,12 +31,12 @@ enum class CervicalMucusType {
 /**
  * FIGO-compliant clinical anomaly red flags.
  */
-enum class AnomalyType(val code: String, val description: String) {
-    OLIGOMENORRHEA("ANO_01", "Siklus lebih panjang dari biasanya (lebih dari 38 hari)"),
-    POLYMENORRHEA("ANO_02", "Siklus lebih pendek dari biasanya (kurang dari 24 hari)"),
-    CYCLE_IRREGULARITY("ANO_03", "Panjang siklus tidak teratur (selisih antar siklus ≥ 8 hari)"),
-    PROLONGED_BLEEDING("ANO_04", "Haid berlangsung lebih dari 8 hari berturut-turut"),
-    INTERMENSTRUAL_BLEEDING("ANO_05", "Perdarahan atau bercak di luar jadwal haid"),
-    SHORT_LUTEAL_PHASE("ANO_06", "Jeda antara ovulasi dan haid berikutnya sangat pendek"),
-    SEVERE_DYSMENORRHEA("ANO_07", "Nyeri haid yang dilaporkan cukup berat")
+enum class AnomalyType(val code: String, @StringRes val descriptionRes: Int) {
+    OLIGOMENORRHEA("ANO_01", R.string.anomaly_oligomenorrhea),
+    POLYMENORRHEA("ANO_02", R.string.anomaly_polymenorrhea),
+    CYCLE_IRREGULARITY("ANO_03", R.string.anomaly_cycle_irregularity),
+    PROLONGED_BLEEDING("ANO_04", R.string.anomaly_prolonged_bleeding),
+    INTERMENSTRUAL_BLEEDING("ANO_05", R.string.anomaly_intermenstrual_bleeding),
+    SHORT_LUTEAL_PHASE("ANO_06", R.string.anomaly_short_luteal_phase),
+    SEVERE_DYSMENORRHEA("ANO_07", R.string.anomaly_severe_dysmenorrhea)
 }

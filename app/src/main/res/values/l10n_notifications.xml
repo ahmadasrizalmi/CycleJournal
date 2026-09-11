@@ -1,0 +1,13 @@
+<resources>
+    <!-- Notification Channels -->
+    <string name="notif_channel_bbt_name">Basal Temperature Reminder (BBT)</string>
+    <string name="notif_channel_bbt_description">Morning notification to measure basal body temperature right after waking up.</string>
+    <string name="notif_channel_period_name">Period Prediction Alert (D-2)</string>
+    <string name="notif_channel_period_description">Discreet notice 2 days before the estimated period start date.</string>
+
+    <!-- Alarm Notifications -->
+    <string name="notif_bbt_title">Time to Measure Basal Temperature (BBT)</string>
+    <string name="notif_bbt_text">Measure your basal body temperature now before getting out of bed for ovulation accuracy.</string>
+    <string name="notif_period_title">Menstrual Cycle Alert</string>
+    <string name="notif_period_text">Based on FIGO predictions, your menstrual cycle is expected to start in 2 days.</string>
+</resources>

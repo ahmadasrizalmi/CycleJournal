@@ -1,0 +1,17 @@
+<!--
+  Indonesian resources. Mirrored in values-id/ and values-in/, which MUST stay byte-identical:
+  older Android platforms only match the legacy "in" qualifier, newer platforms match "id".
+-->
+<resources>
+    <!-- Notification Channels -->
+    <string name="notif_channel_bbt_name">Pengingat Suhu Basal (BBT)</string>
+    <string name="notif_channel_bbt_description">Notifikasi pagi hari untuk mengukur suhu basal tubuh segera setelah bangun tidur.</string>
+    <string name="notif_channel_period_name">Peringatan Prediksi Haid (H-2)</string>
+    <string name="notif_channel_period_description">Pemberitahuan diskrit 2 hari sebelum perkiraan tanggal mulai siklus haid.</string>
+
+    <!-- Alarm Notifications -->
+    <string name="notif_bbt_title">Waktunya Ukur Suhu Basal (BBT)</string>
+    <string name="notif_bbt_text">Ukur suhu basal tubuh sekarang sebelum beranjak dari tempat tidur untuk akurasi ovulasi.</string>
+    <string name="notif_period_title">Peringatan Siklus Menstruasi</string>
+    <string name="notif_period_text">Berdasarkan prediksi FIGO, siklus menstruasi diperkirakan akan dimulai dalam 2 hari.</string>
+</resources>

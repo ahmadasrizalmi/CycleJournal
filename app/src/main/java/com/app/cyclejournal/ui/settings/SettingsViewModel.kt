@@ -3,8 +3,11 @@ package com.app.cyclejournal.ui.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.backup.BackupJsonParser
 import com.app.cyclejournal.data.local.AppDatabase
+import androidx.annotation.StringRes
+import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
 import com.app.cyclejournal.data.remote.model.BackupUploadRequest
@@ -20,6 +23,7 @@ import com.app.cyclejournal.export.csv.CsvExportHelper
 import com.app.cyclejournal.security.BackupCryptoEngine
 import com.app.cyclejournal.security.SecurityPinManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +42,7 @@ sealed class SyncState {
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val database: AppDatabase,
     private val pinManager: SecurityPinManager,
     private val prefs: OnboardingPreferences,
@@ -48,6 +53,10 @@ class SettingsViewModel @Inject constructor(
     private val wipeManager: DataWipeManager
 ) : ViewModel() {
 
+    /** Resolves user-facing text in the language selected inside the app. */
+    private fun text(@StringRes id: Int, vararg args: Any?): String =
+        AppLocale.wrap(appContext).getString(id, *args)
+
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val syncState: StateFlow<SyncState> = _syncState
 
@@ -57,7 +66,7 @@ class SettingsViewModel @Inject constructor(
 
     fun performManualBackup(userPin: String) {
         if (!pinManager.verifyPin(userPin)) {
-            _syncState.value = SyncState.Error("PIN yang dimasukkan salah.")
+            _syncState.value = SyncState.Error(text(R.string.security_backup_invalid_pin))
             return
         }
 
@@ -80,12 +89,12 @@ class SettingsViewModel @Inject constructor(
 
                 if (success) {
                     prefs.setLastSyncTimestamp(System.currentTimeMillis())
-                    _syncState.value = SyncState.Success("Cadangan terenkripsi berhasil disinkronkan ke Cloudflare D1.")
+                    _syncState.value = SyncState.Success(text(R.string.security_backup_upload_success))
                 } else {
-                    _syncState.value = SyncState.Error("Gagal mengunggah ke Cloudflare Worker. Periksa jaringan internet.")
+                    _syncState.value = SyncState.Error(text(R.string.security_backup_upload_failed))
                 }
             } catch (e: Exception) {
-                _syncState.value = SyncState.Error(e.message ?: "Terjadi kesalahan saat mencadangkan.")
+                _syncState.value = SyncState.Error(e.message ?: text(R.string.security_backup_error_generic))
             }
         }
     }
@@ -115,7 +124,7 @@ class SettingsViewModel @Inject constructor(
                 context.contentResolver.openInputStream(fileUri)?.bufferedReader()?.use { it.readText() } ?: ""
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    onComplete(LocalRestoreOutcome.Error("Gagal membaca berkas: ${e.message}"))
+                    onComplete(LocalRestoreOutcome.Error(text(R.string.security_restore_file_read_failed, e.message)))
                 }
                 return@launch
             }
@@ -165,19 +174,19 @@ class SettingsViewModel @Inject constructor(
 
             _syncState.value = when (outcome) {
                 is DataRestoreOutcome.Success -> {
-                    SyncState.Success("Berhasil memulihkan ${outcome.logsRestored} catatan harian & ${outcome.cyclesRestored} siklus.")
+                    SyncState.Success(text(R.string.security_restore_success, outcome.logsRestored, outcome.cyclesRestored))
                 }
                 is DataRestoreOutcome.InvalidPassphrase -> {
-                    SyncState.Error("PIN/Passphrase salah. Gagal mendekripsi ciphertext.")
+                    SyncState.Error(text(R.string.security_restore_invalid_passphrase))
                 }
                 is DataRestoreOutcome.BackupNotFound -> {
-                    SyncState.Error("Tidak ada berkas cadangan di Cloudflare D1 untuk ID ini.")
+                    SyncState.Error(text(R.string.security_restore_backup_not_found))
                 }
                 is DataRestoreOutcome.IntegrityCheckFailed -> {
-                    SyncState.Error("Integritas data rusak (SHA-256 Checksum mismatch).")
+                    SyncState.Error(text(R.string.security_restore_integrity_failed))
                 }
                 is DataRestoreOutcome.NetworkError -> {
-                    SyncState.Error("Kesalahan jaringan: ${outcome.message}")
+                    SyncState.Error(text(R.string.security_restore_network_error, outcome.message))
                 }
             }
         }

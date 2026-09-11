@@ -1,8 +1,10 @@
 package com.app.cyclejournal.ui.home
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.dao.CycleDao
 import com.app.cyclejournal.data.local.dao.DailyLogDao
 import com.app.cyclejournal.data.local.entity.CycleEntity
@@ -26,11 +28,11 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-enum class CycleFilter(val label: String) {
-    ALL("Semua"),
-    PERIOD("Haid"),
-    OVULATION("Ovulasi"),
-    FERTILE("Masa Subur")
+enum class CycleFilter(@StringRes val labelRes: Int) {
+    ALL(R.string.filter_all),
+    PERIOD(R.string.filter_period),
+    OVULATION(R.string.filter_ovulation),
+    FERTILE(R.string.filter_fertile)
 }
 
 @HiltViewModel

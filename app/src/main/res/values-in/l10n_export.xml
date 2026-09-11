@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Indonesian resources. Mirrored in values-id/ and values-in/, which MUST stay byte-identical:
+  older Android platforms only match the legacy "in" qualifier, newer platforms match "id".
+-->
+<resources>
+
+    <!-- CSV export: share sheet -->
+    <string name="export_csv_share_title">Data CycleJournal</string>
+    <string name="export_csv_share_chooser_title">Bagikan Berkas CSV via...</string>
+    <string name="export_csv_empty_reader_toast">Tidak ada aplikasi pembaca CSV/Excel terpasang</string>
+
+    <!-- CSV export: content -->
+    <string name="export_csv_section_cycles"># RIWAYAT SIKLUS MENSTRUASI</string>
+    <string name="export_csv_header_cycles">ID,Tanggal Mulai,Tanggal Akhir,Panjang Siklus (Hari),Durasi Haid (Hari),Estimasi Ovulasi</string>
+    <string name="export_csv_section_logs"># LOG HARIAN BIOMARKER &amp; GEJALA</string>
+    <string name="export_csv_header_logs">Tanggal,Intensitas Aliran (Flow),Suhu Basal BBT (°C),Karakteristik Lendir Serviks,Skala Nyeri (VAS),Lokasi Nyeri,Konsumsi Analgesik,Catatan Tambahan</string>
+    <string name="export_csv_cell_ongoing">Berjalan</string>
+    <string name="export_csv_cell_not_recorded">Tidak tercatat</string>
+    <string name="export_csv_cell_yes">Ya</string>
+    <string name="export_csv_cell_no">Tidak</string>
+
+    <!-- PDF export: share sheet -->
+    <string name="export_pdf_share_title">Rekap Siklus</string>
+    <string name="export_pdf_share_chooser_title">Bagikan Rekap Siklus via...</string>
+    <string name="export_pdf_empty_reader_toast">Tidak ada aplikasi pembaca PDF terpasang</string>
+</resources>

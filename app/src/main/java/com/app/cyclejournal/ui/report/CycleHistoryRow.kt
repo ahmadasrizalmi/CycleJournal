@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.ui.home.CycleFilter
 import java.time.format.DateTimeFormatter
@@ -50,8 +52,16 @@ fun CycleHistoryRow(
 
     val periodEnd = cycle.startDate.plusDays((cycle.periodDurationDays - 1).toLong().coerceAtLeast(0L))
     val startStr = cycle.startDate.format(fmt)
-    val periodTitle = if (isOngoing) "$startStr – Aktif" else "$startStr – ${periodEnd.format(fmt)}"
-    val lengthLabel = if (isOngoing) "Hari ke-$elapsedDaysIfActive (Aktif)" else "$cycleLength hari"
+    val periodTitle = if (isOngoing) {
+        stringResource(R.string.cycle_row_range_ongoing, startStr)
+    } else {
+        "$startStr – ${periodEnd.format(fmt)}"
+    }
+    val lengthLabel = if (isOngoing) {
+        stringResource(R.string.cycle_row_cycle_day_active, elapsedDaysIfActive)
+    } else {
+        stringResource(R.string.cycle_row_length_days, cycleLength)
+    }
 
     Column(
         modifier = modifier

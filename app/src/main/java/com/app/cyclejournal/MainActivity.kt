@@ -1,5 +1,7 @@
 package com.app.cyclejournal
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.os.Process
 import android.view.WindowManager
@@ -8,13 +10,22 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.savedstate.SavedStateRegistryOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import android.widget.Toast
 import com.app.cyclejournal.domain.manager.BackupFileInspection
 import com.app.cyclejournal.domain.manager.LocalRestoreOutcome
@@ -22,7 +33,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.app.cyclejournal.billing.AdMobManager
 import com.app.cyclejournal.billing.BillingManager
+import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
+import com.app.cyclejournal.scheduler.notification.NotificationChannelManager
 import com.app.cyclejournal.security.BiometricAuthHelper
 import com.app.cyclejournal.security.SecurityPinManager
 import com.app.cyclejournal.ui.CycleJournalApp
@@ -61,6 +74,11 @@ class MainActivity : FragmentActivity() {
     private val isAppUnlocked = androidx.compose.runtime.mutableStateOf(false)
     private lateinit var biometricAuthHelper: BiometricAuthHelper
 
+    override fun attachBaseContext(newBase: Context) {
+        // Also normalises Locale.getDefault() so date formatting matches the chosen app language.
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -93,6 +111,14 @@ class MainActivity : FragmentActivity() {
         })
 
         setContent {
+            val currentLang = prefs.getAppLanguage()
+
+            val localizedContext = remember(currentLang) {
+                val wrapped = AppLocale.wrap(this, currentLang)
+                if (wrapped === this) this else LocaleAwareContext(wrapped, this)
+            }
+
+            CompositionLocalProvider(LocalContext provides localizedContext) {
             CycleJournalTheme {
                 if (!isAppUnlocked.value && pinManager.isPinSet()) {
                     PinLockScreen(
@@ -134,13 +160,13 @@ class MainActivity : FragmentActivity() {
                                 onComplete = { outcome ->
                                     when (outcome) {
                                         is LocalRestoreOutcome.Success -> {
-                                            Toast.makeText(this@MainActivity, "Berhasil memulihkan ${outcome.logsRestored} catatan harian & ${outcome.cyclesRestored} siklus!", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_success_toast, outcome.logsRestored, outcome.cyclesRestored), Toast.LENGTH_LONG).show()
                                         }
                                         is LocalRestoreOutcome.InvalidPin -> {
-                                            Toast.makeText(this@MainActivity, "PIN salah. Gagal mendekripsi berkas cadangan.", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_invalid_pin_toast), Toast.LENGTH_LONG).show()
                                         }
                                         is LocalRestoreOutcome.InvalidFileFormat -> {
-                                            Toast.makeText(this@MainActivity, "Format berkas tidak valid atau bukan cadangan CycleJournal.", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_invalid_format_toast), Toast.LENGTH_LONG).show()
                                         }
                                         is LocalRestoreOutcome.Error -> {
                                             Toast.makeText(this@MainActivity, outcome.message, Toast.LENGTH_LONG).show()
@@ -199,22 +225,28 @@ class MainActivity : FragmentActivity() {
                         onDismissDownloadDialog = { cycleViewModel.clearDownloadedReport() },
                         isPinSet = pinManager.isPinSet(),
                         isPromilModeInitial = prefs.isPromilMode(),
-                        onTogglePromilMode = { prefs.setPromilMode(it) }
+                        onTogglePromilMode = { prefs.setPromilMode(it) },
+                        appLanguage = currentLang,
+                        onLanguageChanged = { newLang ->
+                            prefs.setAppLanguage(newLang)
+                            NotificationChannelManager.createChannels(AppLocale.wrap(this@MainActivity, newLang))
+                            recreate()
+                        }
                     )
                     if (isRestorePinInputOpen && pendingInspectedBackup != null) {
                         androidx.compose.material3.AlertDialog(
                             onDismissRequest = { isRestorePinInputOpen = false },
                             title = {
-                                androidx.compose.material3.Text("Masukkan PIN Cadangan", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                androidx.compose.material3.Text(stringResource(R.string.restore_pin_dialog_title), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                             },
                             text = {
                                 androidx.compose.foundation.layout.Column {
-                                    androidx.compose.material3.Text("Berkas cadangan ini dienkripsi dengan PIN. Masukkan 4 digit angka pembuka:")
+                                    androidx.compose.material3.Text(stringResource(R.string.restore_pin_dialog_message))
                                     androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
                                     androidx.compose.material3.OutlinedTextField(
                                         value = restorePinInput,
                                         onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) restorePinInput = it },
-                                        placeholder = { androidx.compose.material3.Text("4 Digit Angka") },
+                                        placeholder = { androidx.compose.material3.Text(stringResource(R.string.restore_pin_placeholder)) },
                                         singleLine = true
                                     )
                                 }
@@ -229,10 +261,10 @@ class MainActivity : FragmentActivity() {
                                         settingsViewModel.restoreInspectedBackup(inspection, pin) { outcome ->
                                             when (outcome) {
                                                 is LocalRestoreOutcome.Success -> {
-                                                    Toast.makeText(this@MainActivity, "Berhasil memulihkan ${outcome.logsRestored} catatan harian & ${outcome.cyclesRestored} siklus!", Toast.LENGTH_LONG).show()
+                                                    Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_success_toast, outcome.logsRestored, outcome.cyclesRestored), Toast.LENGTH_LONG).show()
                                                 }
                                                 is LocalRestoreOutcome.InvalidPin -> {
-                                                    Toast.makeText(this@MainActivity, "PIN salah. Gagal mendekripsi berkas cadangan.", Toast.LENGTH_LONG).show()
+                                                    Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_invalid_pin_toast), Toast.LENGTH_LONG).show()
                                                 }
                                                 is LocalRestoreOutcome.Error -> {
                                                     Toast.makeText(this@MainActivity, outcome.message, Toast.LENGTH_LONG).show()
@@ -242,18 +274,37 @@ class MainActivity : FragmentActivity() {
                                         }
                                     }
                                 ) {
-                                    androidx.compose.material3.Text("Buka & Pulihkan", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                    androidx.compose.material3.Text(stringResource(R.string.restore_confirm_button), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                             },
                             dismissButton = {
                                 androidx.compose.material3.TextButton(onClick = { isRestorePinInputOpen = false }) {
-                                    androidx.compose.material3.Text("Batal")
+                                    androidx.compose.material3.Text(stringResource(R.string.cancel))
                                 }
                             }
                         )
                     }
                 }
             }
+            }
         }
     }
+}
+
+/**
+ * Locale-overridden context that keeps Compose owner lookups (activity result registry, lifecycle,
+ * saved state, back dispatcher, view model store) resolving to the hosting ComponentActivity.
+ */
+private class LocaleAwareContext(
+    base: Context,
+    private val activity: ComponentActivity
+) : ContextWrapper(base),
+    ActivityResultRegistryOwner by activity,
+    LifecycleOwner by activity,
+    ViewModelStoreOwner by activity,
+    SavedStateRegistryOwner by activity,
+    OnBackPressedDispatcherOwner by activity {
+
+    override val lifecycle: Lifecycle
+        get() = activity.lifecycle
 }

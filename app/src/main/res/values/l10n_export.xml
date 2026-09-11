@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- CSV export: share sheet -->
+    <string name="export_csv_share_title">CycleJournal Data</string>
+    <string name="export_csv_share_chooser_title">Share CSV File via...</string>
+    <string name="export_csv_empty_reader_toast">No CSV/Excel reader app installed</string>
+
+    <!-- CSV export: content -->
+    <string name="export_csv_section_cycles"># MENSTRUAL CYCLE HISTORY</string>
+    <string name="export_csv_header_cycles">ID,Start Date,End Date,Cycle Length (Days),Period Duration (Days),Estimated Ovulation</string>
+    <string name="export_csv_section_logs"># DAILY BIOMARKER &amp; SYMPTOM LOG</string>
+    <string name="export_csv_header_logs">Date,Flow Intensity,Basal Body Temp BBT (°C),Cervical Mucus Characteristics,Pain Scale (VAS),Pain Location,Analgesic Use,Additional Notes</string>
+    <string name="export_csv_cell_ongoing">Ongoing</string>
+    <string name="export_csv_cell_not_recorded">Not recorded</string>
+    <string name="export_csv_cell_yes">Yes</string>
+    <string name="export_csv_cell_no">No</string>
+
+    <!-- PDF export: share sheet -->
+    <string name="export_pdf_share_title">Cycle Summary</string>
+    <string name="export_pdf_share_chooser_title">Share Cycle Summary via...</string>
+    <string name="export_pdf_empty_reader_toast">No PDF reader app installed</string>
+</resources>

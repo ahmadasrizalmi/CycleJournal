@@ -5,6 +5,7 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.app.cyclejournal.R
 
 /**
  * Helper for hardware biometric authentication (Fingerprint / Face Unlock) with fallback to PIN.
@@ -17,8 +18,8 @@ class BiometricAuthHelper(private val activity: FragmentActivity) {
     }
 
     fun promptBiometric(
-        title: String = "Buka Kunci CycleJournal",
-        subtitle: String = "Verifikasi identitas Anda untuk mengakses data klinis",
+        title: String = activity.getString(R.string.security_biometric_prompt_title),
+        subtitle: String = activity.getString(R.string.security_biometric_prompt_subtitle),
         onSuccess: () -> Unit,
         onErrorOrFallback: () -> Unit
     ) {
@@ -26,7 +27,7 @@ class BiometricAuthHelper(private val activity: FragmentActivity) {
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setNegativeButtonText("Gunakan PIN")
+            .setNegativeButtonText(activity.getString(R.string.security_biometric_negative_button))
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
 

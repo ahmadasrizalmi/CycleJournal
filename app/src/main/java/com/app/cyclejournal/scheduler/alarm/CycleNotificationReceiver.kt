@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.app.cyclejournal.MainActivity
 import com.app.cyclejournal.R
+import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.scheduler.notification.NotificationChannelManager
 
 class CycleNotificationReceiver : BroadcastReceiver() {
@@ -19,6 +20,8 @@ class CycleNotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager = NotificationManagerCompat.from(context)
+        // Notifications must follow the in-app language, not the raw system locale
+        val localizedContext = AppLocale.wrap(context)
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -35,8 +38,8 @@ class CycleNotificationReceiver : BroadcastReceiver() {
                 // 1. Show high-priority morning BBT notification
                 val notification = NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_BBT)
                     .setSmallIcon(R.drawable.logo_pdf_header)
-                    .setContentTitle("Waktunya Ukur Suhu Basal (BBT)")
-                    .setContentText("Ukur suhu basal tubuh sekarang sebelum beranjak dari tempat tidur untuk akurasi ovulasi.")
+                    .setContentTitle(localizedContext.getString(R.string.notif_bbt_title))
+                    .setContentText(localizedContext.getString(R.string.notif_bbt_text))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
@@ -57,8 +60,8 @@ class CycleNotificationReceiver : BroadcastReceiver() {
                 // Show discrete period warning (H-2)
                 val notification = NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_PERIOD)
                     .setSmallIcon(R.drawable.logo_pdf_header)
-                    .setContentTitle("Peringatan Siklus Menstruasi")
-                    .setContentText("Berdasarkan prediksi FIGO, siklus menstruasi diperkirakan akan dimulai dalam 2 hari.")
+                    .setContentTitle(localizedContext.getString(R.string.notif_period_title))
+                    .setContentText(localizedContext.getString(R.string.notif_period_text))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)

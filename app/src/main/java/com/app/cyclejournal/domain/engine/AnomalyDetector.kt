@@ -1,29 +1,30 @@
 package com.app.cyclejournal.domain.engine
 
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.AnomalyType
 import com.app.cyclejournal.data.local.entity.CervicalMucusType
 import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
 import com.app.cyclejournal.domain.model.AnomalyAlert
+import com.app.cyclejournal.domain.model.ResArg
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 /**
  * Functional pain severity categories for Visual Analog Scale (VAS 0–10).
  */
-enum class VasCategory(val label: String, val isRedFlag: Boolean) {
-    NONE("Tidak Ada Nyeri (Normal)", false),
-    MILD("Nyeri Ringan (Aktivitas Normal)", false),
-    MODERATE("Nyeri Sedang (Aktivitas Terganggu, Butuh Istirahat)", false),
-    SEVERE("Nyeri Berat (Indikasi Dismenore / Red Flag)", true),
-    EXTREME("Nyeri Ekstrem (Disarankan Evaluasi Medis Segera)", true)
+enum class VasCategory(val labelRes: Int, val isRedFlag: Boolean) {
+    NONE(R.string.vas_category_none, false),
+    MILD(R.string.vas_category_mild, false),
+    MODERATE(R.string.vas_category_moderate, false),
+    SEVERE(R.string.vas_category_severe, true),
+    EXTREME(R.string.vas_category_extreme, true)
 }
 
 data class VasImpact(
     val score: Int,
     val category: VasCategory,
-    val description: String,
     val isRedFlag: Boolean
 )
 
@@ -45,11 +46,11 @@ class AnomalyDetector {
     fun mapVasImpact(score: Int): VasImpact {
         val clampedScore = score.coerceIn(0, 10)
         return when (clampedScore) {
-            0 -> VasImpact(0, VasCategory.NONE, "0: Tidak ada rasa nyeri sama sekali.", false)
-            in 1..3 -> VasImpact(clampedScore, VasCategory.MILD, "1–3: Nyeri ringan, dapat diabaikan saat beraktivitas.", false)
-            in 4..6 -> VasImpact(clampedScore, VasCategory.MODERATE, "4–6: Nyeri sedang, mengganggu fokus & butuh pereda nyeri.", false)
-            in 7..8 -> VasImpact(clampedScore, VasCategory.SEVERE, "7–8: Nyeri hebat, membatasi gerak atau butuh tirah baring.", true)
-            else -> VasImpact(clampedScore, VasCategory.EXTREME, "9–10: Nyeri tak tertahankan, disarankan rujukan medis ginekolog.", true)
+            0 -> VasImpact(0, VasCategory.NONE, false)
+            in 1..3 -> VasImpact(clampedScore, VasCategory.MILD, false)
+            in 4..6 -> VasImpact(clampedScore, VasCategory.MODERATE, false)
+            in 7..8 -> VasImpact(clampedScore, VasCategory.SEVERE, true)
+            else -> VasImpact(clampedScore, VasCategory.EXTREME, true)
         }
     }
 
@@ -71,7 +72,8 @@ class AnomalyDetector {
                     AnomalyAlert(
                         AnomalyType.OLIGOMENORRHEA,
                         cycle.startDate,
-                        "Siklus berlangsung selama $len hari (> 38 hari, potensi anovulasi/PCOS)."
+                        R.string.anomaly_detail_oligomenorrhea_pcos,
+                        listOf(len)
                     )
                 )
             } else if (len < MIN_NORMAL_CYCLE_DAYS) {
@@ -79,7 +81,8 @@ class AnomalyDetector {
                     AnomalyAlert(
                         AnomalyType.POLYMENORRHEA,
                         cycle.startDate,
-                        "Siklus berlangsung selama $len hari (< 24 hari)."
+                        R.string.anomaly_detail_polymenorrhea,
+                        listOf(len)
                     )
                 )
             }
@@ -94,7 +97,8 @@ class AnomalyDetector {
                     AnomalyAlert(
                         AnomalyType.CYCLE_IRREGULARITY,
                         LocalDate.now(),
-                        "Variasi panjang siklus mencapai $delta hari (ambang batas FIGO >= 8 hari)."
+                        R.string.anomaly_detail_irregularity_figo,
+                        listOf(delta)
                     )
                 )
             }
@@ -110,7 +114,8 @@ class AnomalyDetector {
                         AnomalyAlert(
                             AnomalyType.PROLONGED_BLEEDING,
                             log.date,
-                            "Perdarahan haid aktif berlangsung $streak hari berturut-turut pada ${log.date}."
+                            R.string.anomaly_detail_prolonged_bleeding_single,
+                            listOf(streak, log.date.toString())
                         )
                     )
                 }
@@ -130,7 +135,8 @@ class AnomalyDetector {
                             AnomalyAlert(
                                 AnomalyType.INTERMENSTRUAL_BLEEDING,
                                 log.date,
-                                "Pendarahan bercak di luar jadwal haid pada hari ke-$dayOfCycle siklus."
+                                R.string.anomaly_detail_imb_day,
+                                listOf(dayOfCycle)
                             )
                         )
                     }
@@ -146,7 +152,8 @@ class AnomalyDetector {
                     AnomalyAlert(
                         AnomalyType.SEVERE_DYSMENORRHEA,
                         log.date,
-                        "Skor nyeri VAS ${log.painVasScore}/10 (${impact.category.label}) pada area: ${log.painLocation ?: "pelvis"}."
+                        R.string.anomaly_detail_vas_category_area,
+                        listOf(log.painVasScore, ResArg(impact.category.labelRes), log.painLocation ?: "pelvis")
                     )
                 )
             }

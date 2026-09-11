@@ -11,9 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.cyclejournal.R
 import com.app.cyclejournal.ui.onboarding.NumericKeypad
 import com.app.cyclejournal.ui.onboarding.PinDotsView
 import com.app.cyclejournal.ui.theme.AlertText
@@ -47,7 +49,7 @@ fun PinLockScreen(
                 modifier = Modifier.size(52.dp)
             )
             Text(
-                text = "Masukkan PIN CycleJournal",
+                text = stringResource(R.string.security_pin_lock_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -56,7 +58,7 @@ fun PinLockScreen(
             PinDotsView(pinLength = pin.length, isError = isError)
 
             if (isError) {
-                Text("PIN salah. Silakan coba lagi.", color = AlertText, fontSize = 13.sp)
+                Text(stringResource(R.string.security_pin_incorrect), color = AlertText, fontSize = 13.sp)
             }
 
             NumericKeypad(onKeyPress = { key ->
@@ -84,7 +86,7 @@ fun PinLockScreen(
             ) {
                 Icon(
                     Icons.Outlined.Fingerprint,
-                    contentDescription = "Sidik Jari",
+                    contentDescription = stringResource(R.string.security_fingerprint_content_desc),
                     tint = PrimaryPink,
                     modifier = Modifier.size(32.dp)
                 )

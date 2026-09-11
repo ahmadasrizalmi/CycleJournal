@@ -98,6 +98,10 @@
   • Tambah Gejala Kustom: Buat dan simpan gejala pribadi Anda (misal: Migrain, Nyeri Sendi, Insomnia) tanpa batas.
   • Kolom catatan klinis bebas untuk dosis obat dan arahan dokter.
 
+  6. DUKUNGAN DUA BAHASA (INDONESIA & INGGRIS)
+  • Seluruh antarmuka, laporan PDF klinis, ekspor CSV, nama kanal notifikasi, dan analisis anomali FIGO tersedia dalam Bahasa Indonesia dan Bahasa Inggris.
+  • Ganti bahasa kapan saja melalui Pengaturan → Pilihan Bahasa (Ikuti Sistem / Indonesia / English) tanpa perlu menginstal ulang aplikasi.
+
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   💎 PILIHAN LISENSI
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -250,8 +254,8 @@ Masuk ke menu: **Monetize > Products > In-app products**:
 
 | Aset | Keterangan & Lokasi di Repositori |
 |---|---|
-| **File Rilis AAB (Wajib Upload)** | 📁 `release/CycleJournal_v1.1.2.aab` (18 MB, Version Code: 4) |
-| **File Rilis APK (Install Uji Coba)** | 📁 `release/CycleJournal_v1.1.2.apk` (26 MB) |
+| **File Rilis AAB (Wajib Upload)** | 📁 `release/CycleJournal_v1.1.3.aab` (Version Code: 5) |
+| **File Rilis APK (Install Uji Coba)** | 📁 `release/CycleJournal_v1.1.3.apk` |
 | **Ikon Aplikasi Resolusi Tinggi** | 📁 `store_assets/play_store_icon_512.png` (512 × 512 px, 32-bit PNG transparan) |
 | **Gambar Fitur Utama (Feature Graphic)** | 📁 `store_assets/feature_graphic_1024x500.png` (1024 × 500 px, Coral-to-Pink gradient) |
 | **5 Screenshot Play Store (Bahasa Indonesia)** | 📁 `out/screenshots/pixel-10-pro/id-ID/*.png` (1080 × 1920 px, 5 berkas) |

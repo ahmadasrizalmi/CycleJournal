@@ -1,0 +1,26 @@
+<resources>
+    <!-- Cycle timeline filter chips -->
+    <string name="filter_all">All</string>
+    <string name="filter_period">Period</string>
+    <string name="filter_ovulation">Ovulation</string>
+    <string name="filter_fertile">Fertile Window</string>
+
+    <!-- Cycle timeline row labels -->
+    <string name="cycle_row_range_ongoing">%1$s – Ongoing</string>
+    <string name="cycle_row_cycle_day_active">Day %1$d (Ongoing)</string>
+    <string name="cycle_row_length_days">%1$d days</string>
+
+    <!-- Countdowns and counters (English needs a singular form) -->
+    <plurals name="app_days_left">
+        <item quantity="one">%1$d day left</item>
+        <item quantity="other">%1$d days left</item>
+    </plurals>
+    <plurals name="app_days_late">
+        <item quantity="one">%1$d day late</item>
+        <item quantity="other">%1$d days late</item>
+    </plurals>
+    <plurals name="report_cycle_count">
+        <item quantity="one">%1$d cycle</item>
+        <item quantity="other">%1$d cycles</item>
+    </plurals>
+</resources>

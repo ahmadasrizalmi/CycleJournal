@@ -1,0 +1,28 @@
+<resources>
+    <string name="pdf_title">CLINICAL MENSTRUAL CYCLE &amp; BIOMARKER REPORT</string>
+    <string name="pdf_subtitle">Self-tracked record for gynecological evaluation &amp; obstetric referral (FIGO Standard)</string>
+    <string name="pdf_patient_id">Patient / Anonymous ID: %1$s</string>
+    <string name="pdf_export_date">Export Date: %1$s</string>
+    <string name="pdf_section_metrics">1. CYCLE METRICS SUMMARY (FIGO STANDARD)</string>
+    <string name="pdf_metric_avg_cycle">Average Cycle</string>
+    <string name="pdf_metric_variability">Variability (SD σ)</string>
+    <string name="pdf_metric_range">Range (Min-Max)</string>
+    <string name="pdf_metric_avg_period">Average Period Duration</string>
+    <string name="pdf_value_days">%1$s Days</string>
+    <string name="pdf_value_days_plusminus">±%1$s Days</string>
+    <string name="pdf_value_range_days">%1$d - %2$d Days</string>
+    <string name="pdf_section_anomalies">2. CLINICAL ANOMALIES &amp; RED FLAGS</string>
+    <string name="pdf_anomalies_none">No significant anomalies or deviations detected in this period.</string>
+    <string name="pdf_anomaly_line">[!] %1$s - %2$s</string>
+    <string name="pdf_anomaly_detail_line">Detail: %1$s (%2$s)</string>
+    <string name="pdf_section_history">3. CYCLE HISTORY LOG (LAST 6 CYCLES MAX.)</string>
+    <string name="pdf_col_start">START DATE</string>
+    <string name="pdf_col_end">END DATE</string>
+    <string name="pdf_col_length">CYCLE LENGTH</string>
+    <string name="pdf_col_period">PERIOD DURATION</string>
+    <string name="pdf_col_ovulation">ESTIMATED OVULATION</string>
+    <string name="pdf_value_ongoing">Ongoing</string>
+    <string name="pdf_section_doctor_notes">4. CLINICIAN NOTES &amp; VERIFICATION (SpOG)</string>
+    <string name="pdf_doctor_notes_prompt">Medical Diagnosis / Therapy Recommendation:</string>
+    <string name="pdf_doctor_signature">Doctor\'s Signature &amp; Stamp</string>
+</resources>

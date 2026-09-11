@@ -1,5 +1,6 @@
 package com.app.cyclejournal.domain.engine
 
+import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.AnomalyType
 import com.app.cyclejournal.data.local.entity.CervicalMucusType
 import com.app.cyclejournal.data.local.entity.CycleEntity
@@ -133,7 +134,8 @@ class ClinicalCycleEngine {
                     AnomalyAlert(
                         AnomalyType.OLIGOMENORRHEA,
                         cycle.startDate,
-                        "Siklus berlangsung selama $length hari (> 38 hari)."
+                        R.string.anomaly_detail_oligomenorrhea,
+                        listOf(length)
                     )
                 )
             } else if (length < MIN_NORMAL_CYCLE_DAYS) {
@@ -141,7 +143,8 @@ class ClinicalCycleEngine {
                     AnomalyAlert(
                         AnomalyType.POLYMENORRHEA,
                         cycle.startDate,
-                        "Siklus berlangsung selama $length hari (< 24 hari)."
+                        R.string.anomaly_detail_polymenorrhea,
+                        listOf(length)
                     )
                 )
             }
@@ -156,7 +159,8 @@ class ClinicalCycleEngine {
                     AnomalyAlert(
                         AnomalyType.CYCLE_IRREGULARITY,
                         LocalDate.now(),
-                        "Selisih siklus terpanjang dan terpendek adalah $delta hari (ambang batas >= 8 hari)."
+                        R.string.anomaly_detail_irregularity_delta,
+                        listOf(delta)
                     )
                 )
             }
@@ -192,7 +196,8 @@ class ClinicalCycleEngine {
                         AnomalyAlert(
                             AnomalyType.PROLONGED_BLEEDING,
                             lastBleedDate,
-                            "Perdarahan aktif berlangsung $streakCount hari berturut-turut ($streakStart s/d $lastBleedDate)."
+                            R.string.anomaly_detail_prolonged_bleeding_range,
+                            listOf(streakCount, streakStart, lastBleedDate)
                         )
                     )
                 }
@@ -226,16 +231,17 @@ class ClinicalCycleEngine {
                 val latestImb = imbDates.last()
                 val count = imbDates.size
                 val dayOfCycle = ChronoUnit.DAYS.between(currentCycle.startDate, latestImb) + 1
-                val detailStr = if (count == 1) {
-                    "Pendarahan bercak (spotting) terdeteksi pada hari ke-$dayOfCycle siklus ($latestImb)."
+                val (detailRes, detailArgs) = if (count == 1) {
+                    R.string.anomaly_detail_imb_single to listOf<Any>(dayOfCycle, latestImb)
                 } else {
-                    "Pendarahan bercak (spotting) terdeteksi $count kali dalam siklus ini (terakhir hari ke-$dayOfCycle, $latestImb)."
+                    R.string.anomaly_detail_imb_multiple to listOf<Any>(count, dayOfCycle, latestImb)
                 }
                 alerts.add(
                     AnomalyAlert(
                         AnomalyType.INTERMENSTRUAL_BLEEDING,
                         latestImb,
-                        detailStr
+                        detailRes,
+                        detailArgs
                     )
                 )
             }
@@ -252,7 +258,8 @@ class ClinicalCycleEngine {
                     AnomalyAlert(
                         AnomalyType.SHORT_LUTEAL_PHASE,
                         currentCycle.startDate,
-                        "Fase luteal hanya berlangsung $lutealDays hari (< 10 hari)."
+                        R.string.anomaly_detail_short_luteal,
+                        listOf(lutealDays)
                     )
                 )
             }
@@ -271,13 +278,22 @@ class ClinicalCycleEngine {
             }
             if (!isAlreadyCovered) {
                 clusteredAlertDates.add(log.date)
-                val locationStr = if (!log.painLocation.isNullOrBlank()) " pada area ${log.painLocation}" else ""
                 alerts.add(
-                    AnomalyAlert(
-                        AnomalyType.SEVERE_DYSMENORRHEA,
-                        log.date,
-                        "Skor nyeri skala VAS ${log.painVasScore}/10 terdeteksi$locationStr pada tanggal ${log.date}."
-                    )
+                    if (!log.painLocation.isNullOrBlank()) {
+                        AnomalyAlert(
+                            AnomalyType.SEVERE_DYSMENORRHEA,
+                            log.date,
+                            R.string.anomaly_detail_vas_date_area,
+                            listOf(log.painVasScore, log.painLocation, log.date)
+                        )
+                    } else {
+                        AnomalyAlert(
+                            AnomalyType.SEVERE_DYSMENORRHEA,
+                            log.date,
+                            R.string.anomaly_detail_vas_date,
+                            listOf(log.painVasScore, log.date)
+                        )
+                    }
                 )
             }
         }

@@ -11,6 +11,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import android.content.Context
+import android.content.res.Resources
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -39,6 +40,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +64,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 enum class AppScreen {
@@ -84,13 +88,19 @@ data class DayStripItem(
     val log: DailyLogEntity? = null
 )
 
-private fun mucusLabelFor(type: CervicalMucusType): String = when (type) {
-    CervicalMucusType.NONE -> "Tidak ada"
-    CervicalMucusType.DRY -> "Kering"
-    CervicalMucusType.STICKY -> "Lengket"
-    CervicalMucusType.CREAMY -> "Krim"
-    CervicalMucusType.WATERY -> "Cair"
-    CervicalMucusType.EGG_WHITE -> "Putih Telur"
+private fun LocalDate.monthName(): String =
+    format(DateTimeFormatter.ofPattern("MMMM", Locale.getDefault()))
+
+private fun LocalDate.monthAbbr(): String =
+    format(DateTimeFormatter.ofPattern("MMM", Locale.getDefault()))
+
+private fun mucusLabelFor(type: CervicalMucusType, resources: Resources): String = when (type) {
+    CervicalMucusType.NONE -> resources.getString(R.string.mucus_none)
+    CervicalMucusType.DRY -> resources.getString(R.string.mucus_dry)
+    CervicalMucusType.STICKY -> resources.getString(R.string.mucus_sticky)
+    CervicalMucusType.CREAMY -> resources.getString(R.string.mucus_creamy)
+    CervicalMucusType.WATERY -> resources.getString(R.string.mucus_watery)
+    CervicalMucusType.EGG_WHITE -> resources.getString(R.string.mucus_egg_white)
 }
 
 @Composable
@@ -116,8 +126,11 @@ fun CycleJournalApp(
     isPromilModeInitial: Boolean = false,
     onTogglePromilMode: (Boolean) -> Unit = {},
     downloadedReport: PdfShareHelper.SaveResult? = null,
-    onDismissDownloadDialog: () -> Unit = {}
+    onDismissDownloadDialog: () -> Unit = {},
+    appLanguage: String = "system",
+    onLanguageChanged: (String) -> Unit = {}
 ) {
+    val resources = LocalContext.current.resources
     var currentScreen by remember { mutableStateOf(AppScreen.DASHBOARD) }
     var isDarkMode by remember { mutableStateOf(false) }
     var isDiscreetMode by remember { mutableStateOf(false) }
@@ -125,7 +138,7 @@ fun CycleJournalApp(
     var isLogModalOpen by remember { mutableStateOf(false) }
     var logModalDate by remember { mutableStateOf(LocalDate.now()) }
     var isProLicenseActive by remember(isProUserActive) { mutableStateOf(isProUserActive) }
-    var pinStatus by remember(isPinSet) { mutableStateOf(if (isPinSet) "Aktif (PIN 4-Digit)" else "Belum diatur (Opsional)") }
+    var isPinConfigured by remember(isPinSet) { mutableStateOf(isPinSet) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     var isPromilMode by remember(isPromilModeInitial) { mutableStateOf(isPromilModeInitial) }
 
@@ -136,22 +149,13 @@ fun CycleJournalApp(
         val monday = today.minusDays((today.dayOfWeek.value - 1).toLong())
         (0..6).map { offset ->
             val date = monday.plusDays(offset.toLong())
-            val dayName = when (date.dayOfWeek) {
-                DayOfWeek.MONDAY -> "Sen"
-                DayOfWeek.TUESDAY -> "Sel"
-                DayOfWeek.WEDNESDAY -> "Rab"
-                DayOfWeek.THURSDAY -> "Kam"
-                DayOfWeek.FRIDAY -> "Jum"
-                DayOfWeek.SATURDAY -> "Sab"
-                DayOfWeek.SUNDAY -> "Min"
-                else -> "Sen"
-            }
+            val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             val log = allLogs.find { it.date == date }
             val bbt = log?.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f °C", it) } ?: "-- °C"
             val pain = log?.let {
-                if (it.painVasScore > 0) "VAS ${it.painVasScore}" else "Bebas Nyeri"
-            } ?: "Bebas Nyeri"
-            val mucus = log?.cervicalMucus?.let { mucusLabelFor(it) } ?: "Kering"
+                if (it.painVasScore > 0) "VAS ${it.painVasScore}" else resources.getString(R.string.app_pain_free)
+            } ?: resources.getString(R.string.app_pain_free)
+            val mucus = log?.cervicalMucus?.let { mucusLabelFor(it, resources) } ?: resources.getString(R.string.mucus_dry)
 
             val periodDays = (latestCycle?.periodDurationDays ?: 5).toLong().coerceAtLeast(1L)
             val isHaid = date in periodDates || (latestCycle != null && !date.isBefore(latestCycle.startDate) && date.isBefore(latestCycle.startDate.plusDays(periodDays)))
@@ -159,10 +163,10 @@ fun CycleJournalApp(
             val isFertile = fertilePrediction != null && !date.isBefore(fertilePrediction.fertileWindowStart) && !date.isAfter(fertilePrediction.fertileWindowEnd)
 
             val (phase, dotColor, title) = when {
-                isHaid -> Triple(CyclePhase.MENSTRUATION, Color(0xFFFB7185), "Fase Haid")
-                isOvulation -> Triple(CyclePhase.OVULATION, MedicalTeal, "Puncak Ovulasi")
-                isFertile -> Triple(CyclePhase.FERTILE, Coral500, "Jendela Subur")
-                else -> Triple(CyclePhase.FOLLICULAR, Color(0xFFCBD5E1), "Fase Folikuler")
+                isHaid -> Triple(CyclePhase.MENSTRUATION, Color(0xFFFB7185), resources.getString(R.string.app_phase_menstrual))
+                isOvulation -> Triple(CyclePhase.OVULATION, MedicalTeal, resources.getString(R.string.app_phase_ovulation_peak))
+                isFertile -> Triple(CyclePhase.FERTILE, Coral500, resources.getString(R.string.app_phase_fertile_window))
+                else -> Triple(CyclePhase.FOLLICULAR, Color(0xFFCBD5E1), resources.getString(R.string.app_phase_follicular))
             }
 
             DayStripItem(
@@ -210,11 +214,11 @@ fun CycleJournalApp(
                     isDiscreetMode = isDiscreetMode,
                     onToggleDiscreet = {
                         isDiscreetMode = !isDiscreetMode
-                        showToast(if (isDiscreetMode) "Mode Samaran Aktif: Istilah sensitif disamarkan" else "Mode Standar Aktif")
+                        showToast(if (isDiscreetMode) resources.getString(R.string.app_mode_discreet_active) else resources.getString(R.string.app_mode_standard_active))
                     },
                     onToggleDarkMode = {
                         isDarkMode = !isDarkMode
-                        showToast(if (isDarkMode) "Mode Subuh Gelap Aktif (Ramah Mata)" else "Mode Terang Aktif")
+                        showToast(if (isDarkMode) resources.getString(R.string.app_mode_dark_active) else resources.getString(R.string.app_mode_light_active))
                     },
                     onOpenSettings = { currentScreen = AppScreen.SETTINGS }
                 )
@@ -249,7 +253,7 @@ fun CycleJournalApp(
                         isPromilMode = isPromilMode,
                         onSelectDay = {
                             selectedDay = it
-                            showToast("Menampilkan data ${it.dayOfMonth} ${it.date.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${it.date.year}")
+                            showToast(resources.getString(R.string.app_toast_showing_date, it.dayOfMonth, it.date.monthName(), it.date.year))
                         },
                         onOpenCalendar = { currentScreen = AppScreen.CALENDAR },
                         onOpenLog = {
@@ -285,22 +289,22 @@ fun CycleJournalApp(
                         fertilePrediction = fertilePrediction,
                         onSharePdf = {
                             onSharePdf?.invoke() ?: run {
-                                showToast("Menyiapkan Berkas Rekap Siklus...")
+                                showToast(resources.getString(R.string.report_export_preparing_summary))
                             }
                         },
                         onExportCsv = {
-                            onExportCsv?.invoke() ?: showToast("Mengekspor Berkas CSV Mentah")
+                            onExportCsv?.invoke() ?: showToast(resources.getString(R.string.app_export_exporting_raw_csv))
                         },
                         onBuyPro = {
                             onBuyPro?.invoke() ?: run {
                                 isProLicenseActive = true
-                                showToast("Google Play Billing: Lisensi Pro Aktif Selamanya!")
+                                showToast(resources.getString(R.string.app_toast_pro_activated))
                             }
                         },
                         onNavigateToCalendar = { date ->
                             selectedCalendarDate = date
                             currentScreen = AppScreen.CALENDAR
-                            showToast("Membuka ${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} di Kalender")
+                            showToast(resources.getString(R.string.app_toast_opening_month_in_calendar, date.monthName()))
                         },
                         onToast = showToast
                     )
@@ -313,7 +317,9 @@ fun CycleJournalApp(
                             isPromilMode = it
                             onTogglePromilMode(it)
                         },
-                        pinStatus = pinStatus,
+                        appLanguage = appLanguage,
+                        onLanguageChanged = onLanguageChanged,
+                        isPinConfigured = isPinConfigured,
                         anonymousRecoveryKey = anonymousRecoveryKey,
                         onToggleDiscreet = { isDiscreetMode = !isDiscreetMode },
                         onToggleDark = { isDarkMode = !isDarkMode },
@@ -321,17 +327,17 @@ fun CycleJournalApp(
                         onBuyPro = {
                             onBuyPro?.invoke() ?: run {
                                 isProLicenseActive = true
-                                showToast("Google Play Billing: Berhasil Upgrade ke Lifetime Pro!")
+                                showToast(resources.getString(R.string.app_toast_upgrade_success))
                             }
                         },
                         onCopyRecoveryKey = {
-                            showToast("Kunci Pemulihan Cadangan Disalin: $anonymousRecoveryKey")
+                            showToast(resources.getString(R.string.app_toast_recovery_key_copied, anonymousRecoveryKey))
                         },
                         onBackupLocal = onBackupLocal,
                         onRestoreLocal = onRestoreLocal,
                         onNukeData = {
                             onNukeData?.invoke() ?: run {
-                                showToast("Seluruh data lokal berhasil dibersihkan")
+                                showToast(resources.getString(R.string.app_toast_local_data_cleared))
                                 currentScreen = AppScreen.DASHBOARD
                             }
                         },
@@ -369,9 +375,9 @@ fun CycleJournalApp(
                 onDismiss = { isPinModalOpen = false },
                 onSave = { enteredPin ->
                     onSavePin(enteredPin)
-                    pinStatus = "Aktif (PIN 4-Digit)"
+                    isPinConfigured = true
                     isPinModalOpen = false
-                    showToast("PIN Keamanan Berhasil Diaktifkan")
+                    showToast(resources.getString(R.string.app_toast_pin_enabled))
                 }
             )
         }
@@ -388,7 +394,7 @@ fun CycleJournalApp(
                     onSaveDailyLog(logEntity)
                     isLogModalOpen = false
                     val isBleed = logEntity.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
-                    showToast(if (isBleed) "Hari Haid Disimpan • Prediksi Berhasil Dihitung!" else "Catatan Harian Disimpan (Bukan Hari Haid)")
+                    showToast(if (isBleed) resources.getString(R.string.app_toast_period_log_saved) else resources.getString(R.string.app_toast_daily_log_saved))
                 }
             )
         }
@@ -398,14 +404,14 @@ fun CycleJournalApp(
             val isCsv = res.fileName.endsWith(".csv", ignoreCase = true)
             val isBackup = res.fileName.endsWith(".cjbackup", ignoreCase = true)
             val fileTypeTitle = when {
-                isBackup -> "Berkas Cadangan (.cjbackup)"
-                isCsv -> "Data CSV (Excel)"
-                else -> "Rekap Siklus PDF"
+                isBackup -> stringResource(R.string.app_backup_file_label)
+                isCsv -> stringResource(R.string.app_csv_data_label)
+                else -> stringResource(R.string.app_cycle_summary_pdf_label)
             }
             val openButtonLabel = when {
-                isBackup -> "Bagikan ke Drive / Chat"
-                isCsv -> "Buka CSV"
-                else -> "Buka PDF"
+                isBackup -> stringResource(R.string.app_share_to_drive_chat)
+                isCsv -> stringResource(R.string.app_open_csv)
+                else -> stringResource(R.string.app_open_pdf)
             }
 
             AlertDialog(
@@ -414,13 +420,13 @@ fun CycleJournalApp(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Unduhan Selesai", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.app_toast_download_complete), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "$fileTypeTitle berhasil disimpan di folder Download perangkat:",
+                            text = stringResource(R.string.app_download_saved_message, fileTypeTitle),
                             fontSize = 12.sp,
                             color = if (isDarkMode) Slate400 else Slate600
                         )
@@ -444,7 +450,7 @@ fun CycleJournalApp(
                     Button(
                         onClick = {
                             if (isBackup) {
-                                com.app.cyclejournal.export.csv.CsvExportHelper.shareCsv(context, res, "Berkas Cadangan CycleJournal")
+                                com.app.cyclejournal.export.csv.CsvExportHelper.shareCsv(context, res, resources.getString(R.string.app_backup_file_name))
                             } else if (isCsv) {
                                 com.app.cyclejournal.export.csv.CsvExportHelper.openCsv(context, res)
                             } else {
@@ -475,10 +481,10 @@ fun CycleJournalApp(
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Bagikan")
+                            Text(stringResource(R.string.app_share))
                         }
                         TextButton(onClick = onDismissDownloadDialog) {
-                            Text("Tutup")
+                            Text(stringResource(R.string.app_close))
                         }
                     }
                 }
@@ -509,21 +515,21 @@ fun AppHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = R.drawable.ic_cyclejournal_logo),
-                contentDescription = "Logo CycleJournal",
+                contentDescription = stringResource(R.string.header_logo_content_desc),
                 modifier = Modifier.size(40.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 if (isDiscreetMode) {
                     Text(
-                        text = "Mode Samaran",
+                        text = stringResource(R.string.header_discreet_mode_label),
                         fontSize = 9.5.sp,
                         fontWeight = FontWeight.Bold,
                         color = Slate400
                     )
                 }
                 Text(
-                    text = if (isDiscreetMode) "CJ Journal" else "CycleJournal",
+                    text = if (isDiscreetMode) stringResource(R.string.header_discreet_app_name) else stringResource(R.string.header_app_name),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = textPrimary
@@ -595,6 +601,7 @@ fun DashboardScreenView(
     onOpenCalendar: () -> Unit,
     onOpenLog: () -> Unit
 ) {
+    val resources = LocalContext.current.resources
     val cardBg = if (isDarkMode) DarkCardBackground else Color.White
     val borderCol = if (isDarkMode) DarkBorder else Slate100
     val textPrimary = if (isDarkMode) Color.White else Slate900
@@ -620,46 +627,46 @@ fun DashboardScreenView(
     }
 
     val nextPeriodValueStr = predictedNextPeriod?.let {
-        val monthStr = it.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }
+        val monthStr = it.monthAbbr()
         "${it.dayOfMonth} $monthStr"
     } ?: "--"
 
     val nextPeriodSubtext = when {
-        !hasActiveCycle -> "Catat haid pertama"
-        daysUntilNextPeriod == null -> "Belum ada prediksi"
-        daysUntilNextPeriod > 0 -> "$daysUntilNextPeriod hari lagi"
-        daysUntilNextPeriod == 0 -> "Hari ini!"
-        else -> "Terlambat ${-daysUntilNextPeriod} hari"
+        !hasActiveCycle -> stringResource(R.string.dash_next_period_log_first)
+        daysUntilNextPeriod == null -> stringResource(R.string.dash_next_period_no_prediction)
+        daysUntilNextPeriod > 0 -> pluralStringResource(R.plurals.app_days_left, daysUntilNextPeriod, daysUntilNextPeriod)
+        daysUntilNextPeriod == 0 -> stringResource(R.string.app_today_exclaim)
+        else -> pluralStringResource(R.plurals.app_days_late, -daysUntilNextPeriod, -daysUntilNextPeriod)
     }
 
     val periodDays = (latestCycle?.periodDurationDays ?: 5).toLong()
     val subtitleDynamic = when {
-        isDiscreet -> "Pencatatan normal berlangsung"
-        !hasActiveCycle -> "Catat hari pertama haid untuk mengaktifkan kalkulasi"
+        isDiscreet -> stringResource(R.string.dash_subtitle_discreet)
+        !hasActiveCycle -> stringResource(R.string.dash_subtitle_start_logging)
         isBleedingToday && currentCycleDay != null -> {
             val remainingDays = (periodDays - currentCycleDay + 1).coerceAtLeast(1L)
-            "Perkiraan selesai $remainingDays hari lagi"
+            stringResource(R.string.dash_period_ending_format, remainingDays)
         }
-        selectedDay.phase == CyclePhase.OVULATION -> "Pelepasan sel telur aktif hari ini"
-        isFertileToday -> "Peluang terbaik dalam siklus ini"
-        else -> "Kondisi hormon stabil"
+        selectedDay.phase == CyclePhase.OVULATION -> stringResource(R.string.dash_subtitle_ovulation_today)
+        isFertileToday -> stringResource(R.string.dash_subtitle_fertile_peak)
+        else -> stringResource(R.string.dash_subtitle_hormones_stable)
     }
 
     val phaseTitle = when {
-        isDiscreet -> if (hasActiveCycle) "Periode Tengah" else "Mulai Jurnal"
-        !hasActiveCycle -> "Mulai Jurnal Anda"
-        isBleedingToday -> "Fase Menstruasi"
-        selectedDay.phase == CyclePhase.OVULATION -> "Puncak Ovulasi"
-        isFertileToday -> "Jendela Subur"
-        else -> "Fase Folikuler"
+        isDiscreet -> if (hasActiveCycle) stringResource(R.string.dash_phase_mid_period) else stringResource(R.string.dash_phase_start_journal)
+        !hasActiveCycle -> stringResource(R.string.dash_phase_start_journal_cta)
+        isBleedingToday -> stringResource(R.string.dash_phase_menstrual)
+        selectedDay.phase == CyclePhase.OVULATION -> stringResource(R.string.app_phase_ovulation_peak)
+        isFertileToday -> stringResource(R.string.app_phase_fertile_window)
+        else -> stringResource(R.string.app_phase_follicular)
     }
 
     val conceptionChance = when {
         !hasActiveCycle -> "--"
-        selectedDay.phase == CyclePhase.OVULATION -> "Puncak Subur"
-        isFertileToday -> "Tinggi"
-        isBleedingToday -> "Sangat Rendah"
-        else -> "Rendah"
+        selectedDay.phase == CyclePhase.OVULATION -> stringResource(R.string.dash_conception_peak_fertile)
+        isFertileToday -> stringResource(R.string.dash_conception_high)
+        isBleedingToday -> stringResource(R.string.dash_conception_very_low)
+        else -> stringResource(R.string.dash_conception_low)
     }
     val progressRatio = if (currentCycleDay != null && hasActiveCycle) {
         (currentCycleDay.toFloat() / effectiveAvgCycleDays.toFloat()).coerceIn(0.05f, 1f)
@@ -749,7 +756,7 @@ fun DashboardScreenView(
                                     lineHeight = 28.sp
                                 )
                                 Text(
-                                    text = "Hari ini",
+                                    text = stringResource(R.string.dash_day_progress_label),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFFFFE4E6)
@@ -778,7 +785,7 @@ fun DashboardScreenView(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "HAID BERIKUTNYA",
+                                    text = stringResource(R.string.dash_hero_next_period_header),
                                     fontSize = 8.5.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White.copy(alpha = 0.85f),
@@ -826,37 +833,37 @@ fun DashboardScreenView(
 
                                     val (headerText, valueText, subText, valueColor) = when {
                                         ovDate == null -> Quadruple(
-                                            "MASA SUBUR & OVULASI",
+                                            stringResource(R.string.dash_hero_fertile_ovulation_header),
                                             "--",
-                                            "Catat haid untuk prediksi",
+                                            stringResource(R.string.dash_hero_log_for_prediction),
                                             Color.White
                                         )
                                         // State 3: HARI-H PUNCAK OVULASI
                                         today == ovDate -> Quadruple(
-                                            "PUNCAK OVULASI HARI INI",
-                                            "Waktu Terbaik Promil",
-                                            "Peluang Hamil Maksimal",
+                                            stringResource(R.string.dash_hero_ovulation_peak_today),
+                                            stringResource(R.string.dash_hero_best_conceive_time),
+                                            stringResource(R.string.dash_hero_max_pregnancy_chance),
                                             Color(0xFFFEF08A)
                                         )
                                         // State 2: JENDELA SUBUR (H-5 s/d H-1 sebelum ovulasi)
                                         fertileStart != null && !today.isBefore(fertileStart) && today.isBefore(ovDate) -> Quadruple(
-                                            "JENDELA MASA SUBUR",
-                                            "Peluang Tinggi",
-                                            "Puncak ovulasi: $ovDateStr (H-${daysUntilOvulation ?: 1})",
+                                            stringResource(R.string.dash_hero_fertile_window_header),
+                                            stringResource(R.string.dash_hero_high_chance),
+                                            stringResource(R.string.cal_ovulation_peak_format, ovDateStr, daysUntilOvulation ?: 1),
                                             Color(0xFFA5F3FC)
                                         )
                                         // State 4: PASCA OVULASI (Masa subur lewat)
                                         today.isAfter(ovDate) -> Quadruple(
-                                            "MASA SUBUR SELESAI",
-                                            "Peluang Rendah",
-                                            "Menunggu siklus baru",
+                                            stringResource(R.string.dash_hero_fertile_window_closed),
+                                            stringResource(R.string.dash_hero_low_chance),
+                                            stringResource(R.string.dash_hero_awaiting_new_cycle),
                                             Color.White.copy(alpha = 0.9f)
                                         )
                                         // State 1: MENUJU MASA SUBUR (Countdown)
                                         else -> Quadruple(
-                                            "MASA SUBUR & OVULASI",
+                                            stringResource(R.string.dash_hero_fertile_ovulation_header),
                                             ovDateStr,
-                                            "${daysUntilOvulation ?: 0} hari lagi",
+                                            pluralStringResource(R.plurals.app_days_left, daysUntilOvulation ?: 0, daysUntilOvulation ?: 0),
                                             Color(0xFFA5F3FC)
                                         )
                                     }
@@ -885,7 +892,7 @@ fun DashboardScreenView(
                                     )
                                 } else {
                                     Text(
-                                        text = "RATA-RATA SIKLUS",
+                                        text = stringResource(R.string.dash_hero_average_cycle_header),
                                         fontSize = 8.5.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White.copy(alpha = 0.85f),
@@ -894,9 +901,9 @@ fun DashboardScreenView(
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     val avgText = when {
-                                        cycleStats != null -> String.format(Locale.US, "%.0f Hari", cycleStats.averageLength)
-                                        hasActiveCycle -> "28 Hari"
-                                        else -> "-- Hari"
+                                        cycleStats != null -> stringResource(R.string.dash_avg_cycle_days_format, cycleStats.averageLength)
+                                        hasActiveCycle -> stringResource(R.string.dash_avg_cycle_default_days)
+                                        else -> stringResource(R.string.dash_avg_cycle_no_data)
                                     }
                                     Text(
                                         text = avgText,
@@ -906,9 +913,9 @@ fun DashboardScreenView(
                                         maxLines = 1
                                     )
                                     val varText = when {
-                                        cycleStats?.standardDeviation != null -> "Variasi ±${String.format(Locale.US, "%.1f", cycleStats.standardDeviation)} hari"
-                                        hasActiveCycle -> "Estimasi awal"
-                                        else -> "Belum ada riwayat"
+                                        cycleStats?.standardDeviation != null -> stringResource(R.string.dash_avg_cycle_variation_format, cycleStats.standardDeviation)
+                                        hasActiveCycle -> stringResource(R.string.dash_avg_cycle_early_estimate)
+                                        else -> stringResource(R.string.dash_avg_cycle_no_history)
                                     }
                                     Text(
                                         text = varText,
@@ -940,7 +947,7 @@ fun DashboardScreenView(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "Minggu Ini • ${today.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${today.year}",
+                                text = stringResource(R.string.dash_week_of_format, today.monthName(), today.year),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
@@ -950,7 +957,7 @@ fun DashboardScreenView(
                         }
 
                         Text(
-                            text = "Buka Kalender Penuh >",
+                            text = stringResource(R.string.dash_open_full_calendar),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
@@ -1055,8 +1062,8 @@ fun DashboardScreenView(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Tren Kurva Suhu Basal (BBT)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                Text("Pantauan Pergeseran Biphasik (3-over-6)", fontSize = 10.sp, color = textSecondary)
+                                Text(stringResource(R.string.dash_bbt_chart_title), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.dash_bbt_chart_subtitle), fontSize = 10.sp, color = textSecondary)
                             }
                         }
 
@@ -1066,7 +1073,7 @@ fun DashboardScreenView(
                             border = BorderStroke(1.dp, if (hasRealBbt) Color(0xFFA7F3D0) else Slate200)
                         ) {
                             Text(
-                                text = if (hasRealBbt) "Normal" else "Belum Ada Data",
+                                text = if (hasRealBbt) stringResource(R.string.dash_bbt_status_normal) else stringResource(R.string.dash_bbt_status_no_data),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (hasRealBbt) Color(0xFF065F46) else Slate500,
@@ -1082,7 +1089,7 @@ fun DashboardScreenView(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = "Coverline 36.40°C",
+                            text = stringResource(R.string.dash_bbt_coverline),
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
@@ -1165,14 +1172,14 @@ fun DashboardScreenView(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Belum ada rekaman suhu BBT harian.",
+                                text = stringResource(R.string.dash_bbt_empty_title),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
                             )
                             Spacer(modifier = Modifier.height(3.dp))
                             Text(
-                                text = "Ukur suhu basal pagi hari sebelum beranjak dari tempat tidur untuk memantau pergeseran ovulasi.",
+                                text = stringResource(R.string.dash_bbt_empty_hint),
                                 fontSize = 10.sp,
                                 color = textSecondary,
                                 textAlign = TextAlign.Center,
@@ -1188,9 +1195,9 @@ fun DashboardScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Folikuler (Rendah)", fontSize = 8.5.sp, color = textSecondary)
-                        Text("Kenaikan BBT (+0.28°C)", fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                        Text("Luteal (Tinggi)", fontSize = 8.5.sp, color = textSecondary)
+                        Text(stringResource(R.string.dash_bbt_phase_follicular_low), fontSize = 8.5.sp, color = textSecondary)
+                        Text(stringResource(R.string.dash_bbt_rise), fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                        Text(stringResource(R.string.dash_bbt_phase_luteal_high), fontSize = 8.5.sp, color = textSecondary)
                     }
                 }
             }
@@ -1226,7 +1233,7 @@ fun DashboardScreenView(
                             Box(modifier = Modifier.size(7.dp).clip(CircleShape).background(Coral500))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Catatan Hari Ini (${selectedDay.dayOfMonth} ${selectedDay.date.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }})",
+                                text = stringResource(R.string.dash_today_note_format, selectedDay.dayOfMonth, selectedDay.date.monthAbbr()),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
@@ -1234,7 +1241,7 @@ fun DashboardScreenView(
                         }
 
                         Text(
-                            text = "Ubah Catatan >",
+                            text = stringResource(R.string.dash_edit_note),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
@@ -1252,7 +1259,7 @@ fun DashboardScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text("Suhu Basal (BBT)", fontSize = 9.sp, color = textSecondary)
+                                Text(stringResource(R.string.dash_log_basal_temp), fontSize = 9.sp, color = textSecondary)
                                 Text(if (log?.basalBodyTempCelsius != null) String.format(Locale.US, "%.2f °C", log.basalBodyTempCelsius) else "-- °C", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Monospace, color = textPrimary)
                             }
                         }
@@ -1264,8 +1271,8 @@ fun DashboardScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text("Lendir Serviks", fontSize = 9.sp, color = textSecondary)
-                                Text(if (log != null && log.cervicalMucus != CervicalMucusType.NONE) mucusLabelFor(log.cervicalMucus) else "--", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.dash_log_cervical_mucus), fontSize = 9.sp, color = textSecondary)
+                                Text(if (log != null && log.cervicalMucus != CervicalMucusType.NONE) mucusLabelFor(log.cervicalMucus, resources) else "--", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                             }
                         }
                     }
@@ -1303,14 +1310,14 @@ fun DashboardScreenView(
                         else -> Color(0xFFF59E0B)
                     }
                     val vasBadgeText = when {
-                        isPainAlert -> "Nyeri Tinggi"
-                        isPainFree -> "Bebas Nyeri"
-                        else -> "Ringan"
+                        isPainAlert -> stringResource(R.string.dash_vas_severe)
+                        isPainFree -> stringResource(R.string.app_pain_free)
+                        else -> stringResource(R.string.dash_vas_mild)
                     }
                     val vasDisplayDesc = when {
-                        isPainAlert -> "$vasScore / 10 • Nyeri Pelvis & Pinggang"
-                        isPainFree -> "0 / 10 • Bebas Nyeri"
-                        else -> "$vasScore / 10 • Nyeri Ringan"
+                        isPainAlert -> stringResource(R.string.dash_vas_pelvic_pain_format, vasScore)
+                        isPainFree -> stringResource(R.string.dash_vas_zero_pain_free)
+                        else -> stringResource(R.string.dash_vas_mild_pain_format, vasScore)
                     }
 
                     Surface(
@@ -1326,7 +1333,7 @@ fun DashboardScreenView(
                         ) {
                             Column {
                                 Text(
-                                    "Skala Nyeri (VAS)",
+                                    stringResource(R.string.dash_vas_scale_title),
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = vasTitleColor
@@ -1374,6 +1381,7 @@ fun CalendarScreenView(
     onOpenLog: (LocalDate) -> Unit = {},
     onToast: (String) -> Unit
 ) {
+    val resources = LocalContext.current.resources
     val cardBg = if (isDarkMode) DarkCardBackground else Color.White
     val borderCol = if (isDarkMode) DarkBorder else Slate100
     val textPrimary = if (isDarkMode) Color.White else Slate900
@@ -1434,21 +1442,21 @@ fun CalendarScreenView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("PETA SIKLUS & OVULASI", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                    Text("Kalender Siklus", fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                    Text(stringResource(R.string.cal_eyebrow_cycle_ovulation_map), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.cal_header_title), fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 }
 
                 Surface(
                     onClick = {
                         currentYearMonth = java.time.YearMonth.from(today)
                         onSelectDate(today)
-                        onToast("Kembali ke hari ini: ${today.dayOfMonth} ${today.month.name.lowercase()} ${today.year}")
+                        onToast(resources.getString(R.string.cal_toast_back_to_today, today.dayOfMonth, today.monthName(), today.year))
                     },
                     shape = RoundedCornerShape(12.dp),
                     color = Color(0xFFFFF1F2),
                     border = BorderStroke(1.dp, Color(0xFFFFE4E6))
                 ) {
-                    Text("Hari Ini", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
+                    Text(stringResource(R.string.cal_today), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
                 }
             }
         }
@@ -1479,11 +1487,11 @@ fun CalendarScreenView(
                             },
                             modifier = Modifier.size(34.dp)
                         ) {
-                            Icon(Icons.Default.ChevronLeft, contentDescription = "Bulan Lalu", tint = textPrimary)
+                            Icon(Icons.Default.ChevronLeft, contentDescription = stringResource(R.string.cal_prev_month), tint = textPrimary)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "${currentYearMonth.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${currentYearMonth.year}",
+                                text = "${currentYearMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${currentYearMonth.year}",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = textPrimary
@@ -1492,9 +1500,9 @@ fun CalendarScreenView(
                                 text = if (fertilePrediction != null) {
                                     val nextP = fertilePrediction.predictedNextPeriodDate
                                     val ov = fertilePrediction.predictedOvulationDate
-                                    "Haid: ${nextP.dayOfMonth} ${nextP.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }} • Ovulasi: ${ov.dayOfMonth} ${ov.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}"
+                                    stringResource(R.string.cal_period_ovulation_format, nextP.dayOfMonth, nextP.monthAbbr(), ov.dayOfMonth, ov.monthAbbr())
                                 } else {
-                                    "Catat hari haid untuk memunculkan prediksi"
+                                    stringResource(R.string.cal_prediction_hint)
                                 },
                                 fontSize = 10.sp,
                                 color = if (fertilePrediction != null) Coral600 else Slate400,
@@ -1510,13 +1518,13 @@ fun CalendarScreenView(
                             },
                             modifier = Modifier.size(34.dp)
                         ) {
-                            Icon(Icons.Default.ChevronRight, contentDescription = "Bulan Depan", tint = textPrimary)
+                            Icon(Icons.Default.ChevronRight, contentDescription = stringResource(R.string.cal_next_month), tint = textPrimary)
                         }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    val headers = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min")
+                    val headers = (1..7).map { DayOfWeek.of(it).getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
                     Row(modifier = Modifier.fillMaxWidth()) {
                         headers.forEach { h ->
                             Text(h, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textSecondary, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
@@ -1582,7 +1590,7 @@ fun CalendarScreenView(
                                                     onOpenLog(cellDate)
                                                 } else {
                                                     onSelectDate(cellDate)
-                                                    onToast("Dipilih: $dayNum ${cellDate.month.name.lowercase()} (Ketuk lagi untuk isi jurnal)")
+                                                    onToast(resources.getString(R.string.cal_selected_day_hint, dayNum, cellDate.monthName()))
                                                 }
                                             },
                                         contentAlignment = Alignment.Center
@@ -1617,10 +1625,10 @@ fun CalendarScreenView(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        LegendPill(color = Color(0xFFFFE4E6), label = "Menstruasi", textSecondary)
-                        LegendPill(color = Color(0xFFFECDD3), label = "Prediksi Haid", textSecondary)
-                        LegendPill(color = Color(0xFFCFFAFE), label = "Masa Subur", textSecondary)
-                        LegendPill(color = MedicalCyan, label = "Puncak Ovulasi", textSecondary)
+                        LegendPill(color = Color(0xFFFFE4E6), label = stringResource(R.string.cal_legend_menstruation), textSecondary)
+                        LegendPill(color = Color(0xFFFECDD3), label = stringResource(R.string.cal_legend_predicted_period), textSecondary)
+                        LegendPill(color = Color(0xFFCFFAFE), label = stringResource(R.string.cal_legend_fertile_window), textSecondary)
+                        LegendPill(color = MedicalCyan, label = stringResource(R.string.app_phase_ovulation_peak), textSecondary)
                     }
                 }
             }
@@ -1640,12 +1648,12 @@ fun CalendarScreenView(
             val hasActiveCycle = latestCycle != null || periodDates.isNotEmpty()
 
             val phaseBadgeText = when {
-                !hasActiveCycle -> "Belum Ada Data"
-                isActualHaid -> "Menstruasi"
-                isPredictedHaid -> "Prediksi Haid"
-                isPeakOvulation -> "Puncak Ovulasi"
-                isFertile -> "Masa Subur"
-                else -> "Fase Folikuler"
+                !hasActiveCycle -> stringResource(R.string.dash_bbt_status_no_data)
+                isActualHaid -> stringResource(R.string.cal_legend_menstruation)
+                isPredictedHaid -> stringResource(R.string.cal_legend_predicted_period)
+                isPeakOvulation -> stringResource(R.string.app_phase_ovulation_peak)
+                isFertile -> stringResource(R.string.cal_legend_fertile_window)
+                else -> stringResource(R.string.app_phase_follicular)
             }
 
             val cycleDayForSelected = latestCycle?.let {
@@ -1667,7 +1675,7 @@ fun CalendarScreenView(
                         Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "${selectedCalendarDate.dayOfMonth} ${selectedCalendarDate.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${selectedCalendarDate.year}",
+                                    text = "${selectedCalendarDate.dayOfMonth} ${selectedCalendarDate.monthName()} ${selectedCalendarDate.year}",
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Black,
                                     color = textPrimary
@@ -1696,15 +1704,15 @@ fun CalendarScreenView(
                             }
                             Text(
                                 text = when {
-                                    !hasActiveCycle -> "Belum ada siklus aktif. Silakan isi jurnal pada hari haid pertama."
-                                    isActualHaid -> "Pendarahan Menstruasi Aktif"
-                                    isPredictedHaid -> "Estimasi Mulai Haid Berikutnya"
-                                    isPeakOvulation -> "Peluang Konsepsi Tertinggi Siklus Ini"
-                                    isFertile -> "Jendela Subur Siklus"
-                                    selectedCalendarDate == today && cycleDayForSelected != null -> "Hari Ini • Hari ke-$cycleDayForSelected Siklus"
-                                    selectedCalendarDate == today -> "Hari Ini • Belum Ada Siklus Aktif"
-                                    cycleDayForSelected != null -> "Hari ke-$cycleDayForSelected Siklus"
-                                    else -> "Tanggal di luar siklus aktif"
+                                    !hasActiveCycle -> stringResource(R.string.cal_no_active_cycle_hint)
+                                    isActualHaid -> stringResource(R.string.cal_status_active_menstrual_bleeding)
+                                    isPredictedHaid -> stringResource(R.string.cal_status_predicted_period_start)
+                                    isPeakOvulation -> stringResource(R.string.cal_status_peak_conception_chance)
+                                    isFertile -> stringResource(R.string.cal_status_fertile_window)
+                                    selectedCalendarDate == today && cycleDayForSelected != null -> stringResource(R.string.cal_today_cycle_day_format, cycleDayForSelected)
+                                    selectedCalendarDate == today -> stringResource(R.string.cal_status_today_no_active_cycle)
+                                    cycleDayForSelected != null -> stringResource(R.string.cal_cycle_day_format, cycleDayForSelected)
+                                    else -> stringResource(R.string.cal_status_outside_active_cycle)
                                 },
                                 fontSize = 11.sp,
                                 color = textSecondary
@@ -1718,22 +1726,22 @@ fun CalendarScreenView(
                         ) {
                             Icon(Icons.Default.EditCalendar, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (log != null) "Ubah Jurnal" else "Isi Jurnal", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(if (log != null) stringResource(R.string.cal_action_edit_log) else stringResource(R.string.cal_action_add_log), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     val bbtVal = log?.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f °C", it) } ?: "-- °C"
-                    val mucusVal = log?.cervicalMucus?.let { mucusLabelFor(it) } ?: "--"
+                    val mucusVal = log?.cervicalMucus?.let { mucusLabelFor(it, resources) } ?: "--"
                     val painVal = log?.let {
-                        if (it.painVasScore > 0) "VAS ${it.painVasScore}" else "Bebas Nyeri"
-                    } ?: "Bebas Nyeri"
+                        if (it.painVasScore > 0) "VAS ${it.painVasScore}" else stringResource(R.string.app_pain_free)
+                    } ?: stringResource(R.string.app_pain_free)
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ParameterBox("Suhu Basal", bbtVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
-                        ParameterBox("Lendir Serviks", mucusVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
-                        ParameterBox("Skala Nyeri", painVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        ParameterBox(stringResource(R.string.cal_param_basal_temp), bbtVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        ParameterBox(stringResource(R.string.dash_log_cervical_mucus), mucusVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        ParameterBox(stringResource(R.string.cal_param_pain_scale), painVal, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
                     }
                 }
             }
@@ -1836,14 +1844,14 @@ fun CyclePredictionInsightCard(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "Prediksi Siklus & Kesuburan",
+                            text = stringResource(R.string.insight_title),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = textPrimary,
                             maxLines = 1
                         )
                         Text(
-                            text = "Estimasi berdasarkan rata-rata siklus tercatat",
+                            text = stringResource(R.string.insight_subtitle),
                             fontSize = 10.sp,
                             color = textSecondary,
                             maxLines = 1
@@ -1865,11 +1873,11 @@ fun CyclePredictionInsightCard(
                         Text(
                             text = if (daysToNextPeriod != null) {
                                 when {
-                                    daysToNextPeriod > 0 -> "$daysToNextPeriod Hari Lagi"
-                                    daysToNextPeriod == 0L -> "Hari Ini"
-                                    else -> "Terlambat ${-daysToNextPeriod} Hari"
+                                    daysToNextPeriod > 0 -> pluralStringResource(R.plurals.app_days_left, daysToNextPeriod.toInt(), daysToNextPeriod.toInt())
+                                    daysToNextPeriod == 0L -> stringResource(R.string.cal_today)
+                                    else -> pluralStringResource(R.plurals.app_days_late, (-daysToNextPeriod).toInt(), (-daysToNextPeriod).toInt())
                                 }
-                            } else "Siap Dihitung",
+                            } else stringResource(R.string.insight_status_ready),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = FontFamily.Monospace,
@@ -1901,7 +1909,7 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Estimasi Haid", fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.insight_next_period_label), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
                         Text(
                             text = if (nextDate != null) "${nextDate.dayOfMonth} ${nextDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
                             fontSize = 12.sp,
@@ -1912,9 +1920,9 @@ fun CyclePredictionInsightCard(
                         Text(
                             text = if (daysToNextPeriod != null) {
                                 when {
-                                    daysToNextPeriod > 0 -> "$daysToNextPeriod hari lagi"
-                                    daysToNextPeriod == 0L -> "Hari ini"
-                                    else -> "Terlambat ${-daysToNextPeriod} hari"
+                                    daysToNextPeriod > 0 -> pluralStringResource(R.plurals.app_days_left, daysToNextPeriod.toInt(), daysToNextPeriod.toInt())
+                                    daysToNextPeriod == 0L -> stringResource(R.string.dash_day_progress_label)
+                                    else -> pluralStringResource(R.plurals.app_days_late, (-daysToNextPeriod).toInt(), (-daysToNextPeriod).toInt())
                                 }
                             } else "--",
                             fontSize = 8.5.sp,
@@ -1939,7 +1947,7 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Puncak Ovulasi", fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.app_phase_ovulation_peak), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
                         Text(
                             text = if (ovulationDate != null) "${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
                             fontSize = 12.sp,
@@ -1949,7 +1957,7 @@ fun CyclePredictionInsightCard(
                         )
                         Text(
                             text = if (daysToOvulation != null) {
-                                if (daysToOvulation > 0) "$daysToOvulation hari lagi" else if (daysToOvulation == 0L) "Hari ini!" else "Terlewati"
+                                if (daysToOvulation > 0) pluralStringResource(R.plurals.app_days_left, daysToOvulation.toInt(), daysToOvulation.toInt()) else if (daysToOvulation == 0L) stringResource(R.string.app_today_exclaim) else stringResource(R.string.insight_ovulation_passed)
                             } else "--",
                             fontSize = 8.5.sp,
                             color = textSecondary,
@@ -1973,7 +1981,7 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Masa Subur", fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
                         Text(
                             text = if (fertileStart != null && fertileEnd != null) "${fertileStart.dayOfMonth}-${fertileEnd.dayOfMonth} ${fertileStart.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
                             fontSize = 12.sp,
@@ -1981,7 +1989,7 @@ fun CyclePredictionInsightCard(
                             color = MedicalCyan,
                             maxLines = 1
                         )
-                        Text(if (fertileStart != null) "6 Hari Subur" else "--", fontSize = 8.5.sp, color = textSecondary, maxLines = 1)
+                        Text(if (fertileStart != null) stringResource(R.string.insight_fertile_days) else "--", fontSize = 8.5.sp, color = textSecondary, maxLines = 1)
                     }
                 }
             }
@@ -2004,7 +2012,7 @@ fun CyclePredictionInsightCard(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Estimasi berdasarkan asumsi fase luteal 14 hari dengan rata-rata siklus ${cycleStats?.averageLength?.let { String.format(Locale.US, "%.0f", it) } ?: "28"} hari.",
+                    text = stringResource(R.string.report_luteal_assumption_note, cycleStats?.averageLength?.let { String.format(Locale.US, "%.0f", it) } ?: "28"),
                     fontSize = 9.sp,
                     color = Color(0xFF065F46)
                 )
@@ -2030,6 +2038,7 @@ fun SpOgReportScreenView(
     onNavigateToCalendar: (LocalDate) -> Unit = {},
     onToast: (String) -> Unit = {}
 ) {
+    val resources = LocalContext.current.resources
     var selectedCycleForDetail by remember { mutableStateOf<CycleEntity?>(null) }
     val cardBg = if (isDarkMode) DarkCardBackground else Color.White
     val borderCol = if (isDarkMode) DarkBorder else Slate100
@@ -2051,12 +2060,12 @@ fun SpOgReportScreenView(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Analisis Siklus", fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                Text(stringResource(R.string.report_title_cycle_analysis), fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isDarkMode) DarkCardBackground else Slate100
                 ) {
-                    Text("Ringkasan Data", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                    Text(stringResource(R.string.report_section_data_summary), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                 }
             }
         }
@@ -2075,8 +2084,8 @@ fun SpOgReportScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            Text("REKAPITULASI SIKLUS KLINIS", fontSize = 12.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                            Text("ID Anonim: $anonymousRecoveryKey", fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = textSecondary)
+                            Text(stringResource(R.string.report_section_clinical_summary), fontSize = 12.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                            Text(stringResource(R.string.report_anonymous_id_label, anonymousRecoveryKey), fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = textSecondary)
                         }
                         Text(
                             text = "${today.dayOfMonth} ${today.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }} ${today.year}",
@@ -2089,12 +2098,12 @@ fun SpOgReportScreenView(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        val rStr = cycleStats?.averageLength?.let { String.format(Locale.US, "%.1f Hari", it) } ?: if (latestCycle != null) "28.0 Hari*" else "-- Hari"
-                        val vStr = cycleStats?.standardDeviation?.let { String.format(Locale.US, "±%.1f Hari", it) } ?: if (latestCycle != null) "Estimasi Awal" else "-- Hari"
-                        val dStr = cycleStats?.averagePeriodDuration?.let { String.format(Locale.US, "%.1f Hari", it) } ?: if (latestCycle != null) "${latestCycle.periodDurationDays}.0 Hari" else "-- Hari"
-                        ParameterBox("Rata-rata", rStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
-                        ParameterBox("Variasi Siklus", vStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
-                        ParameterBox("Lama Haid", dStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        val rStr = cycleStats?.averageLength?.let { stringResource(R.string.unit_days_decimal_format, it) } ?: if (latestCycle != null) stringResource(R.string.report_metric_estimate_placeholder) else stringResource(R.string.dash_avg_cycle_no_data)
+                        val vStr = cycleStats?.standardDeviation?.let { stringResource(R.string.report_metric_variation_format, it) } ?: if (latestCycle != null) stringResource(R.string.report_metric_initial_estimate) else stringResource(R.string.dash_avg_cycle_no_data)
+                        val dStr = cycleStats?.averagePeriodDuration?.let { stringResource(R.string.unit_days_decimal_format, it) } ?: if (latestCycle != null) stringResource(R.string.unit_days_decimal_format, latestCycle.periodDurationDays.toFloat()) else stringResource(R.string.dash_avg_cycle_no_data)
+                        ParameterBox(stringResource(R.string.report_metric_average), rStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        ParameterBox(stringResource(R.string.report_metric_cycle_variation), vStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
+                        ParameterBox(stringResource(R.string.report_metric_period_length), dStr, Modifier.weight(1f), isDarkMode, textPrimary, textSecondary)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -2108,7 +2117,7 @@ fun SpOgReportScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text("Pola Temperatur Biphasik (Ovulasi Terkonfirmasi)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.report_bbt_biphasic_pattern), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Canvas(modifier = Modifier.fillMaxWidth().height(36.dp)) {
                                     drawLine(
@@ -2140,9 +2149,9 @@ fun SpOgReportScreenView(
                                     drawPath(path, Coral600, style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round))
                                 }
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text("Coverline: 36.40°C", fontSize = 8.sp, color = textSecondary)
-                                    Text("Pergeseran Biphasik", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = MedicalTeal)
-                                    Text("Fase Luteal", fontSize = 8.sp, color = textSecondary)
+                                    Text(stringResource(R.string.report_coverline_value), fontSize = 8.sp, color = textSecondary)
+                                    Text(stringResource(R.string.report_metric_biphasic_shift), fontSize = 8.sp, fontWeight = FontWeight.Bold, color = MedicalTeal)
+                                    Text(stringResource(R.string.report_metric_luteal_phase), fontSize = 8.sp, color = textSecondary)
                                 }
                             }
                         }
@@ -2155,14 +2164,14 @@ fun SpOgReportScreenView(
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
-                                    text = "Pola Temperatur Basal (BBT)",
+                                    text = stringResource(R.string.report_bbt_basal_pattern),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = textPrimary
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Belum ada rekaman suhu BBT. Catat suhu basal harian di menu catatan harian untuk menyertakan grafik suhu pada rekap.",
+                                    text = stringResource(R.string.report_bbt_empty_hint),
                                     fontSize = 9.sp,
                                     color = textSecondary,
                                     lineHeight = 13.sp
@@ -2186,11 +2195,11 @@ fun SpOgReportScreenView(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.Info, contentDescription = null, tint = MedicalRose, modifier = Modifier.size(15.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("Perhatian: " + alert.type.description, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                                    Text(stringResource(R.string.report_attention_prefix) + stringResource(alert.type.descriptionRes), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = alert.details,
+                                    text = alert.localizedDetail(resources),
                                     fontSize = 10.sp,
                                     color = Color(0xFF9F1239),
                                     lineHeight = 14.sp
@@ -2210,7 +2219,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Siklus berjalan normal: tidak ada catatan yang perlu diperhatikan", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
+                                Text(stringResource(R.string.report_status_normal), fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
                             }
                         }
                     } else {
@@ -2226,7 +2235,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Outlined.Shield, contentDescription = null, tint = Coral600, modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Pemantauan aktif: catatan akan dianalisis setiap kali kamu mencatat haid baru", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
+                                Text(stringResource(R.string.report_status_monitoring), fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
                             }
                         }
                     }
@@ -2239,13 +2248,13 @@ fun SpOgReportScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "VISUALISASI TIMELINE SIKLUS",
+                            text = stringResource(R.string.report_section_timeline_visualization),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = textSecondary
                         )
                         Text(
-                            text = "${completedCycles.size + if (latestCycle != null) 1 else 0} siklus",
+                            text = pluralStringResource(R.plurals.report_cycle_count, completedCycles.size + if (latestCycle != null) 1 else 0, completedCycles.size + if (latestCycle != null) 1 else 0),
                             fontSize = 10.sp,
                             color = textSecondary
                         )
@@ -2271,7 +2280,7 @@ fun SpOgReportScreenView(
                                 border = if (!isSelected) BorderStroke(1.dp, borderCol) else null
                             ) {
                                 Text(
-                                    text = filter.label,
+                                    text = stringResource(filter.labelRes),
                                     fontSize = 11.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                     color = if (isSelected) Color.White else textSecondary,
@@ -2292,12 +2301,12 @@ fun SpOgReportScreenView(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Coral500))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Haid", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.app_timeline_menstruation), fontSize = 10.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF67E8F9)))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Masa Subur", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 10.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
@@ -2308,12 +2317,12 @@ fun SpOgReportScreenView(
                                     .border(1.5.dp, Color(0xFF0891B2), CircleShape)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Ovulasi", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.app_timeline_ovulation), fontSize = 10.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.width(2.dp).height(8.dp).background(if (isDarkMode) Color.White else Color(0xFF1E293B)))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Hari Ini", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.cal_today), fontSize = 10.sp, color = textSecondary)
                         }
                     }
 
@@ -2370,7 +2379,7 @@ fun SpOgReportScreenView(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Belum ada riwayat siklus yang tercatat.\nCatat hari pertama haid untuk memulai.",
+                                        text = stringResource(R.string.report_empty_history_message),
                                         fontSize = 11.sp,
                                         color = textSecondary,
                                         textAlign = TextAlign.Center,
@@ -2383,7 +2392,7 @@ fun SpOgReportScreenView(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Recent Daily Logs Table (Real Historical Log Entries)
-                    Text("LOG HARIAN TERAKHIR", fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = textSecondary)
+                    Text(stringResource(R.string.report_section_recent_daily_logs), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = textSecondary)
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Surface(
@@ -2399,25 +2408,25 @@ fun SpOgReportScreenView(
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Tanggal", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1.2f))
-                                Text("Darah", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
-                                Text("Suhu BBT", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
-                                Text("Nyeri", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_date), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1.2f))
+                                Text(stringResource(R.string.app_column_blood), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_bbt_temp), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_pain), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
                             }
                             HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
 
                             if (allLogs.isNotEmpty()) {
                                 allLogs.sortedByDescending { it.date }.take(5).forEach { log ->
-                                    val dateStr = "${log.date.dayOfMonth} ${log.date.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}"
+                                    val dateStr = "${log.date.dayOfMonth} ${log.date.monthAbbr()}"
                                     val flowStr = when (log.flow) {
-                                        FlowIntensity.SPOTTING -> "Bercak"
-                                        FlowIntensity.LIGHT -> "Ringan"
-                                        FlowIntensity.MEDIUM -> "Sedang"
-                                        FlowIntensity.HEAVY -> "Deras"
-                                        else -> "Tidak"
+                                        FlowIntensity.SPOTTING -> stringResource(R.string.app_column_spotting)
+                                        FlowIntensity.LIGHT -> stringResource(R.string.dash_vas_mild)
+                                        FlowIntensity.MEDIUM -> stringResource(R.string.app_option_medium)
+                                        FlowIntensity.HEAVY -> stringResource(R.string.app_option_heavy)
+                                        else -> stringResource(R.string.app_option_no)
                                     }
                                     val bbtStr = log.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f°C", it) } ?: "--"
-                                    val painStr = if (log.painVasScore > 0) "VAS ${log.painVasScore}" else "Bebas"
+                                    val painStr = if (log.painVasScore > 0) "VAS ${log.painVasScore}" else stringResource(R.string.app_option_none)
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -2445,7 +2454,7 @@ fun SpOgReportScreenView(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Belum ada catatan harian yang diinput.",
+                                        text = stringResource(R.string.report_empty_daily_logs),
                                         fontSize = 10.sp,
                                         color = textSecondary,
                                         textAlign = TextAlign.Center
@@ -2463,26 +2472,26 @@ fun SpOgReportScreenView(
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 // 1. Primary Button: PDF Medis
                 Button(
-                    onClick = { onSharePdf?.invoke() ?: onToast("Menyiapkan Berkas Rekap Siklus...") },
+                    onClick = { onSharePdf?.invoke() ?: onToast(resources.getString(R.string.report_export_preparing_summary)) },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                 ) {
                     Icon(Icons.Rounded.PictureAsPdf, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Unduh Rekap Siklus (PDF)", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.report_action_download_summary_pdf), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // 2. Secondary Button: CSV Mentah (Excel / Sheets)
                 OutlinedButton(
-                    onClick = { onExportCsv?.invoke() ?: onToast("Mengekspor Berkas CSV Mentah") },
+                    onClick = { onExportCsv?.invoke() ?: onToast(resources.getString(R.string.app_export_exporting_raw_csv)) },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(1.dp, Slate200)
                 ) {
                     Icon(Icons.Rounded.TableView, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Unduh CSV Mentah (Excel / Sheets)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                    Text(stringResource(R.string.app_action_download_raw_csv), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                 }
 
                 // 3. Subtle Pro Text Link (Placemarked underneath both action buttons)
@@ -2495,9 +2504,9 @@ fun SpOgReportScreenView(
                     ) {
                         Text(
                             text = buildAnnotatedString {
-                                append("Ingin ekspor langsung tanpa iklan? ")
+                                append(stringResource(R.string.report_export_ads_hint))
                                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = PrimaryCoral)) {
-                                    append("Buka Lisensi Pro Seumur Hidup")
+                                    append(stringResource(R.string.app_action_open_lifetime_pro_license))
                                 }
                             },
                             fontSize = 12.sp,
@@ -2553,7 +2562,7 @@ fun CycleDetailBottomSheet(
     }
 
     val bbtValues = cycleLogs.mapNotNull { it.basalBodyTempCelsius }
-    val avgBbtStr = if (bbtValues.isNotEmpty()) String.format(Locale.US, "%.2f °C", bbtValues.average()) else "Tidak tercatat"
+    val avgBbtStr = if (bbtValues.isNotEmpty()) String.format(Locale.US, "%.2f °C", bbtValues.average()) else stringResource(R.string.report_value_not_recorded)
 
     val symptomsList = remember(cycleLogs) {
         cycleLogs.mapNotNull { it.painLocation }
@@ -2590,13 +2599,13 @@ fun CycleDetailBottomSheet(
             ) {
                 Column {
                     Text(
-                        text = if (isOngoing) "Siklus Berjalan" else "Detail Riwayat Siklus",
+                        text = if (isOngoing) stringResource(R.string.report_metric_current_cycle) else stringResource(R.string.detail_title_cycle_history),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Black,
                         color = textPrimary
                     )
                     Text(
-                        text = "${cycle.startDate.format(fmt)} – ${if (isOngoing) "Hari Ini (Aktif)" else cycle.endDate!!.format(fmt)}",
+                        text = "${cycle.startDate.format(fmt)} – ${if (isOngoing) stringResource(R.string.detail_status_ongoing) else cycle.endDate!!.format(fmt)}",
                         fontSize = 11.sp,
                         color = textSecondary
                     )
@@ -2620,8 +2629,8 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.Sync,
                         iconTint = Coral600,
-                        label = "Total Panjang Siklus",
-                        value = "$cycleLength Hari",
+                        label = stringResource(R.string.detail_metric_total_cycle_length),
+                        value = stringResource(R.string.detail_cycle_length_format, cycleLength),
                         valueColor = Coral600
                     )
                     HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
@@ -2630,8 +2639,8 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.WaterDrop,
                         iconTint = Coral500,
-                        label = "Masa Perdarahan Haid",
-                        value = "${cycle.periodDurationDays} Hari (${cycle.startDate.dayOfMonth} – ${periodEnd.dayOfMonth} ${cycle.startDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }})",
+                        label = stringResource(R.string.detail_metric_menstrual_bleeding),
+                        value = stringResource(R.string.detail_period_duration_format, cycle.periodDurationDays, cycle.startDate.dayOfMonth, periodEnd.dayOfMonth, cycle.startDate.monthAbbr()),
                         valueColor = textPrimary
                     )
                     HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
@@ -2640,8 +2649,8 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.Favorite,
                         iconTint = Color(0xFF0891B2),
-                        label = "Jendela Masa Subur",
-                        value = "${fertileStart.dayOfMonth} – ${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}",
+                        label = stringResource(R.string.detail_metric_fertile_window),
+                        value = stringResource(R.string.detail_date_range_format, fertileStart.dayOfMonth, ovulationDate.dayOfMonth, ovulationDate.monthAbbr()),
                         valueColor = Color(0xFF0891B2)
                     )
                     HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
@@ -2650,8 +2659,8 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.WbSunny,
                         iconTint = Color(0xFF0891B2),
-                        label = "Estimasi Puncak Ovulasi",
-                        value = "Hari ke-$ovulationDay (${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }})",
+                        label = stringResource(R.string.detail_metric_ovulation_peak_estimate),
+                        value = stringResource(R.string.detail_ovulation_day_format, ovulationDay, ovulationDate.dayOfMonth, ovulationDate.monthAbbr()),
                         valueColor = Color(0xFF0891B2)
                     )
                     HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
@@ -2660,7 +2669,7 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.Thermostat,
                         iconTint = Coral600,
-                        label = "Rata-rata Suhu (BBT)",
+                        label = stringResource(R.string.detail_metric_average_temperature),
                         value = avgBbtStr,
                         valueColor = textPrimary
                     )
@@ -2669,8 +2678,8 @@ fun CycleDetailBottomSheet(
                     DetailMetricRow(
                         icon = Icons.Rounded.Bolt,
                         iconTint = if (peakPain >= 7) Coral600 else Slate500,
-                        label = "Skala Nyeri Puncak",
-                        value = if (peakPain > 0) "VAS $peakPain / 10" else "Bebas Nyeri",
+                        label = stringResource(R.string.detail_metric_peak_pain_scale),
+                        value = if (peakPain > 0) "VAS $peakPain / 10" else stringResource(R.string.app_pain_free),
                         valueColor = if (peakPain >= 7) Coral600 else textPrimary
                     )
                 }
@@ -2679,7 +2688,7 @@ fun CycleDetailBottomSheet(
             // Symptoms tags if any
             if (symptomsList.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Gejala Tercatat dalam Siklus Ini:", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textSecondary)
+                    Text(stringResource(R.string.detail_symptoms_recorded), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textSecondary)
                     Row(
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -2717,7 +2726,7 @@ fun CycleDetailBottomSheet(
                 Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Buka ${cycle.startDate.month.name.lowercase().replaceFirstChar { it.uppercase() }} di Kalender",
+                    text = stringResource(R.string.detail_open_in_calendar, cycle.startDate.monthName()),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -2759,9 +2768,11 @@ fun SettingsScreenView(
     isDarkMode: Boolean,
     isDiscreet: Boolean,
     isPro: Boolean,
+    appLanguage: String = "system",
+    onLanguageChanged: (String) -> Unit = {},
     isPromilMode: Boolean = false,
     onTogglePromilMode: (Boolean) -> Unit = {},
-    pinStatus: String,
+    isPinConfigured: Boolean,
     anonymousRecoveryKey: String,
     onToggleDiscreet: () -> Unit,
     onToggleDark: () -> Unit,
@@ -2773,6 +2784,7 @@ fun SettingsScreenView(
     onNukeData: () -> Unit,
     onToast: (String) -> Unit
 ) {
+    val resources = LocalContext.current.resources
     val cardBg = if (isDarkMode) DarkCardBackground else Color.White
     val borderCol = if (isDarkMode) DarkBorderColor else Slate100
     val textPrimary = if (isDarkMode) Color.White else Slate900
@@ -2797,8 +2809,8 @@ fun SettingsScreenView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("PREFERENSI & KONTROL", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                    Text("Pengaturan", fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                    Text(stringResource(R.string.settings_section_preferences), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.title_settings), fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 }
                 Surface(
                     shape = RoundedCornerShape(10.dp),
@@ -2820,19 +2832,19 @@ fun SettingsScreenView(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        if (isPro) "LISENSI PRO SEUMUR HIDUP AKTIF" else "VERSI GRATIS (DIDUKUNG IKLAN)",
+                        if (isPro) stringResource(R.string.settings_pro_lifetime_active) else stringResource(R.string.settings_free_version_ads),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.White.copy(alpha = 0.85f)
                     )
                     Text(
-                        if (isPro) "100% Bebas Iklan Selamanya" else "Upgrade ke Lifetime Pro",
+                        if (isPro) stringResource(R.string.settings_pro_ads_free_forever) else stringResource(R.string.settings_upgrade_lifetime_pro),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White
                     )
                     Text(
-                        text = if (isPro) "Semua fitur ekspor dan sinkronisasi aktif tanpa batas." else "Beli putus sekali seumur hidup: 100% bebas iklan, ekspor PDF tanpa batas & sinkronisasi cloud terenkripsi.",
+                        text = if (isPro) stringResource(R.string.settings_pro_features_unlimited) else stringResource(R.string.settings_pro_purchase_description),
                         fontSize = 11.sp,
                         color = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.padding(top = 2.dp)
@@ -2846,7 +2858,80 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Color(0xFFB45309), modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Buka Lisensi Pro", color = Color(0xFFB45309), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_open_pro_license), color = Color(0xFFB45309), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+
+        // GROUP: PILIHAN BAHASA / LANGUAGE PREFERENCE
+        item {
+            Surface(
+                shape = RoundedCornerShape(22.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderCol),
+                shadowElevation = 1.dp
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = stringResource(R.string.section_language_title),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Coral600
+                    )
+
+                    val toastFollowSystem = stringResource(R.string.settings_language_follow_system)
+                    val toastIndonesian = stringResource(R.string.settings_language_set_indonesian)
+                    val toastEnglish = stringResource(R.string.settings_language_set_english)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(
+                            Triple("system", stringResource(R.string.language_option_system), Icons.Default.Language),
+                            Triple("id", stringResource(R.string.language_option_id), Icons.Default.Public),
+                            Triple("en", stringResource(R.string.language_option_en), Icons.Default.Translate)
+                        ).forEach { (langCode, label, icon) ->
+                            val isSelected = appLanguage == langCode
+                            Surface(
+                                onClick = {
+                                    onLanguageChanged(langCode)
+                                    onToast(
+                                        when (langCode) {
+                                            "en" -> toastEnglish
+                                            "id" -> toastIndonesian
+                                            else -> toastFollowSystem
+                                        }
+                                    )
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                                border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 4.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        tint = if (isSelected) Coral600 else Slate500,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = label,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Coral600 else textPrimary,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -2862,7 +2947,7 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("TUJUAN PELACAKAN SIKLUS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_tracking_goal), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -2870,12 +2955,12 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                            Text("Mode Program Hamil (Promil)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_promil_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                             Text(
                                 text = if (isPromilMode)
-                                    "Aktif: Beranda menampilkan masa subur, ovulasi & peluang konsepsi."
+                                    stringResource(R.string.settings_promil_on_description)
                                 else
-                                    "Nonaktif: Beranda bersih & fokus jadwal haid berikutnya (ramah remaja/lajang).",
+                                    stringResource(R.string.settings_promil_off_description),
                                 fontSize = 10.5.sp,
                                 color = textSecondary,
                                 lineHeight = 14.sp
@@ -2885,7 +2970,7 @@ fun SettingsScreenView(
                             checked = isPromilMode,
                             onCheckedChange = {
                                 onTogglePromilMode(it)
-                                onToast(if (it) "Mode Promil Diaktifkan" else "Mode Biasa (Pantau Siklus) Aktif")
+                                onToast(if (it) resources.getString(R.string.settings_promil_mode_enabled) else resources.getString(R.string.settings_normal_mode_enabled))
                             },
                             colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Coral500)
                         )
@@ -2902,7 +2987,7 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("KEAMANAN & KUNCI APLIKASI", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_security), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     // Row 1: PIN
                     Row(
@@ -2911,8 +2996,12 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Kunci PIN 4-Digit", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(pinStatus, fontSize = 11.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_pin_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(
+                                text = if (isPinConfigured) stringResource(R.string.settings_pin_active) else stringResource(R.string.settings_pin_unset),
+                                fontSize = 11.sp,
+                                color = textSecondary
+                            )
                         }
                         Button(
                             onClick = onOpenPin,
@@ -2920,7 +3009,7 @@ fun SettingsScreenView(
                             colors = ButtonDefaults.buttonColors(containerColor = Coral500),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                         ) {
-                            Text("Atur PIN", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_set_pin), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -2933,14 +3022,14 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Kunci Sidik Jari / Wajah", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Buka cepat saat ponsel dipinjam", fontSize = 11.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_biometric_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_biometric_lock_subtitle), fontSize = 11.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isBiometricEnabled,
                             onCheckedChange = {
                                 isBiometricEnabled = it
-                                onToast(if (it) "Kunci Sidik Jari / Biometrik Aktif" else "Kunci Sidik Jari Dinonaktifkan")
+                                onToast(if (it) resources.getString(R.string.settings_biometric_enabled) else resources.getString(R.string.settings_biometric_disabled))
                             },
                             colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Coral500)
                         )
@@ -2955,14 +3044,14 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Kunci Otomatis", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Saat aplikasi di latar belakang", fontSize = 11.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_auto_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_auto_lock_subtitle), fontSize = 11.sp, color = textSecondary)
                         }
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = if (isDarkMode) DarkBackground else Slate100
                         ) {
-                            Text("30 Detik", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
+                            Text(stringResource(R.string.settings_auto_lock_30_seconds), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
                         }
                     }
                 }
@@ -2979,20 +3068,20 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("CADANGAN DATA MANDIRI", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_backup), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Kunci Pemulihan Cadangan", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                        Text(stringResource(R.string.settings_backup_recovery_key), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                         Text(
-                            text = "Salin",
+                            text = stringResource(R.string.settings_copy),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
-                            modifier = Modifier.clickable { onCopyRecoveryKey?.invoke() ?: onToast("Recovery Key Disalin: $anonymousRecoveryKey") }
+                            modifier = Modifier.clickable { onCopyRecoveryKey?.invoke() ?: onToast(resources.getString(R.string.settings_toast_recovery_key_copied, anonymousRecoveryKey)) }
                         )
                     }
 
@@ -3010,7 +3099,7 @@ fun SettingsScreenView(
                             modifier = Modifier.padding(10.dp)
                         )
                     }
-                    Text("Gunakan kode rahasia ini jika Anda berganti perangkat baru.", fontSize = 10.sp, color = textSecondary)
+                    Text(stringResource(R.string.settings_backup_recovery_key_hint), fontSize = 10.sp, color = textSecondary)
 
                     HorizontalDivider(color = borderCol)
 
@@ -3020,8 +3109,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Cadangan Data Pribadi", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Simpan salinan data siklus ke memori HP atau Google Drive pribadi Anda.", fontSize = 10.5.sp, color = textSecondary, lineHeight = 14.sp)
+                            Text(stringResource(R.string.settings_personal_data_backup), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_personal_data_backup_description), fontSize = 10.5.sp, color = textSecondary, lineHeight = 14.sp)
                         }
                     }
 
@@ -3031,7 +3120,7 @@ fun SettingsScreenView(
                         border = BorderStroke(1.dp, Color(0xFFA7F3D0))
                     ) {
                         Text(
-                            text = "Tersimpan Lokal • Privasi Terjaga 100%",
+                            text = stringResource(R.string.settings_backup_privacy_note),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF065F46),
@@ -3051,18 +3140,18 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Default.CloudUpload, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Cadangkan Data", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_backup_data), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
                             onClick = {
-                                onRestoreLocal?.invoke() ?: onToast("Membuka pengelola berkas...")
+                                onRestoreLocal?.invoke() ?: onToast(resources.getString(R.string.settings_opening_file_manager))
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(Icons.Default.CloudDownload, contentDescription = null, tint = MedicalTeal, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Pulihkan Data", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_restore_data), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -3078,15 +3167,15 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("TAMPILAN & NOTIFIKASI", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_display), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Mode Samaran (Anti-Intip)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Samarkan istilah sensitif di publik", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_discreet_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_discreet_mode_subtitle), fontSize = 10.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isDiscreet,
@@ -3101,8 +3190,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Mode Gelap Subuh (OLED)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Ramah mata saat bangun ukur suhu", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_oled_dark_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_oled_dark_mode_subtitle), fontSize = 10.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isDarkMode,
@@ -3117,8 +3206,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Pengingat Suhu Basal (BBT)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Alarm lembut pukul 05:30 pagi", fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_bbt_reminder), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_bbt_reminder_subtitle), fontSize = 10.sp, color = textSecondary)
                         }
                         Surface(
                             shape = RoundedCornerShape(8.dp),
@@ -3161,8 +3250,8 @@ fun SettingsScreenView(
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
-                                Text("Panduan Singkat & FAQ", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                Text("Cara input haid, prediksi siklus & arti warna", fontSize = 10.sp, color = textSecondary)
+                                Text(stringResource(R.string.settings_quick_guide_faq), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.settings_quick_guide_subtitle), fontSize = 10.sp, color = textSecondary)
                             }
                         }
                         Icon(
@@ -3180,9 +3269,9 @@ fun SettingsScreenView(
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             // Point 1: Cara Catat Haid
                             Column {
-                                Text("1. Cara Mencatat Hari Pertama Haid", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_1_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "Buka form catatan harian pada tanggal haid, lalu pilih intensitas darah: Ringan, Sedang, atau Deras. Opsi \"Tidak\" atau \"Bercak\" dianggap sebagai gejala harian biasa tanpa pendarahan haid.",
+                                    text = stringResource(R.string.settings_faq_1_body_prefix) + stringResource(R.string.settings_faq_1_body_suffix),
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -3191,9 +3280,9 @@ fun SettingsScreenView(
 
                             // Point 2: Mekanisme Prediksi Dinamis
                             Column {
-                                Text("2. Mekanisme Prediksi Siklus (Dinamis)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_2_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "• Siklus ke-1: Menggunakan baseline 28 hari sebagai estimasi awal.\n• Siklus ke-2 ke atas: Sepenuhnya dinamis menghitung rata-rata riil tubuh Anda sendiri. Bukan angka saklek 28 hari.",
+                                    text = stringResource(R.string.settings_faq_2_body),
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -3202,9 +3291,9 @@ fun SettingsScreenView(
 
                             // Point 3: Arti Warna Kalender
                             Column {
-                                Text("3. Arti Warna pada Kalender", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_3_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "• Merah Muda: Hari haid aktif yang Anda catat.\n• Dot Merah Muda: Prediksi hari haid berikutnya (bisa dicek di bulan depan via tombol >).\n• Biru Muda: Jendela subur (6 hari peluang konsepsi).\n• Toska Tua: Puncak ovulasi (pelepasan sel telur).",
+                                    text = stringResource(R.string.settings_faq_3_body),
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -3213,9 +3302,9 @@ fun SettingsScreenView(
 
                             // Point 4: Standar Medis FIGO
                             Column {
-                                Text("4. Siklus Normal & Tanda yang Perlu Diperhatikan", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_4_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
-                                    text = "Siklus normal wanita berjarak 24 hingga 38 hari. Jika siklus Anda <24 hari, >38 hari, atau sangat tidak teratur (selisih ≥8 hari), aplikasi akan memberi peringatan di tab Analisis Siklus.",
+                                    text = stringResource(R.string.settings_faq_4_body),
                                     fontSize = 10.sp,
                                     color = textSecondary,
                                     lineHeight = 14.sp
@@ -3228,7 +3317,7 @@ fun SettingsScreenView(
                                     try {
                                         uriHandler.openUri("https://asridigital.com/cyclejournal/docs")
                                     } catch (e: Exception) {
-                                        onToast("Membuka peramban...")
+                                        onToast(resources.getString(R.string.settings_opening_browser))
                                     }
                                 },
                                 shape = RoundedCornerShape(12.dp),
@@ -3245,7 +3334,7 @@ fun SettingsScreenView(
                                         Icon(Icons.Default.MenuBook, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
-                                            Text("Dokumentasi & Referensi Siklus", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                            Text(stringResource(R.string.settings_documentation_references), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                                             Text("asridigital.com/cyclejournal/docs", fontSize = 9.sp, color = textSecondary)
                                         }
                                     }
@@ -3266,9 +3355,9 @@ fun SettingsScreenView(
                 border = BorderStroke(1.dp, Color(0xFFFFE4E6))
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("HAPUS SEMUA DATA LOKAL", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                    Text(stringResource(R.string.settings_section_delete_all_data), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                     Text(
-                        text = "Menghapus seluruh catatan siklus, gejala harian, dan pengaturan dari perangkat ini secara permanen. Data yang telah dihapus tidak dapat dipulihkan kecuali Anda memiliki berkas cadangan.",
+                        text = stringResource(R.string.settings_delete_all_data_description),
                         fontSize = 10.sp,
                         color = Color(0xFF9F1239),
                         lineHeight = 14.sp
@@ -3279,7 +3368,7 @@ fun SettingsScreenView(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Hapus Semua Data di Perangkat", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.settings_delete_all_data_button), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -3288,7 +3377,7 @@ fun SettingsScreenView(
         // App Version Footer
         item {
             Text(
-                text = "CycleJournal v${BuildConfig.VERSION_NAME} • Pemantau Siklus Pribadi",
+                text = stringResource(R.string.app_version_footer, BuildConfig.VERSION_NAME),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 color = Slate400,
@@ -3301,12 +3390,12 @@ fun SettingsScreenView(
             AlertDialog(
                 onDismissRequest = { isBackupOptionsDialogOpen = false },
                 title = {
-                    Text("Cadangkan Data Mandiri", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.settings_backup_data_self_managed), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            text = "Pilih metode penguncian berkas cadangan Anda:",
+                            text = stringResource(R.string.settings_backup_lock_method_prompt),
                             fontSize = 12.sp,
                             color = textSecondary
                         )
@@ -3331,8 +3420,8 @@ fun SettingsScreenView(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Column {
-                                    Text("Standar (Bebas PIN)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (!isBackupEncrypted) Coral600 else textPrimary)
-                                    Text("Langsung pulih tanpa password. Cocok jika Anda sering lupa PIN dan menyimpan file di Google Drive pribadi.", fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                    Text(stringResource(R.string.settings_backup_lock_standard), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (!isBackupEncrypted) Coral600 else textPrimary)
+                                    Text(stringResource(R.string.settings_backup_lock_standard_description), fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
                                 }
                             }
                         }
@@ -3355,8 +3444,8 @@ fun SettingsScreenView(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Column {
-                                        Text("Terenkripsi dengan PIN", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isBackupEncrypted) Coral600 else textPrimary)
-                                        Text("Diberi kunci enkripsi AES-256. Wajib memasukkan PIN yang sama saat memulihkan berkas.", fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                        Text(stringResource(R.string.settings_backup_lock_encrypted), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isBackupEncrypted) Coral600 else textPrimary)
+                                        Text(stringResource(R.string.settings_backup_lock_encrypted_description), fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
                                     }
                                 }
                                 if (isBackupEncrypted) {
@@ -3364,7 +3453,7 @@ fun SettingsScreenView(
                                     OutlinedTextField(
                                         value = backupPinInput,
                                         onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) backupPinInput = it },
-                                        placeholder = { Text("Ketik 4 Digit PIN") },
+                                        placeholder = { Text(stringResource(R.string.settings_pin_entry_hint)) },
                                         singleLine = true,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -3381,17 +3470,17 @@ fun SettingsScreenView(
                             onBackupLocal?.invoke(
                                 isBackupEncrypted,
                                 if (isBackupEncrypted) backupPinInput else null
-                            ) ?: onToast("Membuat berkas cadangan...")
+                            ) ?: onToast(resources.getString(R.string.settings_creating_backup_file))
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Coral500),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Buat Cadangan", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.settings_create_backup), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { isBackupOptionsDialogOpen = false }) {
-                        Text("Batal")
+                        Text(stringResource(R.string.settings_cancel))
                     }
                 }
             )
@@ -3400,11 +3489,11 @@ fun SettingsScreenView(
             AlertDialog(
                 onDismissRequest = { isNukeConfirmDialogOpen = false },
                 title = {
-                    Text("Hapus Semua Data?", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                    Text(stringResource(R.string.nuke_confirm_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                 },
                 text = {
                     Text(
-                        text = "Tindakan ini akan mengosongkan seluruh jurnal, catatan harian, dan riwayat siklus dari perangkat ini secara permanen.\n\nPastikan Anda sudah mencadangkan data jika ingin menyimpannya.",
+                        text = stringResource(R.string.settings_nuke_local_message),
                         fontSize = 12.sp,
                         color = textSecondary,
                         lineHeight = 16.sp
@@ -3419,12 +3508,12 @@ fun SettingsScreenView(
                         colors = ButtonDefaults.buttonColors(containerColor = MedicalRose),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Hapus Sekarang", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.settings_delete_now), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { isNukeConfirmDialogOpen = false }) {
-                        Text("Batal")
+                        Text(stringResource(R.string.settings_cancel))
                     }
                 }
             )
@@ -3441,32 +3530,12 @@ fun DailyLogBottomSheet(
     onDismiss: () -> Unit,
     onSave: (DailyLogEntity) -> Unit
 ) {
+    val resources = LocalContext.current.resources
     val textPrimary = if (isDarkMode) Color.White else Slate900
     val textSecondary = if (isDarkMode) Slate400 else Slate500
     var vasScore by remember(initialLog) { mutableStateOf((initialLog?.painVasScore ?: 0).toFloat()) }
-    var selectedFlow by remember(initialLog) {
-        mutableStateOf(
-            when (initialLog?.flow) {
-                FlowIntensity.SPOTTING -> "Bercak"
-                FlowIntensity.LIGHT -> "Ringan"
-                FlowIntensity.MEDIUM -> "Sedang"
-                FlowIntensity.HEAVY -> "Deras"
-                else -> "Tidak"
-            }
-        )
-    }
-    var selectedMucus by remember(initialLog) {
-        mutableStateOf(
-            when (initialLog?.cervicalMucus) {
-                CervicalMucusType.DRY -> "Kering"
-                CervicalMucusType.STICKY -> "Lengket"
-                CervicalMucusType.CREAMY -> "Krim"
-                CervicalMucusType.WATERY -> "Cair"
-                CervicalMucusType.EGG_WHITE -> "Putih Telur"
-                else -> "Tidak"
-            }
-        )
-    }
+    var selectedFlow by remember(initialLog) { mutableStateOf(initialLog?.flow ?: FlowIntensity.NONE) }
+    var selectedMucus by remember(initialLog) { mutableStateOf(initialLog?.cervicalMucus ?: CervicalMucusType.NONE) }
     var hasTakenAnalgesic by remember(initialLog) { mutableStateOf(initialLog?.takenAnalgesic ?: false) }
     var isBbtRecorded by remember(initialLog) {
         mutableStateOf(initialLog?.basalBodyTempCelsius != null)
@@ -3480,12 +3549,10 @@ fun DailyLogBottomSheet(
     val context = LocalContext.current
     val customPrefs = remember { context.getSharedPreferences("custom_symptoms_store", Context.MODE_PRIVATE) }
 
-    val defaultSymptoms = remember {
-        listOf(
-            "Kram Pelvis", "Sakit Pinggang", "Payudara Sensitif", "Sakit Kepala",
-            "Perut Kembung", "Mood Sensitif", "Kelelahan", "Mual"
-        )
-    }
+    val defaultSymptoms = listOf(
+        stringResource(R.string.daily_symptom_pelvic_cramps), stringResource(R.string.daily_symptom_lower_back_pain), stringResource(R.string.daily_symptom_tender_breasts), stringResource(R.string.daily_symptom_headache),
+        stringResource(R.string.daily_symptom_bloating), stringResource(R.string.daily_symptom_sensitive_mood), stringResource(R.string.daily_symptom_fatigue), stringResource(R.string.daily_symptom_nausea)
+    )
 
     val customSymptomsList = remember {
         mutableStateListOf<String>().apply {
@@ -3498,9 +3565,9 @@ fun DailyLogBottomSheet(
     var newCustomSymptomInput by remember { mutableStateOf("") }
     var clinicalNotesInput by remember(initialLog) {
         val raw = initialLog?.notes ?: ""
-        val cleaned = if (raw.contains("Catatan: ")) {
-            raw.substringAfter("Catatan: ").trim()
-        } else if (!raw.startsWith("Gejala: ")) {
+        val cleaned = if (raw.contains(resources.getString(R.string.daily_notes_prefix))) {
+            raw.substringAfter(resources.getString(R.string.daily_notes_prefix)).trim()
+        } else if (!raw.startsWith(resources.getString(R.string.daily_symptoms_prefix))) {
             raw
         } else {
             ""
@@ -3539,9 +3606,9 @@ fun DailyLogBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Jurnal Kondisi Hari Ini", fontSize = 17.sp, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.daily_log_title), fontSize = 17.sp, fontWeight = FontWeight.Black)
                     Text(
-                        text = "${targetDate.dayOfWeek.name.lowercase().replaceFirstChar { c -> c.uppercase() }}, ${targetDate.dayOfMonth} ${targetDate.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${targetDate.year}",
+                        text = "${targetDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())}, ${targetDate.dayOfMonth} ${targetDate.monthName()} ${targetDate.year}",
                         fontSize = 11.sp,
                         color = Slate400
                     )
@@ -3554,24 +3621,30 @@ fun DailyLogBottomSheet(
             // Flow Pills
             Column {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Pendarahan Menstruasi (Flow)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.daily_flow_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     Text(
-                        text = if (selectedFlow in listOf("Ringan", "Sedang", "Deras")) "• Fase Haid Aktif" else "• Bukan Hari Haid",
+                        text = if (selectedFlow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) stringResource(R.string.daily_flow_active) else stringResource(R.string.daily_flow_inactive),
                         fontSize = 9.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (selectedFlow in listOf("Ringan", "Sedang", "Deras")) Coral600 else Slate400
+                        color = if (selectedFlow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) Coral600 else Slate400
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Pilih Ringan, Sedang, atau Deras untuk mencatat hari haid dan mengaktifkan prediksi siklus.",
+                    text = stringResource(R.string.daily_flow_hint),
                     fontSize = 9.5.sp,
                     color = Slate400,
                     lineHeight = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Tidak", "Bercak", "Ringan", "Sedang", "Deras").forEach { flow ->
+                    listOf(
+                        FlowIntensity.NONE to stringResource(R.string.app_option_no),
+                        FlowIntensity.SPOTTING to stringResource(R.string.app_column_spotting),
+                        FlowIntensity.LIGHT to stringResource(R.string.dash_vas_mild),
+                        FlowIntensity.MEDIUM to stringResource(R.string.app_option_medium),
+                        FlowIntensity.HEAVY to stringResource(R.string.app_option_heavy)
+                    ).forEach { (flow, label) ->
                         val isSelected = flow == selectedFlow
                         Surface(
                             modifier = Modifier.weight(1f).clickable { selectedFlow = flow },
@@ -3579,7 +3652,7 @@ fun DailyLogBottomSheet(
                             color = if (isSelected) Coral500 else if (isDarkMode) DarkBackground else Slate100
                         ) {
                             Text(
-                                flow,
+                                label,
                                 fontSize = 10.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isSelected) Color.White else Slate600,
@@ -3594,11 +3667,11 @@ fun DailyLogBottomSheet(
             // Clinical Pain VAS Card (Refined functional rating)
             val num = vasScore.toInt()
             val (badgeText, cardBg, textCol, impactText) = when {
-                num == 0 -> Quadruple("Bebas Nyeri", Color(0xFFECFDF5), Color(0xFF047857), "Bebas Nyeri • Nyaman beraktivitas")
-                num <= 3 -> Quadruple("Ringan", Slate100, Slate700, "Nyeri Ringan • Terasa pegal, aktivitas normal")
-                num <= 6 -> Quadruple("Perlu Pantauan", Color(0xFFFFFBEB), Color(0xFFB45309), "Nyeri Sedang • Mengganggu, butuh jeda istirahat")
-                num <= 8 -> Quadruple("Perhatian", Color(0xFFFFF1F2), Color(0xFFBE123C), "Nyeri Berat • Membatasi gerak, butuh pereda nyeri")
-                else -> Quadruple("Konsultasi Segera", Color(0xFFFEE2E2), Color(0xFF991B1B), "Sangat Hebat • Tirah baring total / darurat")
+                num == 0 -> Quadruple(stringResource(R.string.app_pain_free), Color(0xFFECFDF5), Color(0xFF047857), stringResource(R.string.daily_pain_impact_none))
+                num <= 3 -> Quadruple(stringResource(R.string.dash_vas_mild), Slate100, Slate700, stringResource(R.string.daily_pain_impact_mild))
+                num <= 6 -> Quadruple(stringResource(R.string.daily_pain_badge_monitor), Color(0xFFFFFBEB), Color(0xFFB45309), stringResource(R.string.daily_pain_impact_moderate))
+                num <= 8 -> Quadruple(stringResource(R.string.daily_pain_badge_attention), Color(0xFFFFF1F2), Color(0xFFBE123C), stringResource(R.string.daily_pain_impact_severe))
+                else -> Quadruple(stringResource(R.string.daily_pain_badge_consult), Color(0xFFFEE2E2), Color(0xFF991B1B), stringResource(R.string.daily_pain_impact_critical))
             }
 
             Surface(
@@ -3612,7 +3685,7 @@ fun DailyLogBottomSheet(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Tingkat Nyeri (Skala 0–10)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textCol)
+                        Text(stringResource(R.string.daily_pain_scale_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textCol)
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = textCol.copy(alpha = 0.15f)
@@ -3652,9 +3725,9 @@ fun DailyLogBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Gejala Tubuh Hari Ini", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.daily_body_symptoms_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     Text(
-                        text = "${selectedSymptoms.size} dipilih",
+                        text = stringResource(R.string.daily_symptoms_selected_format, selectedSymptoms.size),
                         fontSize = 10.sp,
                         color = Coral600,
                         fontWeight = FontWeight.SemiBold
@@ -3719,7 +3792,7 @@ fun DailyLogBottomSheet(
                             Icon(Icons.Default.Add, contentDescription = null, tint = Coral500, modifier = Modifier.size(13.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Tambah Gejala",
+                                text = stringResource(R.string.daily_add_symptom),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Coral500
@@ -3743,9 +3816,9 @@ fun DailyLogBottomSheet(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Suhu Basal (°C)", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                            Text(stringResource(R.string.daily_basal_temp_title), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
                             Text(
-                                text = if (isBbtRecorded) "Hapus" else "+ Catat",
+                                text = if (isBbtRecorded) stringResource(R.string.daily_basal_temp_remove) else stringResource(R.string.daily_basal_temp_record),
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isBbtRecorded) Coral600 else Color(0xFF059669),
@@ -3817,7 +3890,7 @@ fun DailyLogBottomSheet(
                             }
                         } else {
                             Text(
-                                text = "-- °C (Belum diukur)",
+                                text = stringResource(R.string.daily_temp_not_measured),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Slate400,
@@ -3841,8 +3914,8 @@ fun DailyLogBottomSheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Analgesik", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
-                            Text("Minum Obat", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.daily_analgesic_label), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                            Text(stringResource(R.string.daily_take_medication), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                         Checkbox(
                             checked = hasTakenAnalgesic,
@@ -3856,11 +3929,15 @@ fun DailyLogBottomSheet(
             // Cervical Mucus Selector
             // Cervical Mucus Selector (2 rows x 3 columns for balanced width)
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Lendir Serviks (Sintotermal)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.daily_cervical_mucus_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
 
                 // Row 1: Tidak, Kering, Lengket
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Tidak", "Kering", "Lengket").forEach { mucus ->
+                    listOf(
+                        CervicalMucusType.NONE to stringResource(R.string.app_option_no),
+                        CervicalMucusType.DRY to stringResource(R.string.mucus_dry),
+                        CervicalMucusType.STICKY to stringResource(R.string.mucus_sticky)
+                    ).forEach { (mucus, label) ->
                         val isSelected = mucus == selectedMucus
                         Surface(
                             modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
@@ -3869,7 +3946,7 @@ fun DailyLogBottomSheet(
                             border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
                         ) {
                             Text(
-                                text = mucus,
+                                text = label,
                                 fontSize = 10.5.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isSelected) Coral600 else Slate600,
@@ -3883,7 +3960,11 @@ fun DailyLogBottomSheet(
 
                 // Row 2: Krim, Cair, Putih Telur
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Krim", "Cair", "Putih Telur").forEach { mucus ->
+                    listOf(
+                        CervicalMucusType.CREAMY to stringResource(R.string.mucus_creamy),
+                        CervicalMucusType.WATERY to stringResource(R.string.mucus_watery),
+                        CervicalMucusType.EGG_WHITE to stringResource(R.string.mucus_egg_white)
+                    ).forEach { (mucus, label) ->
                         val isSelected = mucus == selectedMucus
                         Surface(
                             modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
@@ -3892,7 +3973,7 @@ fun DailyLogBottomSheet(
                             border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
                         ) {
                             Text(
-                                text = mucus,
+                                text = label,
                                 fontSize = 10.5.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isSelected) Coral600 else Slate600,
@@ -3908,12 +3989,12 @@ fun DailyLogBottomSheet(
 
             // Clinical Notes Field
             Column {
-                Text("Catatan Tambahan (Opsional)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.daily_notes_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = clinicalNotesInput,
                     onValueChange = { clinicalNotesInput = it },
-                    placeholder = { Text("Misal: Dosis obat, keluhan spesifik, saran dokter...", fontSize = 11.sp, color = Slate400) },
+                    placeholder = { Text(stringResource(R.string.daily_notes_hint), fontSize = 11.sp, color = Slate400) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     minLines = 2,
@@ -3921,23 +4002,13 @@ fun DailyLogBottomSheet(
                 )
             }
 
+            val symptomsPrefix = stringResource(R.string.daily_notes_symptoms_prefix)
+            val notePrefix = stringResource(R.string.daily_notes_note_prefix)
+
             Button(
                 onClick = {
-                    val flowEnum = when (selectedFlow) {
-                        "Bercak" -> FlowIntensity.SPOTTING
-                        "Ringan" -> FlowIntensity.LIGHT
-                        "Sedang" -> FlowIntensity.MEDIUM
-                        "Deras" -> FlowIntensity.HEAVY
-                        else -> FlowIntensity.NONE
-                    }
-                    val mucusEnum = when (selectedMucus) {
-                        "Kering" -> CervicalMucusType.DRY
-                        "Lengket" -> CervicalMucusType.STICKY
-                        "Krim" -> CervicalMucusType.CREAMY
-                        "Cair" -> CervicalMucusType.WATERY
-                        "Putih Telur" -> CervicalMucusType.EGG_WHITE
-                        else -> CervicalMucusType.NONE
-                    }
+                    val flowEnum = selectedFlow
+                    val mucusEnum = selectedMucus
                     val bbtVal = if (isBbtRecorded) bbtInputText.replace(",", ".").toDoubleOrNull() else null
                     val logEntity = DailyLogEntity(
                         date = targetDate,
@@ -3948,9 +4019,9 @@ fun DailyLogBottomSheet(
                         painLocation = if (selectedSymptoms.isNotEmpty()) selectedSymptoms.joinToString(", ") else null,
                         takenAnalgesic = hasTakenAnalgesic,
                         notes = buildString {
-                            if (selectedSymptoms.isNotEmpty()) append("Gejala: ${selectedSymptoms.joinToString(", ")}")
+                            if (selectedSymptoms.isNotEmpty()) append(symptomsPrefix + selectedSymptoms.joinToString(", "))
                             if (clinicalNotesInput.isNotBlank()) {
-                                if (isNotEmpty()) append("\nCatatan: ")
+                                if (isNotEmpty()) append(notePrefix)
                                 append(clinicalNotesInput.trim())
                             }
                         }.takeIf { it.isNotBlank() }
@@ -3961,22 +4032,22 @@ fun DailyLogBottomSheet(
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Coral500)
             ) {
-                Text("Simpan Catatan Hari Ini", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Text(stringResource(R.string.daily_save_log), fontWeight = FontWeight.Bold, fontSize = 13.sp)
             }
         }
 
         if (isAddCustomDialogOpen) {
             AlertDialog(
                 onDismissRequest = { isAddCustomDialogOpen = false },
-                title = { Text("Tambah Gejala Kustom", fontSize = 15.sp, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.daily_custom_symptom_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("Ketikkan nama gejala tubuh yang Anda rasakan:", fontSize = 12.sp, color = Slate500)
+                        Text(stringResource(R.string.daily_custom_symptom_prompt), fontSize = 12.sp, color = Slate500)
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = newCustomSymptomInput,
                             onValueChange = { newCustomSymptomInput = it },
-                            placeholder = { Text("Misal: Migrain, Nyeri Sendi, Insomnia...", fontSize = 11.sp) },
+                            placeholder = { Text(stringResource(R.string.daily_custom_symptom_hint), fontSize = 11.sp) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -4001,12 +4072,12 @@ fun DailyLogBottomSheet(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                     ) {
-                        Text("Simpan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.daily_save), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { isAddCustomDialogOpen = false }) {
-                        Text("Batal", fontSize = 12.sp)
+                        Text(stringResource(R.string.settings_cancel), fontSize = 12.sp)
                     }
                 }
             )
@@ -4014,10 +4085,10 @@ fun DailyLogBottomSheet(
         if (isBbtDialogOpen) {
             AlertDialog(
                 onDismissRequest = { isBbtDialogOpen = false },
-                title = { Text("Masukkan Suhu Basal", fontSize = 15.sp, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.daily_basal_temp_dialog_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("Ketik suhu tubuh pagi hari (misal: 36.65):", fontSize = 12.sp, color = textSecondary)
+                        Text(stringResource(R.string.daily_basal_temp_dialog_hint), fontSize = 12.sp, color = textSecondary)
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = tempBbtDialogInput,
@@ -4037,12 +4108,12 @@ fun DailyLogBottomSheet(
                         }
                         isBbtDialogOpen = false
                     }) {
-                        Text("Simpan", fontWeight = FontWeight.Bold, color = Coral600)
+                        Text(stringResource(R.string.daily_save), fontWeight = FontWeight.Bold, color = Coral600)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { isBbtDialogOpen = false }) {
-                        Text("Batal")
+                        Text(stringResource(R.string.settings_cancel))
                     }
                 }
             )
@@ -4085,14 +4156,14 @@ fun AppBottomNavigation(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                NavButton(Icons.Default.Home, "Beranda", currentScreen == AppScreen.DASHBOARD) { onSelect(AppScreen.DASHBOARD) }
-                NavButton(Icons.Default.DateRange, "Kalender", currentScreen == AppScreen.CALENDAR) { onSelect(AppScreen.CALENDAR) }
+                NavButton(Icons.Default.Home, stringResource(R.string.nav_home), currentScreen == AppScreen.DASHBOARD) { onSelect(AppScreen.DASHBOARD) }
+                NavButton(Icons.Default.DateRange, stringResource(R.string.nav_calendar), currentScreen == AppScreen.CALENDAR) { onSelect(AppScreen.CALENDAR) }
 
                 // Spacer to reserve central notch space for the elevated FAB
                 Spacer(modifier = Modifier.size(54.dp))
 
-                NavButton(Icons.Default.Description, "Laporan", currentScreen == AppScreen.REPORT) { onSelect(AppScreen.REPORT) }
-                NavButton(Icons.Default.Settings, "Pengaturan", currentScreen == AppScreen.SETTINGS) { onSelect(AppScreen.SETTINGS) }
+                NavButton(Icons.Default.Description, stringResource(R.string.nav_report), currentScreen == AppScreen.REPORT) { onSelect(AppScreen.REPORT) }
+                NavButton(Icons.Default.Settings, stringResource(R.string.nav_settings), currentScreen == AppScreen.SETTINGS) { onSelect(AppScreen.SETTINGS) }
             }
         }
 
@@ -4111,7 +4182,7 @@ fun AppBottomNavigation(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Catat Harian",
+                contentDescription = stringResource(R.string.nav_log_daily),
                 tint = Color.White,
                 modifier = Modifier.size(28.dp)
             )
@@ -4155,8 +4226,8 @@ fun PinSetupDialog(
                     Icon(Icons.Default.Lock, contentDescription = null, tint = Coral600)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("Setup Kunci PIN 4-Digit", fontSize = 15.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                Text("Lindungi privasi saat ponsel Anda dipinjam", fontSize = 11.sp, color = Slate400)
+                Text(stringResource(R.string.pin_setup_title), fontSize = 15.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                Text(stringResource(R.string.pin_setup_subtitle), fontSize = 11.sp, color = Slate400)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -4214,7 +4285,7 @@ fun PinSetupDialog(
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                 ) {
-                    Text("Simpan Kunci Keamanan", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text(stringResource(R.string.pin_setup_save), fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 }
             }
         }

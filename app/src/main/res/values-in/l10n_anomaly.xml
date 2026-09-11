@@ -1,0 +1,37 @@
+<!--
+  Indonesian resources. Mirrored in values-id/ and values-in/, which MUST stay byte-identical:
+  older Android platforms only match the legacy "in" qualifier, newer platforms match "id".
+-->
+<resources>
+    <!-- FIGO anomaly type descriptions -->
+    <string name="anomaly_oligomenorrhea">Siklus lebih panjang dari biasanya (lebih dari 38 hari)</string>
+    <string name="anomaly_polymenorrhea">Siklus lebih pendek dari biasanya (kurang dari 24 hari)</string>
+    <string name="anomaly_cycle_irregularity">Panjang siklus tidak teratur (selisih antar siklus ≥ 8 hari)</string>
+    <string name="anomaly_prolonged_bleeding">Haid berlangsung lebih dari 8 hari berturut-turut</string>
+    <string name="anomaly_intermenstrual_bleeding">Perdarahan atau bercak di luar jadwal haid</string>
+    <string name="anomaly_short_luteal_phase">Jeda antara ovulasi dan haid berikutnya sangat pendek</string>
+    <string name="anomaly_severe_dysmenorrhea">Nyeri haid yang dilaporkan cukup berat</string>
+
+    <!-- VAS pain categories -->
+    <string name="vas_category_none">Tidak Ada Nyeri (Normal)</string>
+    <string name="vas_category_mild">Nyeri Ringan (Aktivitas Normal)</string>
+    <string name="vas_category_moderate">Nyeri Sedang (Aktivitas Terganggu, Butuh Istirahat)</string>
+    <string name="vas_category_severe">Nyeri Berat (Indikasi Dismenore / Red Flag)</string>
+    <string name="vas_category_extreme">Nyeri Ekstrem (Disarankan Evaluasi Medis Segera)</string>
+
+    <!-- Anomaly detail templates -->
+    <string name="anomaly_detail_oligomenorrhea_pcos">Siklus berlangsung selama %1$d hari (&gt; 38 hari, potensi anovulasi/PCOS).</string>
+    <string name="anomaly_detail_polymenorrhea">Siklus berlangsung selama %1$d hari (&lt; 24 hari).</string>
+    <string name="anomaly_detail_irregularity_figo">Variasi panjang siklus mencapai %1$d hari (ambang batas FIGO &gt;= 8 hari).</string>
+    <string name="anomaly_detail_prolonged_bleeding_single">Perdarahan haid aktif berlangsung %1$d hari berturut-turut pada %2$s.</string>
+    <string name="anomaly_detail_imb_day">Pendarahan bercak di luar jadwal haid pada hari ke-%1$d siklus.</string>
+    <string name="anomaly_detail_vas_category_area">Skor nyeri VAS %1$d/10 (%2$s) pada area: %3$s.</string>
+    <string name="anomaly_detail_oligomenorrhea">Siklus berlangsung selama %1$d hari (&gt; 38 hari).</string>
+    <string name="anomaly_detail_irregularity_delta">Selisih siklus terpanjang dan terpendek adalah %1$d hari (ambang batas &gt;= 8 hari).</string>
+    <string name="anomaly_detail_prolonged_bleeding_range">Perdarahan aktif berlangsung %1$d hari berturut-turut (%2$s s/d %3$s).</string>
+    <string name="anomaly_detail_imb_single">Pendarahan bercak (spotting) terdeteksi pada hari ke-%1$d siklus (%2$s).</string>
+    <string name="anomaly_detail_imb_multiple">Pendarahan bercak (spotting) terdeteksi %1$d kali dalam siklus ini (terakhir hari ke-%2$d, %3$s).</string>
+    <string name="anomaly_detail_short_luteal">Fase luteal hanya berlangsung %1$d hari (&lt; 10 hari).</string>
+    <string name="anomaly_detail_vas_date_area">Skor nyeri skala VAS %1$d/10 terdeteksi pada area %2$s pada tanggal %3$s.</string>
+    <string name="anomaly_detail_vas_date">Skor nyeri skala VAS %1$d/10 terdeteksi pada tanggal %2$s.</string>
+</resources>
