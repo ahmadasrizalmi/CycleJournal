@@ -21,11 +21,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
 import android.widget.Toast
 import com.app.cyclejournal.domain.manager.BackupFileInspection
 import com.app.cyclejournal.domain.manager.LocalRestoreOutcome
@@ -112,13 +115,20 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val currentLang = prefs.getAppLanguage()
+            // User text size is a multiplier on top of the system font scale, so a user who has
+            // already enlarged text in Android settings keeps that gain and can add to it.
+            var textScale by remember { mutableFloatStateOf(prefs.getAppTextScale()) }
+            val systemDensity = LocalDensity.current
 
             val localizedContext = remember(currentLang) {
                 val wrapped = AppLocale.wrap(this, currentLang)
                 if (wrapped === this) this else LocaleAwareContext(wrapped, this)
             }
 
-            CompositionLocalProvider(LocalContext provides localizedContext) {
+            CompositionLocalProvider(
+                LocalContext provides localizedContext,
+                LocalDensity provides Density(systemDensity.density, systemDensity.fontScale * textScale)
+            ) {
             CycleJournalTheme {
                 if (!isAppUnlocked.value && pinManager.isPinSet()) {
                     PinLockScreen(
@@ -243,6 +253,11 @@ class MainActivity : FragmentActivity() {
                         isPromilModeInitial = prefs.isPromilMode(),
                         onTogglePromilMode = { prefs.setPromilMode(it) },
                         appLanguage = currentLang,
+                        appTextScale = textScale,
+                        onTextScaleChanged = { scale ->
+                            prefs.setAppTextScale(scale)
+                            textScale = scale
+                        },
                         onLanguageChanged = { newLang ->
                             prefs.setAppLanguage(newLang)
                             NotificationChannelManager.createChannels(AppLocale.wrap(this@MainActivity, newLang))

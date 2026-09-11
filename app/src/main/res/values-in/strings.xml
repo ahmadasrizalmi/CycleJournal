@@ -114,6 +114,12 @@
 
     <!-- Language Preference -->
     <string name="section_language_title">PILIHAN BAHASA (LANGUAGE)</string>
+    <string name="section_text_size_title">UKURAN TEKS</string>
+    <string name="settings_text_size_hint">Diterapkan di atas ukuran teks pada setelan Android Anda.</string>
+    <string name="settings_text_size_small">Kecil</string>
+    <string name="settings_text_size_normal">Normal</string>
+    <string name="settings_text_size_large">Besar</string>
+    <string name="settings_text_size_extra">XL</string>
     <string name="language_option_system">Sistem</string>
     <string name="language_option_id">Indonesia</string>
     <string name="language_option_en">English</string>

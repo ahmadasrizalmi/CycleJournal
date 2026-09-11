@@ -137,7 +137,9 @@ fun CycleJournalApp(
     downloadedReport: PdfShareHelper.SaveResult? = null,
     onDismissDownloadDialog: () -> Unit = {},
     appLanguage: String = "system",
-    onLanguageChanged: (String) -> Unit = {}
+    onLanguageChanged: (String) -> Unit = {},
+    appTextScale: Float = 1f,
+    onTextScaleChanged: (Float) -> Unit = {}
 ) {
     val resources = LocalContext.current.resources
     var currentScreen by remember { mutableStateOf(AppScreen.DASHBOARD) }
@@ -328,6 +330,8 @@ fun CycleJournalApp(
                         },
                         appLanguage = appLanguage,
                         onLanguageChanged = onLanguageChanged,
+                        appTextScale = appTextScale,
+                        onTextScaleChanged = onTextScaleChanged,
                         isPinConfigured = isPinConfigured,
                         anonymousRecoveryKey = anonymousRecoveryKey,
                         onToggleDiscreet = { isDiscreetMode = !isDiscreetMode },
@@ -2769,6 +2773,14 @@ private fun DetailMetricRow(
 }
 
 // 5. SETTINGS SCREEN: Wired to Cloudflare Backup, Recovery Key, and Data Nuke
+/** Text-size steps offered in Settings: multiplier over the system font scale, and its label. */
+private val TEXT_SIZE_STEPS = listOf(
+    0.90f to R.string.settings_text_size_small,
+    1.00f to R.string.settings_text_size_normal,
+    1.15f to R.string.settings_text_size_large,
+    1.30f to R.string.settings_text_size_extra
+)
+
 @Composable
 fun SettingsScreenView(
     isDarkMode: Boolean,
@@ -2776,6 +2788,8 @@ fun SettingsScreenView(
     isPro: Boolean,
     appLanguage: String = "system",
     onLanguageChanged: (String) -> Unit = {},
+    appTextScale: Float = 1f,
+    onTextScaleChanged: (Float) -> Unit = {},
     isPromilMode: Boolean = false,
     onTogglePromilMode: (Boolean) -> Unit = {},
     isPinConfigured: Boolean,
@@ -2940,6 +2954,54 @@ fun SettingsScreenView(
                                         maxLines = 1
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // GROUP: UKURAN TEKS / TEXT SIZE
+        item {
+            Surface(
+                shape = RoundedCornerShape(22.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderCol),
+                shadowElevation = 1.dp
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = stringResource(R.string.section_text_size_title),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Coral600
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_text_size_hint),
+                        fontSize = 12.sp,
+                        color = textSecondary
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TEXT_SIZE_STEPS.forEach { (scale, labelRes) ->
+                            val isSelected = Math.abs(appTextScale - scale) < 0.01f
+                            Surface(
+                                onClick = { onTextScaleChanged(scale) },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                                border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = stringResource(labelRes),
+                                    fontSize = 13.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Coral600 else textPrimary,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 4.dp)
+                                )
                             }
                         }
                     }
