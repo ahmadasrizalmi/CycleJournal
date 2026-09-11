@@ -12,6 +12,7 @@ class OnboardingPreferences(context: Context) {
         private const val PREFS_NAME = "onboarding_prefs"
         private const val KEY_IS_ONBOARDING_COMPLETED = "is_onboarding_completed"
         private const val KEY_LAST_SYNC_TIMESTAMP = "last_sync_timestamp"
+        private const val KEY_IS_PROMIL_MODE = "is_promil_mode"
     }
 
     private val prefs: SharedPreferences =
@@ -33,6 +34,13 @@ class OnboardingPreferences(context: Context) {
         prefs.edit().putLong(KEY_LAST_SYNC_TIMESTAMP, timestamp).apply()
     }
 
+    fun isPromilMode(): Boolean {
+        return prefs.getBoolean(KEY_IS_PROMIL_MODE, false)
+    }
+
+    fun setPromilMode(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_IS_PROMIL_MODE, enabled).apply()
+    }
     fun clear() {
         prefs.edit().clear().commit()
     }

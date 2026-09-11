@@ -112,6 +112,8 @@ fun CycleJournalApp(
     anomalies: List<AnomalyAlert> = emptyList(),
     isPinSet: Boolean = false,
     onSavePin: (String) -> Unit = {},
+    isPromilModeInitial: Boolean = false,
+    onTogglePromilMode: (Boolean) -> Unit = {},
     downloadedReport: PdfShareHelper.SaveResult? = null,
     onDismissDownloadDialog: () -> Unit = {}
 ) {
@@ -124,6 +126,7 @@ fun CycleJournalApp(
     var isProLicenseActive by remember(isProUserActive) { mutableStateOf(isProUserActive) }
     var pinStatus by remember(isPinSet) { mutableStateOf(if (isPinSet) "Aktif (PIN 4-Digit)" else "Belum diatur (Opsional)") }
     var toastMessage by remember { mutableStateOf<String?>(null) }
+    var isPromilMode by remember(isPromilModeInitial) { mutableStateOf(isPromilModeInitial) }
 
     val today = remember { LocalDate.now() }
     var selectedCalendarDate by remember { mutableStateOf(today) }
@@ -242,6 +245,7 @@ fun CycleJournalApp(
                         fertilePrediction = fertilePrediction,
                         cycleStats = cycleStats,
                         allLogs = allLogs,
+                        isPromilMode = isPromilMode,
                         onSelectDay = {
                             selectedDay = it
                             showToast("Menampilkan data ${it.dayOfMonth} ${it.date.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }} ${it.date.year}")
@@ -298,6 +302,11 @@ fun CycleJournalApp(
                         isDarkMode = isDarkMode,
                         isDiscreet = isDiscreetMode,
                         isPro = isProLicenseActive,
+                        isPromilMode = isPromilMode,
+                        onTogglePromilMode = {
+                            isPromilMode = it
+                            onTogglePromilMode(it)
+                        },
                         pinStatus = pinStatus,
                         anonymousRecoveryKey = anonymousRecoveryKey,
                         onToggleDiscreet = { isDiscreetMode = !isDiscreetMode },
@@ -316,7 +325,7 @@ fun CycleJournalApp(
                         onRestoreLocal = onRestoreLocal,
                         onNukeData = {
                             onNukeData?.invoke() ?: run {
-                                showToast("Seluruh data lokal & cloud berhasil dibersihkan")
+                                showToast("Seluruh data lokal berhasil dibersihkan")
                                 currentScreen = AppScreen.DASHBOARD
                             }
                         },
@@ -573,6 +582,7 @@ fun DashboardScreenView(
     fertilePrediction: FertilePrediction?,
     cycleStats: CycleStats?,
     allLogs: List<DailyLogEntity>,
+    isPromilMode: Boolean = false,
     onSelectDay: (DayStripItem) -> Unit,
     onOpenCalendar: () -> Unit,
     onOpenLog: () -> Unit
@@ -594,15 +604,37 @@ fun DashboardScreenView(
     val isBleedingToday = selectedDay.phase == CyclePhase.MENSTRUATION
     val isFertileToday = selectedDay.phase == CyclePhase.FERTILE || selectedDay.phase == CyclePhase.OVULATION
 
-    val phaseBadge = when {
-        isDiscreet -> if (hasActiveCycle) "FASE AKTIF" else "SIKLUS BARU"
-        !hasActiveCycle -> "SIKLUS BARU"
-        selectedDay.date == today && currentCycleDay != null -> "HARI KE-$currentCycleDay"
-        latestCycle != null -> {
-            val dayNum = ChronoUnit.DAYS.between(latestCycle.startDate, selectedDay.date) + 1L
-            if (dayNum > 0) "HARI KE-$dayNum" else "FASE SAAT INI"
+    val predictedNextPeriod = fertilePrediction?.predictedNextPeriodDate
+        ?: (latestCycle?.startDate?.plusDays(effectiveAvgCycleDays.toLong()))
+
+    val daysUntilNextPeriod = predictedNextPeriod?.let {
+        ChronoUnit.DAYS.between(today, it).toInt()
+    }
+
+    val nextPeriodValueStr = predictedNextPeriod?.let {
+        val monthStr = it.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }
+        "${it.dayOfMonth} $monthStr"
+    } ?: "--"
+
+    val nextPeriodSubtext = when {
+        !hasActiveCycle -> "Catat haid pertama"
+        daysUntilNextPeriod == null -> "Belum ada prediksi"
+        daysUntilNextPeriod > 0 -> "$daysUntilNextPeriod hari lagi"
+        daysUntilNextPeriod == 0 -> "Hari ini!"
+        else -> "Terlambat ${-daysUntilNextPeriod} hari"
+    }
+
+    val periodDays = (latestCycle?.periodDurationDays ?: 5).toLong()
+    val subtitleDynamic = when {
+        isDiscreet -> "Pencatatan normal berlangsung"
+        !hasActiveCycle -> "Catat hari pertama haid untuk mengaktifkan kalkulasi"
+        isBleedingToday && currentCycleDay != null -> {
+            val remainingDays = (periodDays - currentCycleDay + 1).coerceAtLeast(1L)
+            "Perkiraan selesai $remainingDays hari lagi"
         }
-        else -> "FASE SAAT INI"
+        selectedDay.phase == CyclePhase.OVULATION -> "Pelepasan sel telur aktif hari ini"
+        isFertileToday -> "Peluang terbaik dalam siklus ini"
+        else -> "Kondisi hormon stabil"
     }
 
     val phaseTitle = when {
@@ -614,17 +646,6 @@ fun DashboardScreenView(
         else -> "Fase Folikuler"
     }
 
-    val ovulationCountdown = fertilePrediction?.let {
-        ChronoUnit.DAYS.between(today, it.predictedOvulationDate).toInt()
-    }
-    val subtitleText = when {
-        isDiscreet -> "Pencatatan normal berlangsung"
-        !hasActiveCycle -> "Catat hari pertama haid untuk mengaktifkan prediksi siklus."
-        ovulationCountdown != null && ovulationCountdown > 0 -> "Ovulasi dalam $ovulationCountdown hari ke depan"
-        ovulationCountdown == 0 -> "Ovulasi berlangsung hari ini!"
-        else -> "Pencatatan siklus normal berlangsung"
-    }
-
     val conceptionChance = when {
         !hasActiveCycle -> "--"
         selectedDay.phase == CyclePhase.OVULATION -> "Puncak Subur"
@@ -632,7 +653,6 @@ fun DashboardScreenView(
         isBleedingToday -> "Sangat Rendah"
         else -> "Rendah"
     }
-
     val progressRatio = if (currentCycleDay != null && hasActiveCycle) {
         (currentCycleDay.toFloat() / effectiveAvgCycleDays.toFloat()).coerceIn(0.05f, 1f)
     } else 0f
@@ -654,73 +674,166 @@ fun DashboardScreenView(
                     .background(CoralLinearGradient)
                     .padding(20.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        // Phase Badge Capsule
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = Color.White.copy(alpha = 0.22f)
-                        ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // TOP ROW: Title & Subtitle on left, Circular Day Progress on right
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
                             Text(
-                                text = phaseBadge,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
+                                text = phaseTitle,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Black,
                                 color = Color.White,
-                                letterSpacing = 0.8.sp,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                letterSpacing = (-0.5).sp
                             )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Rounded.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = Color(0xFFFFD1D8),
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = subtitleDynamic,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFFFFE4E6)
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = phaseTitle,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color.White,
-                            letterSpacing = (-0.5).sp
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Rounded.AutoAwesome,
-                                contentDescription = null,
-                                tint = Color(0xFFFFD1D8),
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = subtitleText,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFFFFE4E6)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Symmetrical Dual-Metric Cards in Hero Phase Card
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        // Circular Progress: Day X
+                        Box(
+                            modifier = Modifier.size(86.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Surface(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .defaultMinSize(minHeight = 54.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color.White.copy(alpha = 0.20f)
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                val strokePx = 7.dp.toPx()
+                                drawCircle(
+                                    color = Color.White.copy(alpha = 0.25f),
+                                    style = Stroke(width = strokePx)
+                                )
+                                drawArc(
+                                    color = Color.White,
+                                    startAngle = -90f,
+                                    sweepAngle = (progressRatio * 360f).coerceIn(15f, 360f),
+                                    useCenter = false,
+                                    style = Stroke(width = strokePx, cap = StrokeCap.Round)
+                                )
+                            }
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                    verticalArrangement = Arrangement.Center
-                                ) {
+                                Text(
+                                    text = if (currentCycleDay != null) "$currentCycleDay" else "--",
+                                    fontSize = 26.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White,
+                                    lineHeight = 28.sp
+                                )
+                                Text(
+                                    text = "Hari ini",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFFFFE4E6)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // BOTTOM ROW: FULL-WIDTH Symmetrical Dual-Metric Cards
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        // Card 1 (Left): HAID BERIKUTNYA
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .defaultMinSize(minHeight = 54.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color.White.copy(alpha = 0.20f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "HAID BERIKUTNYA",
+                                    fontSize = 8.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White.copy(alpha = 0.85f),
+                                    letterSpacing = 0.5.sp,
+                                    maxLines = 1
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = nextPeriodValueStr,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    text = nextPeriodSubtext,
+                                    fontSize = 9.sp,
+                                    color = Color(0xFFFFE4E6),
+                                    maxLines = 1
+                                )
+                            }
+                        }
+
+                        // Card 2 (Right): Dynamic Goal
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .defaultMinSize(minHeight = 54.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color.White.copy(alpha = 0.20f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                if (isPromilMode) {
+                                    Text(
+                                        text = "MASA SUBUR & OVULASI",
+                                        fontSize = 8.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White.copy(alpha = 0.85f),
+                                        letterSpacing = 0.5.sp,
+                                        maxLines = 1
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    val ovDateStr = fertilePrediction?.predictedOvulationDate?.let {
+                                        val m = it.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }
+                                        "${it.dayOfMonth} $m"
+                                    } ?: "--"
+                                    Text(
+                                        text = ovDateStr,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFFEF08A),
+                                        maxLines = 1
+                                    )
+                                    Text(
+                                        text = "Peluang: $conceptionChance",
+                                        fontSize = 9.sp,
+                                        color = Color(0xFFFFE4E6),
+                                        maxLines = 1
+                                    )
+                                } else {
                                     Text(
                                         text = "RATA-RATA SIKLUS",
                                         fontSize = 8.5.sp,
@@ -730,99 +843,31 @@ fun DashboardScreenView(
                                         maxLines = 1
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
+                                    val avgText = when {
+                                        cycleStats != null -> String.format(Locale.US, "%.0f Hari", cycleStats.averageLength)
+                                        hasActiveCycle -> "28 Hari"
+                                        else -> "-- Hari"
+                                    }
                                     Text(
-                                        text = when {
-                                            cycleStats != null -> String.format(Locale.US, "%.0f Hari (±%.1f)", cycleStats.averageLength, stdDev ?: 1.5)
-                                            hasActiveCycle -> "28 Hari (Estimasi Awal)"
-                                            else -> "-- Hari"
-                                        },
-                                        fontSize = 12.5.sp,
+                                        text = avgText,
+                                        fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White,
                                         maxLines = 1
                                     )
-                                }
-                            }
-
-                            Surface(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .defaultMinSize(minHeight = 54.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color.White.copy(alpha = 0.20f)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                    verticalArrangement = Arrangement.Center
-                                ) {
+                                    val varText = when {
+                                        cycleStats?.standardDeviation != null -> "Variasi ±${String.format(Locale.US, "%.1f", cycleStats.standardDeviation)} hari"
+                                        hasActiveCycle -> "Estimasi awal"
+                                        else -> "Belum ada riwayat"
+                                    }
                                     Text(
-                                        text = "PELUANG KONSEPSI",
-                                        fontSize = 8.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White.copy(alpha = 0.85f),
-                                        letterSpacing = 0.5.sp,
-                                        maxLines = 1
-                                    )
-                                    Spacer(modifier = Modifier.height(2.dp))
-                                    Text(
-                                        text = conceptionChance,
-                                        fontSize = 12.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFFEF08A),
+                                        text = varText,
+                                        fontSize = 9.sp,
+                                        color = Color(0xFFFFE4E6),
                                         maxLines = 1
                                     )
                                 }
                             }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Circular Progress: Day X of Average Days (50% sweep if day 14 of 28)
-                    Box(
-                        modifier = Modifier.size(92.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            val strokePx = 7.dp.toPx()
-                            // Background Track Ring
-                            drawCircle(
-                                color = Color.White.copy(alpha = 0.25f),
-                                style = Stroke(width = strokePx)
-                            )
-                            // Progress Arc
-                            drawArc(
-                                color = Color.White,
-                                startAngle = -90f,
-                                sweepAngle = (progressRatio * 360f).coerceIn(15f, 360f),
-                                useCenter = false,
-                                style = Stroke(width = strokePx, cap = StrokeCap.Round)
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "Hari",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFFFFE4E6)
-                            )
-                            Text(
-                                text = if (currentCycleDay != null) "$currentCycleDay" else "--",
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White,
-                                lineHeight = 28.sp
-                            )
-                            Text(
-                                text = if (hasActiveCycle) "dari ${effectiveAvgCycleDays.toInt()}" else "dari --",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFFFFE4E6)
-                            )
                         }
                     }
                 }
@@ -2417,6 +2462,8 @@ fun SettingsScreenView(
     isDarkMode: Boolean,
     isDiscreet: Boolean,
     isPro: Boolean,
+    isPromilMode: Boolean = false,
+    onTogglePromilMode: (Boolean) -> Unit = {},
     pinStatus: String,
     anonymousRecoveryKey: String,
     onToggleDiscreet: () -> Unit,
@@ -2508,6 +2555,46 @@ fun SettingsScreenView(
             }
         }
 
+        // GROUP: TUJUAN APLIKASI (GOAL)
+        item {
+            Surface(
+                shape = RoundedCornerShape(22.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderCol),
+                shadowElevation = 1.dp
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("TUJUAN PELACAKAN SIKLUS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                            Text("Mode Program Hamil (Promil)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(
+                                text = if (isPromilMode)
+                                    "Aktif: Beranda menampilkan masa subur, ovulasi & peluang konsepsi."
+                                else
+                                    "Nonaktif: Beranda bersih & fokus jadwal haid berikutnya (ramah remaja/lajang).",
+                                fontSize = 10.5.sp,
+                                color = textSecondary,
+                                lineHeight = 14.sp
+                            )
+                        }
+                        Switch(
+                            checked = isPromilMode,
+                            onCheckedChange = {
+                                onTogglePromilMode(it)
+                                onToast(if (it) "Mode Promil Diaktifkan" else "Mode Biasa (Pantau Siklus) Aktif")
+                            },
+                            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Coral500)
+                        )
+                    }
+                }
+            }
+        }
         // GROUP 1: KEAMANAN & AKSES APLIKASI
         item {
             Surface(
@@ -3431,11 +3518,13 @@ fun DailyLogBottomSheet(
             }
 
             // Cervical Mucus Selector
-            Column {
+            // Cervical Mucus Selector (2 rows x 3 columns for balanced width)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("Lendir Serviks (Sintotermal)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(6.dp))
+
+                // Row 1: Tidak, Kering, Lengket
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Tidak", "Kering", "Lengket", "Krim", "Cair", "Putih Telur").forEach { mucus ->
+                    listOf("Tidak", "Kering", "Lengket").forEach { mucus ->
                         val isSelected = mucus == selectedMucus
                         Surface(
                             modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
@@ -3444,11 +3533,36 @@ fun DailyLogBottomSheet(
                             border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
                         ) {
                             Text(
-                                mucus,
-                                fontSize = 10.sp,
-                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
+                                text = mucus,
+                                fontSize = 10.5.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isSelected) Coral600 else Slate600,
-                                modifier = Modifier.padding(vertical = 7.dp)
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Row 2: Krim, Cair, Putih Telur
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf("Krim", "Cair", "Putih Telur").forEach { mucus ->
+                        val isSelected = mucus == selectedMucus
+                        Surface(
+                            modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                            border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
+                        ) {
+                            Text(
+                                text = mucus,
+                                fontSize = 10.5.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Coral600 else Slate600,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
                     }

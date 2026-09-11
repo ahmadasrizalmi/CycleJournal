@@ -197,7 +197,9 @@ class MainActivity : FragmentActivity() {
                         anomalies = anomalies,
                         downloadedReport = downloadedReport,
                         onDismissDownloadDialog = { cycleViewModel.clearDownloadedReport() },
-                        isPinSet = pinManager.isPinSet()
+                        isPinSet = pinManager.isPinSet(),
+                        isPromilModeInitial = prefs.isPromilMode(),
+                        onTogglePromilMode = { prefs.setPromilMode(it) }
                     )
                     if (isRestorePinInputOpen && pendingInspectedBackup != null) {
                         androidx.compose.material3.AlertDialog(
