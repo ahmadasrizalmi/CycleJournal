@@ -56,7 +56,7 @@ fun PinLockScreen(
             PinDotsView(pinLength = pin.length, isError = isError)
 
             if (isError) {
-                Text(stringResource(R.string.security_pin_incorrect), color = AlertText, fontSize = 13.sp)
+                Text(stringResource(R.string.security_pin_incorrect), color = AlertText, fontSize = 14.sp)
             }
 
             NumericKeypad(onKeyPress = { key ->

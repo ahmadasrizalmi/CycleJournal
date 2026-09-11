@@ -236,6 +236,15 @@ Catatan: "</string>
     <string name="daily_pain_scale_title">Tingkat Nyeri (Skala 0–10)</string>
     <string name="daily_save">Simpan</string>
     <string name="daily_save_log">Simpan Catatan Hari Ini</string>
+    <string name="daily_detail_show">Tambah detail klinis</string>
+    <string name="daily_detail_hide">Sembunyikan detail klinis</string>
+    <string name="daily_detail_subtitle_empty">Suhu basal · lendir serviks · gejala · catatan</string>
+    <string name="daily_detail_subtitle_filled">%1$d dari 5 detail terisi</string>
+    <string name="daily_save_hint">Menyimpan aliran, tingkat nyeri, dan detail yang kamu isi</string>
+    <string name="daily_discard_title">Buang perubahan?</string>
+    <string name="daily_discard_message">Catatan ini punya perubahan yang belum disimpan.</string>
+    <string name="daily_discard_confirm">Buang</string>
+    <string name="daily_discard_keep">Lanjut mengisi</string>
     <string name="daily_symptom_bloating">Perut Kembung</string>
     <string name="daily_symptom_fatigue">Kelelahan</string>
     <string name="daily_symptom_headache">Sakit Kepala</string>

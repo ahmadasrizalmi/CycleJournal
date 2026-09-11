@@ -45,15 +45,15 @@ val Typography = Typography(
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.sp,
+        fontSize = 14.sp,
         lineHeight = 18.sp,
         color = TextSecondary
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 14.sp,
+        fontSize = 13.sp,
+        lineHeight = 15.sp,
         color = TextSecondary
     )
 )

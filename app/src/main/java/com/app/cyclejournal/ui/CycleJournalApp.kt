@@ -365,7 +365,7 @@ fun CycleJournalApp(
                 Text(
                     text = msg,
                     color = Color.White,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center
                 )
@@ -431,7 +431,7 @@ fun CycleJournalApp(
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = stringResource(R.string.app_download_saved_message, fileTypeTitle),
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = if (isDarkMode) Slate400 else Slate600
                         )
                         Surface(
@@ -441,7 +441,7 @@ fun CycleJournalApp(
                         ) {
                             Text(
                                 text = "Download/CycleJournal/${res.fileName}",
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Coral600,
@@ -527,7 +527,7 @@ fun AppHeader(
                 if (isDiscreetMode) {
                     Text(
                         text = stringResource(R.string.header_discreet_mode_label),
-                        fontSize = 9.5.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Slate400
                     )
@@ -721,7 +721,7 @@ fun DashboardScreenView(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = subtitleDynamic,
-                                    fontSize = 12.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFFFFE4E6)
                                 )
@@ -761,7 +761,7 @@ fun DashboardScreenView(
                                 )
                                 Text(
                                     text = stringResource(R.string.dash_day_progress_label),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFFFFE4E6)
                                 )
@@ -790,25 +790,25 @@ fun DashboardScreenView(
                             ) {
                                 Text(
                                     text = stringResource(R.string.dash_hero_next_period_header),
-                                    fontSize = 8.5.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White.copy(alpha = 0.85f),
                                     letterSpacing = 0.5.sp,
-                                    maxLines = 1
+                                    maxLines = 2
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = nextPeriodValueStr,
-                                    fontSize = 13.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
-                                    maxLines = 1
+                                    maxLines = 2
                                 )
                                 Text(
                                     text = nextPeriodSubtext,
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     color = Color(0xFFFFE4E6),
-                                    maxLines = 1
+                                    maxLines = 2
                                 )
                             }
                         }
@@ -874,11 +874,11 @@ fun DashboardScreenView(
 
                                     Text(
                                         text = headerText,
-                                        fontSize = 8.5.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White.copy(alpha = 0.85f),
                                         letterSpacing = 0.5.sp,
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     Text(
@@ -886,22 +886,22 @@ fun DashboardScreenView(
                                         fontSize = if (valueText.length > 10) 11.5.sp else 13.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = valueColor,
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                     Text(
                                         text = subText,
-                                        fontSize = 9.sp,
+                                        fontSize = 12.sp,
                                         color = Color(0xFFFFE4E6),
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                 } else {
                                     Text(
                                         text = stringResource(R.string.dash_hero_average_cycle_header),
-                                        fontSize = 8.5.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White.copy(alpha = 0.85f),
                                         letterSpacing = 0.5.sp,
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     val avgText = when {
@@ -911,10 +911,10 @@ fun DashboardScreenView(
                                     }
                                     Text(
                                         text = avgText,
-                                        fontSize = 13.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White,
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                     val varText = when {
                                         cycleStats?.standardDeviation != null -> stringResource(R.string.dash_avg_cycle_variation_format, cycleStats.standardDeviation)
@@ -923,9 +923,9 @@ fun DashboardScreenView(
                                     }
                                     Text(
                                         text = varText,
-                                        fontSize = 9.sp,
+                                        fontSize = 12.sp,
                                         color = Color(0xFFFFE4E6),
-                                        maxLines = 1
+                                        maxLines = 2
                                     )
                                 }
                             }
@@ -952,7 +952,7 @@ fun DashboardScreenView(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(R.string.dash_week_of_format, today.monthName(), today.year),
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
                             )
@@ -962,7 +962,7 @@ fun DashboardScreenView(
 
                         Text(
                             text = stringResource(R.string.dash_open_full_calendar),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
                             modifier = Modifier.clickable { onOpenCalendar() }
@@ -1000,13 +1000,13 @@ fun DashboardScreenView(
                             ) {
                                 Text(
                                     text = item.dayName,
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = if (isSelected) Color(0xFFFCA5A5) else if (isPeak) MedicalTeal else Slate400
                                 )
                                 Text(
                                     text = "${item.dayOfMonth}",
-                                    fontSize = 13.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Black,
                                     color = if (isSelected) Color.White else if (isPeak) MedicalTeal else textPrimary
                                 )
@@ -1054,7 +1054,7 @@ fun DashboardScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
                                     .size(30.dp)
@@ -1065,11 +1065,13 @@ fun DashboardScreenView(
                                 Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(stringResource(R.string.dash_bbt_chart_title), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                Text(stringResource(R.string.dash_bbt_chart_subtitle), fontSize = 10.sp, color = textSecondary)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.dash_bbt_chart_title), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.dash_bbt_chart_subtitle), fontSize = 12.sp, color = textSecondary)
                             }
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Surface(
                             shape = RoundedCornerShape(10.dp),
@@ -1078,7 +1080,7 @@ fun DashboardScreenView(
                         ) {
                             Text(
                                 text = if (hasRealBbt) stringResource(R.string.dash_bbt_status_normal) else stringResource(R.string.dash_bbt_status_no_data),
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (hasRealBbt) Color(0xFF065F46) else Slate500,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
@@ -1094,7 +1096,7 @@ fun DashboardScreenView(
                     ) {
                         Text(
                             text = stringResource(R.string.dash_bbt_coverline),
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                             color = Slate400
@@ -1177,17 +1179,17 @@ fun DashboardScreenView(
                         ) {
                             Text(
                                 text = stringResource(R.string.dash_bbt_empty_title),
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
                             )
                             Spacer(modifier = Modifier.height(3.dp))
                             Text(
                                 text = stringResource(R.string.dash_bbt_empty_hint),
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = textSecondary,
                                 textAlign = TextAlign.Center,
-                                lineHeight = 14.sp
+                                lineHeight = 15.sp
                             )
                         }
                     }
@@ -1199,9 +1201,9 @@ fun DashboardScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(stringResource(R.string.dash_bbt_phase_follicular_low), fontSize = 8.5.sp, color = textSecondary)
-                        Text(stringResource(R.string.dash_bbt_rise), fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                        Text(stringResource(R.string.dash_bbt_phase_luteal_high), fontSize = 8.5.sp, color = textSecondary)
+                        Text(stringResource(R.string.dash_bbt_phase_follicular_low), fontSize = 12.sp, color = textSecondary)
+                        Text(stringResource(R.string.dash_bbt_rise), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                        Text(stringResource(R.string.dash_bbt_phase_luteal_high), fontSize = 12.sp, color = textSecondary)
                     }
                 }
             }
@@ -1238,7 +1240,7 @@ fun DashboardScreenView(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = stringResource(R.string.dash_today_note_format, selectedDay.dayOfMonth, selectedDay.date.monthAbbr()),
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textPrimary
                             )
@@ -1246,7 +1248,7 @@ fun DashboardScreenView(
 
                         Text(
                             text = stringResource(R.string.dash_edit_note),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
                             modifier = Modifier.clickable { onOpenLog() }
@@ -1263,8 +1265,8 @@ fun DashboardScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text(stringResource(R.string.dash_log_basal_temp), fontSize = 9.sp, color = textSecondary)
-                                Text(if (log?.basalBodyTempCelsius != null) String.format(Locale.US, "%.2f °C", log.basalBodyTempCelsius) else "-- °C", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Monospace, color = textPrimary)
+                                Text(stringResource(R.string.dash_log_basal_temp), fontSize = 12.sp, color = textSecondary)
+                                Text(if (log?.basalBodyTempCelsius != null) String.format(Locale.US, "%.2f °C", log.basalBodyTempCelsius) else "-- °C", fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.Monospace, color = textPrimary)
                             }
                         }
 
@@ -1275,8 +1277,8 @@ fun DashboardScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text(stringResource(R.string.dash_log_cervical_mucus), fontSize = 9.sp, color = textSecondary)
-                                Text(if (log != null && log.cervicalMucus != CervicalMucusType.NONE) mucusLabelFor(log.cervicalMucus, resources) else "--", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.dash_log_cervical_mucus), fontSize = 12.sp, color = textSecondary)
+                                Text(if (log != null && log.cervicalMucus != CervicalMucusType.NONE) mucusLabelFor(log.cervicalMucus, resources) else "--", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                             }
                         }
                     }
@@ -1338,13 +1340,13 @@ fun DashboardScreenView(
                             Column {
                                 Text(
                                     stringResource(R.string.dash_vas_scale_title),
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = vasTitleColor
                                 )
                                 Text(
                                     text = vasDisplayDesc,
-                                    fontSize = 11.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = vasTextColor
                                 )
@@ -1356,7 +1358,7 @@ fun DashboardScreenView(
                             ) {
                                 Text(
                                     text = vasBadgeText,
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -1446,7 +1448,7 @@ fun CalendarScreenView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(R.string.cal_eyebrow_cycle_ovulation_map), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.cal_eyebrow_cycle_ovulation_map), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
                     Text(stringResource(R.string.cal_header_title), fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 }
 
@@ -1460,7 +1462,7 @@ fun CalendarScreenView(
                     color = Color(0xFFFFF1F2),
                     border = BorderStroke(1.dp, Color(0xFFFFE4E6))
                 ) {
-                    Text(stringResource(R.string.cal_today), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
+                    Text(stringResource(R.string.cal_today), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral600, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
                 }
             }
         }
@@ -1508,7 +1510,7 @@ fun CalendarScreenView(
                                 } else {
                                     stringResource(R.string.cal_prediction_hint)
                                 },
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = if (fertilePrediction != null) Coral600 else Slate400,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -1531,7 +1533,7 @@ fun CalendarScreenView(
                     val headers = (1..7).map { DayOfWeek.of(it).getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
                     Row(modifier = Modifier.fillMaxWidth()) {
                         headers.forEach { h ->
-                            Text(h, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textSecondary, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                            Text(h, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textSecondary, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
                         }
                     }
 
@@ -1602,7 +1604,7 @@ fun CalendarScreenView(
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             Text(
                                                 text = "$dayNum",
-                                                fontSize = 11.sp,
+                                                fontSize = 13.sp,
                                                 fontWeight = if (isSelected || isPeakOvulation || isActualHaid || isPredictedHaid) FontWeight.Black else FontWeight.SemiBold,
                                                 color = textColor
                                             )
@@ -1680,7 +1682,7 @@ fun CalendarScreenView(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "${selectedCalendarDate.dayOfMonth} ${selectedCalendarDate.monthName()} ${selectedCalendarDate.year}",
-                                    fontSize = 13.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.Black,
                                     color = textPrimary
                                 )
@@ -1695,7 +1697,7 @@ fun CalendarScreenView(
                                 ) {
                                     Text(
                                         text = phaseBadgeText,
-                                        fontSize = 9.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = when {
                                             !hasActiveCycle -> Slate500
@@ -1718,7 +1720,7 @@ fun CalendarScreenView(
                                     cycleDayForSelected != null -> stringResource(R.string.cal_cycle_day_format, cycleDayForSelected)
                                     else -> stringResource(R.string.cal_status_outside_active_cycle)
                                 },
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 color = textSecondary
                             )
                         }
@@ -1730,7 +1732,7 @@ fun CalendarScreenView(
                         ) {
                             Icon(Icons.Default.EditCalendar, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (log != null) stringResource(R.string.cal_action_edit_log) else stringResource(R.string.cal_action_add_log), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(if (log != null) stringResource(R.string.cal_action_edit_log) else stringResource(R.string.cal_action_add_log), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -1768,7 +1770,7 @@ fun LegendPill(color: Color, label: String, textSecondary: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(modifier = Modifier.width(4.dp))
-        Text(label, fontSize = 10.sp, color = textSecondary)
+        Text(label, fontSize = 12.sp, color = textSecondary)
     }
 }
 
@@ -1781,8 +1783,8 @@ fun ParameterBox(label: String, value: String, modifier: Modifier, isDarkMode: B
         border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(label, fontSize = 9.sp, color = textSecondary)
-            Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+            Text(label, fontSize = 12.sp, color = textSecondary)
+            Text(value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
         }
     }
 }
@@ -1849,16 +1851,16 @@ fun CyclePredictionInsightCard(
                     Column {
                         Text(
                             text = stringResource(R.string.insight_title),
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = textPrimary,
-                            maxLines = 1
+                            maxLines = 2
                         )
                         Text(
                             text = stringResource(R.string.insight_subtitle),
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = textSecondary,
-                            maxLines = 1
+                            maxLines = 2
                         )
                     }
                 }
@@ -1882,7 +1884,7 @@ fun CyclePredictionInsightCard(
                                     else -> pluralStringResource(R.plurals.app_days_late, (-daysToNextPeriod).toInt(), (-daysToNextPeriod).toInt())
                                 }
                             } else stringResource(R.string.insight_status_ready),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = FontFamily.Monospace,
                             color = if (daysToNextPeriod != null && daysToNextPeriod < 0) Color(0xFFDC2626) else Coral700
@@ -1913,13 +1915,13 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(R.string.insight_next_period_label), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.insight_next_period_label), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 2)
                         Text(
                             text = if (nextDate != null) "${nextDate.dayOfMonth} ${nextDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Black,
                             color = Coral600,
-                            maxLines = 1
+                            maxLines = 2
                         )
                         Text(
                             text = if (daysToNextPeriod != null) {
@@ -1929,9 +1931,9 @@ fun CyclePredictionInsightCard(
                                     else -> pluralStringResource(R.plurals.app_days_late, (-daysToNextPeriod).toInt(), (-daysToNextPeriod).toInt())
                                 }
                             } else "--",
-                            fontSize = 8.5.sp,
+                            fontSize = 12.sp,
                             color = if (daysToNextPeriod != null && daysToNextPeriod < 0) Color(0xFFDC2626) else textSecondary,
-                            maxLines = 1
+                            maxLines = 2
                         )
                     }
                 }
@@ -1951,21 +1953,21 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(R.string.app_phase_ovulation_peak), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.app_phase_ovulation_peak), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 2)
                         Text(
                             text = if (ovulationDate != null) "${ovulationDate.dayOfMonth} ${ovulationDate.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Black,
                             color = MedicalTeal,
-                            maxLines = 1
+                            maxLines = 2
                         )
                         Text(
                             text = if (daysToOvulation != null) {
                                 if (daysToOvulation > 0) pluralStringResource(R.plurals.app_days_left, daysToOvulation.toInt(), daysToOvulation.toInt()) else if (daysToOvulation == 0L) stringResource(R.string.app_today_exclaim) else stringResource(R.string.insight_ovulation_passed)
                             } else "--",
-                            fontSize = 8.5.sp,
+                            fontSize = 12.sp,
                             color = textSecondary,
-                            maxLines = 1
+                            maxLines = 2
                         )
                     }
                 }
@@ -1985,15 +1987,15 @@ fun CyclePredictionInsightCard(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 8.5.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 1)
+                        Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textSecondary, maxLines = 2)
                         Text(
                             text = if (fertileStart != null && fertileEnd != null) "${fertileStart.dayOfMonth}-${fertileEnd.dayOfMonth} ${fertileStart.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }}" else "--",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MedicalCyan,
-                            maxLines = 1
+                            maxLines = 2
                         )
-                        Text(if (fertileStart != null) stringResource(R.string.insight_fertile_days) else "--", fontSize = 8.5.sp, color = textSecondary, maxLines = 1)
+                        Text(if (fertileStart != null) stringResource(R.string.insight_fertile_days) else "--", fontSize = 12.sp, color = textSecondary, maxLines = 2)
                     }
                 }
             }
@@ -2017,7 +2019,7 @@ fun CyclePredictionInsightCard(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.report_luteal_assumption_note, cycleStats?.averageLength?.let { String.format(Locale.US, "%.0f", it) } ?: "28"),
-                    fontSize = 9.sp,
+                    fontSize = 12.sp,
                     color = Color(0xFF065F46)
                 )
             }
@@ -2069,7 +2071,7 @@ fun SpOgReportScreenView(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isDarkMode) DarkCardBackground else Slate100
                 ) {
-                    Text(stringResource(R.string.report_section_data_summary), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                    Text(stringResource(R.string.report_section_data_summary), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate600, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                 }
             }
         }
@@ -2088,12 +2090,12 @@ fun SpOgReportScreenView(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            Text(stringResource(R.string.report_section_clinical_summary), fontSize = 12.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                            Text(stringResource(R.string.report_anonymous_id_label, anonymousRecoveryKey), fontSize = 9.sp, fontFamily = FontFamily.Monospace, color = textSecondary)
+                            Text(stringResource(R.string.report_section_clinical_summary), fontSize = 14.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                            Text(stringResource(R.string.report_anonymous_id_label, anonymousRecoveryKey), fontSize = 12.sp, fontFamily = FontFamily.Monospace, color = textSecondary)
                         }
                         Text(
                             text = "${today.dayOfMonth} ${today.month.name.lowercase().take(3).replaceFirstChar { c -> c.uppercase() }} ${today.year}",
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = textPrimary
                         )
@@ -2121,7 +2123,7 @@ fun SpOgReportScreenView(
                             border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
-                                Text(stringResource(R.string.report_bbt_biphasic_pattern), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.report_bbt_biphasic_pattern), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Canvas(modifier = Modifier.fillMaxWidth().height(36.dp)) {
                                     drawLine(
@@ -2153,9 +2155,9 @@ fun SpOgReportScreenView(
                                     drawPath(path, Coral600, style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round))
                                 }
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text(stringResource(R.string.report_coverline_value), fontSize = 8.sp, color = textSecondary)
-                                    Text(stringResource(R.string.report_metric_biphasic_shift), fontSize = 8.sp, fontWeight = FontWeight.Bold, color = MedicalTeal)
-                                    Text(stringResource(R.string.report_metric_luteal_phase), fontSize = 8.sp, color = textSecondary)
+                                    Text(stringResource(R.string.report_coverline_value), fontSize = 12.sp, color = textSecondary)
+                                    Text(stringResource(R.string.report_metric_biphasic_shift), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MedicalTeal)
+                                    Text(stringResource(R.string.report_metric_luteal_phase), fontSize = 12.sp, color = textSecondary)
                                 }
                             }
                         }
@@ -2169,16 +2171,16 @@ fun SpOgReportScreenView(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
                                     text = stringResource(R.string.report_bbt_basal_pattern),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = textPrimary
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = stringResource(R.string.report_bbt_empty_hint),
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     color = textSecondary,
-                                    lineHeight = 13.sp
+                                    lineHeight = 14.sp
                                 )
                             }
                         }
@@ -2199,14 +2201,14 @@ fun SpOgReportScreenView(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.Info, contentDescription = null, tint = MedicalRose, modifier = Modifier.size(15.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text(stringResource(R.string.report_attention_prefix) + stringResource(alert.type.descriptionRes), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                                    Text(stringResource(R.string.report_attention_prefix) + stringResource(alert.type.descriptionRes), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = alert.localizedDetail(resources),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     color = Color(0xFF9F1239),
-                                    lineHeight = 14.sp
+                                    lineHeight = 15.sp
                                 )
                             }
                         }
@@ -2223,7 +2225,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(stringResource(R.string.report_status_normal), fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
+                                Text(stringResource(R.string.report_status_normal), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF065F46))
                             }
                         }
                     } else {
@@ -2239,7 +2241,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Icon(Icons.Outlined.Shield, contentDescription = null, tint = Coral600, modifier = Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(stringResource(R.string.report_status_monitoring), fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
+                                Text(stringResource(R.string.report_status_monitoring), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textSecondary)
                             }
                         }
                     }
@@ -2253,13 +2255,13 @@ fun SpOgReportScreenView(
                     ) {
                         Text(
                             text = stringResource(R.string.report_section_timeline_visualization),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = textSecondary
                         )
                         Text(
                             text = pluralStringResource(R.plurals.report_cycle_count, completedCycles.size + if (latestCycle != null) 1 else 0, completedCycles.size + if (latestCycle != null) 1 else 0),
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = textSecondary
                         )
                     }
@@ -2285,7 +2287,7 @@ fun SpOgReportScreenView(
                             ) {
                                 Text(
                                     text = stringResource(filter.labelRes),
-                                    fontSize = 11.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                     color = if (isSelected) Color.White else textSecondary,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
@@ -2305,12 +2307,12 @@ fun SpOgReportScreenView(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Coral500))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.app_timeline_menstruation), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.app_timeline_menstruation), fontSize = 12.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF67E8F9)))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.cal_legend_fertile_window), fontSize = 12.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
@@ -2321,12 +2323,12 @@ fun SpOgReportScreenView(
                                     .border(1.5.dp, Color(0xFF0891B2), CircleShape)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.app_timeline_ovulation), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.app_timeline_ovulation), fontSize = 12.sp, color = textSecondary)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.width(2.dp).height(8.dp).background(if (isDarkMode) Color.White else Color(0xFF1E293B)))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.cal_today), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.cal_today), fontSize = 12.sp, color = textSecondary)
                         }
                     }
 
@@ -2384,7 +2386,7 @@ fun SpOgReportScreenView(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.report_empty_history_message),
-                                        fontSize = 11.sp,
+                                        fontSize = 13.sp,
                                         color = textSecondary,
                                         textAlign = TextAlign.Center,
                                         lineHeight = 15.sp
@@ -2396,7 +2398,7 @@ fun SpOgReportScreenView(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Recent Daily Logs Table (Real Historical Log Entries)
-                    Text(stringResource(R.string.report_section_recent_daily_logs), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = textSecondary)
+                    Text(stringResource(R.string.report_section_recent_daily_logs), fontSize = 12.sp, fontWeight = FontWeight.ExtraBold, color = textSecondary)
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Surface(
@@ -2412,10 +2414,10 @@ fun SpOgReportScreenView(
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(stringResource(R.string.app_column_date), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1.2f))
-                                Text(stringResource(R.string.app_column_blood), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
-                                Text(stringResource(R.string.app_column_bbt_temp), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
-                                Text(stringResource(R.string.app_column_pain), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_date), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1.2f))
+                                Text(stringResource(R.string.app_column_blood), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_bbt_temp), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.app_column_pain), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textSecondary, modifier = Modifier.weight(1f))
                             }
                             HorizontalDivider(color = if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.5f))
 
@@ -2438,16 +2440,16 @@ fun SpOgReportScreenView(
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(dateStr, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textPrimary, modifier = Modifier.weight(1.2f))
+                                        Text(dateStr, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textPrimary, modifier = Modifier.weight(1.2f))
                                         Text(
                                             flowStr,
-                                            fontSize = 10.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = if (log.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) FontWeight.Bold else FontWeight.Normal,
                                             color = if (log.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) Coral600 else textPrimary,
                                             modifier = Modifier.weight(1f)
                                         )
-                                        Text(bbtStr, fontSize = 10.sp, color = textPrimary, modifier = Modifier.weight(1f))
-                                        Text(painStr, fontSize = 10.sp, color = if (log.painVasScore >= 4) MedicalRose else textPrimary, modifier = Modifier.weight(1f))
+                                        Text(bbtStr, fontSize = 12.sp, color = textPrimary, modifier = Modifier.weight(1f))
+                                        Text(painStr, fontSize = 12.sp, color = if (log.painVasScore >= 4) MedicalRose else textPrimary, modifier = Modifier.weight(1f))
                                     }
                                 }
                             } else {
@@ -2459,7 +2461,7 @@ fun SpOgReportScreenView(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.report_empty_daily_logs),
-                                        fontSize = 10.sp,
+                                        fontSize = 12.sp,
                                         color = textSecondary,
                                         textAlign = TextAlign.Center
                                     )
@@ -2477,25 +2479,25 @@ fun SpOgReportScreenView(
                 // 1. Primary Button: PDF Medis
                 Button(
                     onClick = { onSharePdf?.invoke() ?: onToast(resources.getString(R.string.report_export_preparing_summary)) },
-                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                 ) {
                     Icon(Icons.Rounded.PictureAsPdf, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.report_action_download_summary_pdf), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.report_action_download_summary_pdf), fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // 2. Secondary Button: CSV Mentah (Excel / Sheets)
                 OutlinedButton(
                     onClick = { onExportCsv?.invoke() ?: onToast(resources.getString(R.string.app_export_exporting_raw_csv)) },
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(1.dp, Slate200)
                 ) {
                     Icon(Icons.Rounded.TableView, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.app_action_download_raw_csv), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                    Text(stringResource(R.string.app_action_download_raw_csv), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                 }
 
                 // 3. Subtle Pro Text Link (Placemarked underneath both action buttons)
@@ -2513,7 +2515,7 @@ fun SpOgReportScreenView(
                                     append(stringResource(R.string.app_action_open_lifetime_pro_license))
                                 }
                             },
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -2610,7 +2612,7 @@ fun CycleDetailBottomSheet(
                     )
                     Text(
                         text = "${cycle.startDate.format(fmt)} – ${if (isOngoing) stringResource(R.string.detail_status_ongoing) else cycle.endDate!!.format(fmt)}",
-                        fontSize = 11.sp,
+                        fontSize = 13.sp,
                         color = textSecondary
                     )
                 }
@@ -2692,7 +2694,7 @@ fun CycleDetailBottomSheet(
             // Symptoms tags if any
             if (symptomsList.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.detail_symptoms_recorded), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textSecondary)
+                    Text(stringResource(R.string.detail_symptoms_recorded), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textSecondary)
                     Row(
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -2705,7 +2707,7 @@ fun CycleDetailBottomSheet(
                             ) {
                                 Text(
                                     text = sym,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Coral600,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -2723,7 +2725,7 @@ fun CycleDetailBottomSheet(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .heightIn(min = 48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Coral500)
             ) {
@@ -2731,7 +2733,7 @@ fun CycleDetailBottomSheet(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.detail_open_in_calendar, cycle.startDate.monthName()),
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -2760,9 +2762,9 @@ private fun DetailMetricRow(
                 modifier = Modifier.size(15.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(label, fontSize = 11.sp, color = Slate500)
+            Text(label, fontSize = 13.sp, color = Slate500)
         }
-        Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = valueColor)
+        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = valueColor)
     }
 }
 
@@ -2816,7 +2818,7 @@ fun SettingsScreenView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(R.string.settings_section_preferences), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_preferences), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
                     Text(stringResource(R.string.title_settings), fontSize = 20.sp, fontWeight = FontWeight.Black, color = textPrimary)
                 }
                 Surface(
@@ -2840,7 +2842,7 @@ fun SettingsScreenView(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         if (isPro) stringResource(R.string.settings_pro_lifetime_active) else stringResource(R.string.settings_free_version_ads),
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.White.copy(alpha = 0.85f)
                     )
@@ -2852,7 +2854,7 @@ fun SettingsScreenView(
                     )
                     Text(
                         text = if (isPro) stringResource(R.string.settings_pro_features_unlimited) else stringResource(R.string.settings_pro_purchase_description),
-                        fontSize = 11.sp,
+                        fontSize = 13.sp,
                         color = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.padding(top = 2.dp)
                     )
@@ -2865,7 +2867,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Color(0xFFB45309), modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.settings_open_pro_license), color = Color(0xFFB45309), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_open_pro_license), color = Color(0xFFB45309), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -2883,7 +2885,7 @@ fun SettingsScreenView(
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
                         text = stringResource(R.string.section_language_title),
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Coral600
                     )
@@ -2932,7 +2934,7 @@ fun SettingsScreenView(
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = label,
-                                        fontSize = 11.sp,
+                                        fontSize = 13.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                         color = if (isSelected) Coral600 else textPrimary,
                                         maxLines = 1
@@ -2954,7 +2956,7 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(stringResource(R.string.settings_section_tracking_goal), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_tracking_goal), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -2962,15 +2964,15 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                            Text(stringResource(R.string.settings_promil_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_promil_mode), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                             Text(
                                 text = if (isPromilMode)
                                     stringResource(R.string.settings_promil_on_description)
                                 else
                                     stringResource(R.string.settings_promil_off_description),
-                                fontSize = 10.5.sp,
+                                fontSize = 13.sp,
                                 color = textSecondary,
-                                lineHeight = 14.sp
+                                lineHeight = 15.sp
                             )
                         }
                         Switch(
@@ -2994,7 +2996,7 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.settings_section_security), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_security), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     // Row 1: PIN
                     Row(
@@ -3003,10 +3005,10 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_pin_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_pin_lock), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                             Text(
                                 text = if (isPinConfigured) stringResource(R.string.settings_pin_active) else stringResource(R.string.settings_pin_unset),
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 color = textSecondary
                             )
                         }
@@ -3016,7 +3018,7 @@ fun SettingsScreenView(
                             colors = ButtonDefaults.buttonColors(containerColor = Coral500),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                         ) {
-                            Text(stringResource(R.string.settings_set_pin), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_set_pin), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -3029,8 +3031,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_biometric_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_biometric_lock_subtitle), fontSize = 11.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_biometric_lock), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_biometric_lock_subtitle), fontSize = 13.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isBiometricEnabled,
@@ -3051,14 +3053,14 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_auto_lock), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_auto_lock_subtitle), fontSize = 11.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_auto_lock), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_auto_lock_subtitle), fontSize = 13.sp, color = textSecondary)
                         }
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = if (isDarkMode) DarkBackground else Slate100
                         ) {
-                            Text(stringResource(R.string.settings_auto_lock_30_seconds), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
+                            Text(stringResource(R.string.settings_auto_lock_30_seconds), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
                         }
                     }
                 }
@@ -3075,17 +3077,17 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(stringResource(R.string.settings_section_backup), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_backup), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(stringResource(R.string.settings_backup_recovery_key), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                        Text(stringResource(R.string.settings_backup_recovery_key), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                         Text(
                             text = stringResource(R.string.settings_copy),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Coral600,
                             modifier = Modifier.clickable { onCopyRecoveryKey?.invoke() ?: onToast(resources.getString(R.string.settings_toast_recovery_key_copied, anonymousRecoveryKey)) }
@@ -3101,12 +3103,12 @@ fun SettingsScreenView(
                         Text(
                             text = anonymousRecoveryKey,
                             fontFamily = FontFamily.Monospace,
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             color = textSecondary,
                             modifier = Modifier.padding(10.dp)
                         )
                     }
-                    Text(stringResource(R.string.settings_backup_recovery_key_hint), fontSize = 10.sp, color = textSecondary)
+                    Text(stringResource(R.string.settings_backup_recovery_key_hint), fontSize = 12.sp, color = textSecondary)
 
                     HorizontalDivider(color = borderCol)
 
@@ -3116,8 +3118,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_personal_data_backup), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_personal_data_backup_description), fontSize = 10.5.sp, color = textSecondary, lineHeight = 14.sp)
+                            Text(stringResource(R.string.settings_personal_data_backup), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_personal_data_backup_description), fontSize = 13.sp, color = textSecondary, lineHeight = 15.sp)
                         }
                     }
 
@@ -3128,7 +3130,7 @@ fun SettingsScreenView(
                     ) {
                         Text(
                             text = stringResource(R.string.settings_backup_privacy_note),
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF065F46),
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -3147,7 +3149,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Default.CloudUpload, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.settings_backup_data), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_backup_data), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
                             onClick = {
@@ -3158,7 +3160,7 @@ fun SettingsScreenView(
                         ) {
                             Icon(Icons.Default.CloudDownload, contentDescription = null, tint = MedicalTeal, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.settings_restore_data), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.settings_restore_data), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -3174,15 +3176,15 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.settings_section_display), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text(stringResource(R.string.settings_section_display), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_discreet_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_discreet_mode_subtitle), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_discreet_mode), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_discreet_mode_subtitle), fontSize = 12.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isDiscreet,
@@ -3197,8 +3199,8 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_oled_dark_mode), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_oled_dark_mode_subtitle), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_oled_dark_mode), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_oled_dark_mode_subtitle), fontSize = 12.sp, color = textSecondary)
                         }
                         Switch(
                             checked = isDarkMode,
@@ -3213,15 +3215,15 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(stringResource(R.string.settings_bbt_reminder), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text(stringResource(R.string.settings_bbt_reminder_subtitle), fontSize = 10.sp, color = textSecondary)
+                            Text(stringResource(R.string.settings_bbt_reminder), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(stringResource(R.string.settings_bbt_reminder_subtitle), fontSize = 12.sp, color = textSecondary)
                         }
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = Color(0xFFFFF1F2),
                             border = BorderStroke(1.dp, Color(0xFFFFE4E6))
                         ) {
-                            Text("05:30", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral700, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+                            Text("05:30", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral700, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
                         }
                     }
                 }
@@ -3257,8 +3259,8 @@ fun SettingsScreenView(
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
-                                Text(stringResource(R.string.settings_quick_guide_faq), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                Text(stringResource(R.string.settings_quick_guide_subtitle), fontSize = 10.sp, color = textSecondary)
+                                Text(stringResource(R.string.settings_quick_guide_faq), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                Text(stringResource(R.string.settings_quick_guide_subtitle), fontSize = 12.sp, color = textSecondary)
                             }
                         }
                         Icon(
@@ -3276,45 +3278,45 @@ fun SettingsScreenView(
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             // Point 1: Cara Catat Haid
                             Column {
-                                Text(stringResource(R.string.settings_faq_1_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_1_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
                                     text = stringResource(R.string.settings_faq_1_body_prefix) + stringResource(R.string.settings_faq_1_body_suffix),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     color = textSecondary,
-                                    lineHeight = 14.sp
+                                    lineHeight = 15.sp
                                 )
                             }
 
                             // Point 2: Mekanisme Prediksi Dinamis
                             Column {
-                                Text(stringResource(R.string.settings_faq_2_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_2_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
                                     text = stringResource(R.string.settings_faq_2_body),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     color = textSecondary,
-                                    lineHeight = 14.sp
+                                    lineHeight = 15.sp
                                 )
                             }
 
                             // Point 3: Arti Warna Kalender
                             Column {
-                                Text(stringResource(R.string.settings_faq_3_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_3_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
                                     text = stringResource(R.string.settings_faq_3_body),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     color = textSecondary,
-                                    lineHeight = 14.sp
+                                    lineHeight = 15.sp
                                 )
                             }
 
                             // Point 4: Standar Medis FIGO
                             Column {
-                                Text(stringResource(R.string.settings_faq_4_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                                Text(stringResource(R.string.settings_faq_4_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Coral600)
                                 Text(
                                     text = stringResource(R.string.settings_faq_4_body),
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     color = textSecondary,
-                                    lineHeight = 14.sp
+                                    lineHeight = 15.sp
                                 )
                             }
 
@@ -3341,8 +3343,8 @@ fun SettingsScreenView(
                                         Icon(Icons.Default.MenuBook, contentDescription = null, tint = Coral600, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
-                                            Text(stringResource(R.string.settings_documentation_references), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                                            Text("asridigital.com/cyclejournal/docs", fontSize = 9.sp, color = textSecondary)
+                                            Text(stringResource(R.string.settings_documentation_references), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                                            Text("asridigital.com/cyclejournal/docs", fontSize = 12.sp, color = textSecondary)
                                         }
                                     }
                                     Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = Coral600, modifier = Modifier.size(15.dp))
@@ -3362,12 +3364,12 @@ fun SettingsScreenView(
                 border = BorderStroke(1.dp, Color(0xFFFFE4E6))
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(stringResource(R.string.settings_section_delete_all_data), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
+                    Text(stringResource(R.string.settings_section_delete_all_data), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MedicalRose)
                     Text(
                         text = stringResource(R.string.settings_delete_all_data_description),
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF9F1239),
-                        lineHeight = 14.sp
+                        lineHeight = 15.sp
                     )
                     Button(
                         onClick = {
@@ -3380,7 +3382,7 @@ fun SettingsScreenView(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.settings_delete_all_data_button), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.settings_delete_all_data_button), fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -3390,7 +3392,7 @@ fun SettingsScreenView(
         item {
             Text(
                 text = stringResource(R.string.app_version_footer, BuildConfig.VERSION_NAME),
-                fontSize = 11.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = Slate400,
                 textAlign = TextAlign.Center,
@@ -3408,7 +3410,7 @@ fun SettingsScreenView(
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
                             text = stringResource(R.string.settings_backup_lock_method_prompt),
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = textSecondary
                         )
 
@@ -3432,8 +3434,8 @@ fun SettingsScreenView(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Column {
-                                    Text(stringResource(R.string.settings_backup_lock_standard), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (!isBackupEncrypted) Coral600 else textPrimary)
-                                    Text(stringResource(R.string.settings_backup_lock_standard_description), fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                    Text(stringResource(R.string.settings_backup_lock_standard), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = if (!isBackupEncrypted) Coral600 else textPrimary)
+                                    Text(stringResource(R.string.settings_backup_lock_standard_description), fontSize = 12.sp, color = textSecondary, lineHeight = 14.sp)
                                 }
                             }
                         }
@@ -3456,8 +3458,8 @@ fun SettingsScreenView(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Column {
-                                        Text(stringResource(R.string.settings_backup_lock_encrypted), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isBackupEncrypted) Coral600 else textPrimary)
-                                        Text(stringResource(R.string.settings_backup_lock_encrypted_description), fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                        Text(stringResource(R.string.settings_backup_lock_encrypted), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = if (isBackupEncrypted) Coral600 else textPrimary)
+                                        Text(stringResource(R.string.settings_backup_lock_encrypted_description), fontSize = 12.sp, color = textSecondary, lineHeight = 14.sp)
                                     }
                                 }
                                 if (isBackupEncrypted) {
@@ -3512,13 +3514,13 @@ fun SettingsScreenView(
                     ) {
                         Text(
                             text = stringResource(R.string.settings_nuke_local_message),
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = textSecondary,
                             lineHeight = 16.sp
                         )
                         Text(
                             text = stringResource(R.string.nuke_confirm_consequences),
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = MedicalRose,
                             lineHeight = 15.sp
@@ -3526,14 +3528,14 @@ fun SettingsScreenView(
                         OutlinedTextField(
                             value = nukeKeyword,
                             onValueChange = { nukeKeyword = it },
-                            label = { Text(stringResource(R.string.nuke_confirm_hint), fontSize = 11.sp) },
+                            label = { Text(stringResource(R.string.nuke_confirm_hint), fontSize = 13.sp) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
                         if (isPinConfigured) {
                             Text(
                                 text = stringResource(R.string.nuke_pin_prompt),
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 color = textSecondary
                             )
                             OutlinedTextField(
@@ -3544,7 +3546,7 @@ fun SettingsScreenView(
                                         isNukePinWrong = false
                                     }
                                 },
-                                placeholder = { Text("\u2022\u2022\u2022\u2022", fontSize = 12.sp) },
+                                placeholder = { Text("\u2022\u2022\u2022\u2022", fontSize = 14.sp) },
                                 isError = isNukePinWrong,
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),
@@ -3554,7 +3556,7 @@ fun SettingsScreenView(
                             if (isNukePinWrong) {
                                 Text(
                                     text = stringResource(R.string.nuke_wrong_pin),
-                                    fontSize = 11.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MedicalRose
                                 )
@@ -3587,10 +3589,10 @@ fun SettingsScreenView(
                                 isBackupOptionsDialogOpen = true
                             }
                         ) {
-                            Text(stringResource(R.string.nuke_backup_first), fontSize = 12.sp, color = Coral600)
+                            Text(stringResource(R.string.nuke_backup_first), fontSize = 14.sp, color = Coral600)
                         }
                         TextButton(onClick = { nukeStage = NukeStage.Closed }) {
-                            Text(stringResource(R.string.settings_cancel), fontSize = 12.sp)
+                            Text(stringResource(R.string.settings_cancel), fontSize = 14.sp)
                         }
                     }
                 }
@@ -3606,7 +3608,7 @@ fun SettingsScreenView(
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MedicalRose, strokeWidth = 2.dp)
-                        Text(stringResource(R.string.nuke_wiping_message), fontSize = 12.sp, color = textSecondary)
+                        Text(stringResource(R.string.nuke_wiping_message), fontSize = 14.sp, color = textSecondary)
                     }
                 },
                 confirmButton = { }
@@ -3657,17 +3659,17 @@ fun DailyLogBottomSheet(
 
     var isAddCustomDialogOpen by remember { mutableStateOf(false) }
     var newCustomSymptomInput by remember { mutableStateOf("") }
-    var clinicalNotesInput by remember(initialLog) {
+    val storedNotes = remember(initialLog) {
         val raw = initialLog?.notes ?: ""
-        val cleaned = if (raw.contains(resources.getString(R.string.daily_notes_prefix))) {
+        if (raw.contains(resources.getString(R.string.daily_notes_prefix))) {
             raw.substringAfter(resources.getString(R.string.daily_notes_prefix)).trim()
         } else if (!raw.startsWith(resources.getString(R.string.daily_symptoms_prefix))) {
             raw
         } else {
             ""
         }
-        mutableStateOf(cleaned)
     }
+    var clinicalNotesInput by remember(initialLog) { mutableStateOf(storedNotes) }
 
     val allAvailableSymptoms = remember(customSymptomsList.size) {
         (defaultSymptoms + customSymptomsList).distinct()
@@ -3681,453 +3683,563 @@ fun DailyLogBottomSheet(
         list
     }
 
+    val storedSymptoms = remember(initialLog) {
+        initialLog?.painLocation?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+    }
+    val storedBbt = remember(initialLog) {
+        initialLog?.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f", it) }
+    }
+
+    val isPeriodFlow = selectedFlow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
+    val detailCount = listOf(
+        selectedSymptoms.isNotEmpty(),
+        isBbtRecorded,
+        selectedMucus != CervicalMucusType.NONE,
+        hasTakenAnalgesic,
+        clinicalNotesInput.isNotBlank()
+    ).count { it }
+
+    // The slower clinical fields start collapsed: a day without complaints stays two taps.
+    // They open on their own only when the stored log for this date already carries detail.
+    var isDetailExpanded by remember(initialLog) {
+        mutableStateOf(initialLog != null && detailCount > 0)
+    }
+
+    val isDirty = vasScore.toInt() != (initialLog?.painVasScore ?: 0) ||
+        selectedFlow != (initialLog?.flow ?: FlowIntensity.NONE) ||
+        selectedMucus != (initialLog?.cervicalMucus ?: CervicalMucusType.NONE) ||
+        hasTakenAnalgesic != (initialLog?.takenAnalgesic ?: false) ||
+        isBbtRecorded != (initialLog?.basalBodyTempCelsius != null) ||
+        (isBbtRecorded && bbtInputText != storedBbt) ||
+        selectedSymptoms.toList() != storedSymptoms ||
+        clinicalNotesInput.trim() != storedNotes
+
+    var showDiscardDialog by remember { mutableStateOf(false) }
+    val requestDismiss: () -> Unit = { if (isDirty) showDiscardDialog = true else onDismiss() }
+
+    val symptomsPrefix = stringResource(R.string.daily_notes_symptoms_prefix)
+    val notePrefix = stringResource(R.string.daily_notes_note_prefix)
+    val saveLog: () -> Unit = {
+        onSave(
+            DailyLogEntity(
+                date = targetDate,
+                flow = selectedFlow,
+                basalBodyTempCelsius = if (isBbtRecorded) bbtInputText.replace(",", ".").toDoubleOrNull() else null,
+                cervicalMucus = selectedMucus,
+                painVasScore = vasScore.toInt(),
+                painLocation = selectedSymptoms.takeIf { it.isNotEmpty() }?.joinToString(", "),
+                takenAnalgesic = hasTakenAnalgesic,
+                notes = buildString {
+                    if (selectedSymptoms.isNotEmpty()) append(symptomsPrefix + selectedSymptoms.joinToString(", "))
+                    if (clinicalNotesInput.isNotBlank()) {
+                        if (isNotEmpty()) append(notePrefix)
+                        append(clinicalNotesInput.trim())
+                    }
+                }.takeIf { it.isNotBlank() }
+            )
+        )
+    }
+
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = requestDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = if (isDarkMode) DarkCardBackground else Color.White
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 6.dp)
-                .padding(bottom = 24.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        // Sheet frame: scrollable content on top, pinned save action below.
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                // The scroll area takes the remaining height so the save action stays pinned
+                // at the bottom of the sheet instead of hiding below the fold.
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp, vertical = 6.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Column {
-                    Text(stringResource(R.string.daily_log_title), fontSize = 17.sp, fontWeight = FontWeight.Black)
-                    Text(
-                        text = "${targetDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())}, ${targetDate.dayOfMonth} ${targetDate.monthName()} ${targetDate.year}",
-                        fontSize = 11.sp,
-                        color = Slate400
-                    )
-                }
-                IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = null, tint = Slate400)
-                }
-            }
-
-            // Flow Pills
-            Column {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.daily_flow_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = if (selectedFlow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) stringResource(R.string.daily_flow_active) else stringResource(R.string.daily_flow_inactive),
-                        fontSize = 9.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (selectedFlow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)) Coral600 else Slate400
-                    )
-                }
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(R.string.daily_flow_hint),
-                    fontSize = 9.5.sp,
-                    color = Slate400,
-                    lineHeight = 13.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf(
-                        FlowIntensity.NONE to stringResource(R.string.app_option_no),
-                        FlowIntensity.SPOTTING to stringResource(R.string.app_column_spotting),
-                        FlowIntensity.LIGHT to stringResource(R.string.dash_vas_mild),
-                        FlowIntensity.MEDIUM to stringResource(R.string.app_option_medium),
-                        FlowIntensity.HEAVY to stringResource(R.string.app_option_heavy)
-                    ).forEach { (flow, label) ->
-                        val isSelected = flow == selectedFlow
-                        Surface(
-                            modifier = Modifier.weight(1f).clickable { selectedFlow = flow },
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) Coral500 else if (isDarkMode) DarkBackground else Slate100
-                        ) {
-                            Text(
-                                label,
-                                fontSize = 10.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else Slate600,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(vertical = 7.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Clinical Pain VAS Card (Refined functional rating)
-            val num = vasScore.toInt()
-            val (badgeText, cardBg, textCol, impactText) = when {
-                num == 0 -> Quadruple(stringResource(R.string.app_pain_free), Color(0xFFECFDF5), Color(0xFF047857), stringResource(R.string.daily_pain_impact_none))
-                num <= 3 -> Quadruple(stringResource(R.string.dash_vas_mild), Slate100, Slate700, stringResource(R.string.daily_pain_impact_mild))
-                num <= 6 -> Quadruple(stringResource(R.string.daily_pain_badge_monitor), Color(0xFFFFFBEB), Color(0xFFB45309), stringResource(R.string.daily_pain_impact_moderate))
-                num <= 8 -> Quadruple(stringResource(R.string.daily_pain_badge_attention), Color(0xFFFFF1F2), Color(0xFFBE123C), stringResource(R.string.daily_pain_impact_severe))
-                else -> Quadruple(stringResource(R.string.daily_pain_badge_consult), Color(0xFFFEE2E2), Color(0xFF991B1B), stringResource(R.string.daily_pain_impact_critical))
-            }
-
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = cardBg,
-                border = BorderStroke(1.dp, textCol.copy(alpha = 0.25f))
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.daily_pain_scale_title), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = textCol)
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = textCol.copy(alpha = 0.15f)
-                        ) {
-                            Text(badgeText, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = textCol, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Text("$num / 10", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textCol)
-                        Text(impactText, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = textCol)
-                    }
-
-                    Slider(
-                        value = vasScore,
-                        onValueChange = { vasScore = it },
-                        valueRange = 0f..10f,
-                        steps = 9,
-                        colors = SliderDefaults.colors(
-                            thumbColor = textCol,
-                            activeTrackColor = textCol
-                        )
-                    )
-                }
-            }
-
-            // Dynamic Symptom Chips with Custom Symptom Support
-            Column {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(R.string.daily_body_symptoms_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = stringResource(R.string.daily_symptoms_selected_format, selectedSymptoms.size),
-                        fontSize = 10.sp,
-                        color = Coral600,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Column {
+                        Text(stringResource(R.string.daily_log_title), fontSize = 17.sp, fontWeight = FontWeight.Black)
+                        Text(
+                            text = "${targetDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())}, ${targetDate.dayOfMonth} ${targetDate.monthName()} ${targetDate.year}",
+                            fontSize = 13.sp,
+                            color = Slate400
+                        )
+                    }
+                    IconButton(onClick = requestDismiss) {
+                        Icon(Icons.Default.Close, contentDescription = null, tint = Slate400)
+                    }
                 }
-                Spacer(modifier = Modifier.height(6.dp))
 
-                @OptIn(ExperimentalLayoutApi::class)
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    allAvailableSymptoms.forEach { sym ->
-                        val isSelected = selectedSymptoms.contains(sym)
-                        val isCustom = customSymptomsList.contains(sym)
-                        Surface(
-                            modifier = Modifier.clickable {
-                                if (isSelected) selectedSymptoms.remove(sym) else selectedSymptoms.add(sym)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
-                            border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                // Flow — the primary question. Chips wrap instead of squeezing five equal columns.
+                Column {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.daily_flow_title), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = if (isPeriodFlow) stringResource(R.string.daily_flow_active) else stringResource(R.string.daily_flow_inactive),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isPeriodFlow) Coral600 else Slate400
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    @OptIn(ExperimentalLayoutApi::class)
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf(
+                            FlowIntensity.NONE to stringResource(R.string.app_option_no),
+                            FlowIntensity.SPOTTING to stringResource(R.string.app_column_spotting),
+                            FlowIntensity.LIGHT to stringResource(R.string.dash_vas_mild),
+                            FlowIntensity.MEDIUM to stringResource(R.string.app_option_medium),
+                            FlowIntensity.HEAVY to stringResource(R.string.app_option_heavy)
+                        ).forEach { (flow, label) ->
+                            val isSelected = flow == selectedFlow
+                            Surface(
+                                modifier = Modifier.clickable { selectedFlow = flow },
+                                shape = RoundedCornerShape(10.dp),
+                                color = if (isSelected) Coral500 else if (isDarkMode) DarkBackground else Slate100,
+                                border = BorderStroke(1.dp, if (isSelected) Coral500 else if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
                             ) {
-                                if (isCustom) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(5.dp)
-                                            .clip(CircleShape)
-                                            .background(Coral600)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
                                 Text(
-                                    text = sym,
-                                    fontSize = 10.sp,
+                                    text = label,
+                                    fontSize = 13.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) Coral600 else Slate600
+                                    color = if (isSelected) Color.White else Slate600,
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp)
                                 )
                             }
                         }
                     }
-
-                    // + Tambah Gejala Button
-                    Surface(
-                        modifier = Modifier.clickable {
-                            newCustomSymptomInput = ""
-                            isAddCustomDialogOpen = true
-                        },
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color.Transparent,
-                        border = BorderStroke(1.dp, Coral500)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = null, tint = Coral500, modifier = Modifier.size(13.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.daily_add_symptom),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Coral500
-                            )
-                        }
+                    // Guidance matters only while the day is not logged as a period day.
+                    if (!isPeriodFlow) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.daily_flow_hint),
+                            fontSize = 12.sp,
+                            color = Slate400,
+                            lineHeight = 16.sp
+                        )
                     }
                 }
-            }
 
-            // BBT Number Stepper & Analgesic Checkbox
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Clinical Pain VAS Card (Refined functional rating)
+                val num = vasScore.toInt()
+                val (badgeText, cardBg, textCol, impactText) = when {
+                    num == 0 -> Quadruple(stringResource(R.string.app_pain_free), Color(0xFFECFDF5), Color(0xFF047857), stringResource(R.string.daily_pain_impact_none))
+                    num <= 3 -> Quadruple(stringResource(R.string.dash_vas_mild), Slate100, Slate700, stringResource(R.string.daily_pain_impact_mild))
+                    num <= 6 -> Quadruple(stringResource(R.string.daily_pain_badge_monitor), Color(0xFFFFFBEB), Color(0xFFB45309), stringResource(R.string.daily_pain_impact_moderate))
+                    num <= 8 -> Quadruple(stringResource(R.string.daily_pain_badge_attention), Color(0xFFFFF1F2), Color(0xFFBE123C), stringResource(R.string.daily_pain_impact_severe))
+                    else -> Quadruple(stringResource(R.string.daily_pain_badge_consult), Color(0xFFFEE2E2), Color(0xFF991B1B), stringResource(R.string.daily_pain_impact_critical))
+                }
+
                 Surface(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (isDarkMode) DarkBackground else Slate50,
-                    border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+                    shape = RoundedCornerShape(16.dp),
+                    color = cardBg,
+                    border = BorderStroke(1.dp, textCol.copy(alpha = 0.25f))
                 ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
+                    Column(modifier = Modifier.padding(14.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(stringResource(R.string.daily_basal_temp_title), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
-                            Text(
-                                text = if (isBbtRecorded) stringResource(R.string.daily_basal_temp_remove) else stringResource(R.string.daily_basal_temp_record),
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isBbtRecorded) Coral600 else Color(0xFF059669),
-                                modifier = Modifier.clickable {
-                                    isBbtRecorded = !isBbtRecorded
-                                    if (isBbtRecorded && bbtInputText.isBlank()) {
-                                        bbtInputText = "36.50"
-                                    }
-                                }
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        if (isBbtRecorded) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                            Text(stringResource(R.string.daily_pain_scale_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textCol)
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = textCol.copy(alpha = 0.15f)
                             ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = if (isDarkMode) DarkCardBackground else Slate200,
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clickable {
-                                            val current = bbtInputText.toDoubleOrNull() ?: 36.50
-                                            val next = (current - 0.10).coerceAtLeast(35.00)
-                                            bbtInputText = String.format(Locale.US, "%.2f", next)
-                                        }
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text("-", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                                    }
-                                }
-
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = if (isDarkMode) DarkCardBackground else Color(0xFFFFF1F2),
-                                    border = BorderStroke(1.dp, Coral400),
-                                    modifier = Modifier.clickable {
-                                        tempBbtDialogInput = bbtInputText
-                                        isBbtDialogOpen = true
-                                    }
-                                ) {
-                                    Text(
-                                        text = "$bbtInputText °C",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Black,
-                                        fontFamily = FontFamily.Monospace,
-                                        color = Coral600,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    )
-                                }
-
-                                Surface(
-                                    shape = CircleShape,
-                                    color = if (isDarkMode) DarkCardBackground else Slate200,
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clickable {
-                                            val current = bbtInputText.toDoubleOrNull() ?: 36.50
-                                            val next = (current + 0.10).coerceAtMost(39.50)
-                                            bbtInputText = String.format(Locale.US, "%.2f", next)
-                                        }
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text("+", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                                    }
-                                }
+                                Text(badgeText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textCol, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
                             }
-                        } else {
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text("$num / 10", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textCol)
+                            Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = stringResource(R.string.daily_temp_not_measured),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Slate400,
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
-                                    .clickable { isBbtRecorded = true }
+                                text = impactText,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = textCol,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.weight(1f)
                             )
                         }
+
+                        Slider(
+                            value = vasScore,
+                            onValueChange = { vasScore = it },
+                            valueRange = 0f..10f,
+                            steps = 9,
+                            colors = SliderDefaults.colors(
+                                thumbColor = textCol,
+                                activeTrackColor = textCol
+                            )
+                        )
                     }
                 }
 
                 Surface(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isDetailExpanded = !isDetailExpanded },
+                    shape = RoundedCornerShape(14.dp),
                     color = if (isDarkMode) DarkBackground else Slate50,
                     border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
-                            Text(stringResource(R.string.daily_analgesic_label), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Slate400)
-                            Text(stringResource(R.string.daily_take_medication), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(if (isDetailExpanded) R.string.daily_detail_hide else R.string.daily_detail_show),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = if (detailCount == 0) stringResource(R.string.daily_detail_subtitle_empty)
+                                else stringResource(R.string.daily_detail_subtitle_filled, detailCount),
+                                fontSize = 12.sp,
+                                color = Slate400,
+                                lineHeight = 16.sp
+                            )
                         }
-                        Checkbox(
-                            checked = hasTakenAnalgesic,
-                            onCheckedChange = { hasTakenAnalgesic = it },
-                            colors = CheckboxDefaults.colors(checkedColor = Coral500)
+                        Icon(
+                            imageVector = if (isDetailExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = null,
+                            tint = Slate400
                         )
                     }
                 }
-            }
 
-            // Cervical Mucus Selector
-            // Cervical Mucus Selector (2 rows x 3 columns for balanced width)
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(stringResource(R.string.daily_cervical_mucus_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-
-                // Row 1: Tidak, Kering, Lengket
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf(
-                        CervicalMucusType.NONE to stringResource(R.string.app_option_no),
-                        CervicalMucusType.DRY to stringResource(R.string.mucus_dry),
-                        CervicalMucusType.STICKY to stringResource(R.string.mucus_sticky)
-                    ).forEach { (mucus, label) ->
-                        val isSelected = mucus == selectedMucus
-                        Surface(
-                            modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
-                            border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
+                if (isDetailExpanded) {
+                    // Symptom chips with custom symptom support
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Text(stringResource(R.string.daily_body_symptoms_title), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                             Text(
-                                text = label,
-                                fontSize = 10.5.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Coral600 else Slate600,
-                                textAlign = TextAlign.Center,
-                                maxLines = 1,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                text = stringResource(R.string.daily_symptoms_selected_format, selectedSymptoms.size),
+                                fontSize = 12.sp,
+                                color = Coral600,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
-                    }
-                }
+                        Spacer(modifier = Modifier.height(6.dp))
 
-                // Row 2: Krim, Cair, Putih Telur
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf(
-                        CervicalMucusType.CREAMY to stringResource(R.string.mucus_creamy),
-                        CervicalMucusType.WATERY to stringResource(R.string.mucus_watery),
-                        CervicalMucusType.EGG_WHITE to stringResource(R.string.mucus_egg_white)
-                    ).forEach { (mucus, label) ->
-                        val isSelected = mucus == selectedMucus
-                        Surface(
-                            modifier = Modifier.weight(1f).clickable { selectedMucus = mucus },
-                            shape = RoundedCornerShape(10.dp),
-                            color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
-                            border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
+                        @OptIn(ExperimentalLayoutApi::class)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Text(
-                                text = label,
-                                fontSize = 10.5.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Coral600 else Slate600,
-                                textAlign = TextAlign.Center,
-                                maxLines = 1,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-
-            // Clinical Notes Field
-            Column {
-                Text(stringResource(R.string.daily_notes_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = clinicalNotesInput,
-                    onValueChange = { clinicalNotesInput = it },
-                    placeholder = { Text(stringResource(R.string.daily_notes_hint), fontSize = 11.sp, color = Slate400) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    minLines = 2,
-                    maxLines = 3
-                )
-            }
-
-            val symptomsPrefix = stringResource(R.string.daily_notes_symptoms_prefix)
-            val notePrefix = stringResource(R.string.daily_notes_note_prefix)
-
-            Button(
-                onClick = {
-                    val flowEnum = selectedFlow
-                    val mucusEnum = selectedMucus
-                    val bbtVal = if (isBbtRecorded) bbtInputText.replace(",", ".").toDoubleOrNull() else null
-                    val logEntity = DailyLogEntity(
-                        date = targetDate,
-                        flow = flowEnum,
-                        basalBodyTempCelsius = bbtVal,
-                        cervicalMucus = mucusEnum,
-                        painVasScore = vasScore.toInt(),
-                        painLocation = if (selectedSymptoms.isNotEmpty()) selectedSymptoms.joinToString(", ") else null,
-                        takenAnalgesic = hasTakenAnalgesic,
-                        notes = buildString {
-                            if (selectedSymptoms.isNotEmpty()) append(symptomsPrefix + selectedSymptoms.joinToString(", "))
-                            if (clinicalNotesInput.isNotBlank()) {
-                                if (isNotEmpty()) append(notePrefix)
-                                append(clinicalNotesInput.trim())
+                            allAvailableSymptoms.forEach { sym ->
+                                val isSelected = selectedSymptoms.contains(sym)
+                                val isCustom = customSymptomsList.contains(sym)
+                                Surface(
+                                    modifier = Modifier.clickable {
+                                        if (isSelected) selectedSymptoms.remove(sym) else selectedSymptoms.add(sym)
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                                    border = BorderStroke(1.dp, if (isSelected) Coral400 else Color.Transparent)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (isCustom) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(5.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Coral600)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                        }
+                                        Text(
+                                            text = sym,
+                                            fontSize = 12.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) Coral600 else Slate600
+                                        )
+                                    }
+                                }
                             }
-                        }.takeIf { it.isNotBlank() }
-                    )
-                    onSave(logEntity)
-                },
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Coral500)
-            ) {
-                Text(stringResource(R.string.daily_save_log), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+
+                            // + Tambah Gejala Button
+                            Surface(
+                                modifier = Modifier.clickable {
+                                    newCustomSymptomInput = ""
+                                    isAddCustomDialogOpen = true
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color.Transparent,
+                                border = BorderStroke(1.dp, Coral500)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null, tint = Coral500, modifier = Modifier.size(13.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.daily_add_symptom),
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Coral500
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // BBT Number Stepper & Analgesic Checkbox
+                    Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isDarkMode) DarkBackground else Slate50,
+                            border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(stringResource(R.string.daily_basal_temp_title), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                                    Text(
+                                        text = if (isBbtRecorded) stringResource(R.string.daily_basal_temp_remove) else stringResource(R.string.daily_basal_temp_record),
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isBbtRecorded) Coral600 else Color(0xFF059669),
+                                        modifier = Modifier.clickable {
+                                            isBbtRecorded = !isBbtRecorded
+                                            if (isBbtRecorded && bbtInputText.isBlank()) {
+                                                bbtInputText = "36.50"
+                                            }
+                                        }
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                if (isBbtRecorded) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = if (isDarkMode) DarkCardBackground else Slate200,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .clickable {
+                                                    val current = bbtInputText.toDoubleOrNull() ?: 36.50
+                                                    val next = (current - 0.10).coerceAtLeast(35.00)
+                                                    bbtInputText = String.format(Locale.US, "%.2f", next)
+                                                }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text("-", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                                            }
+                                        }
+
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = if (isDarkMode) DarkCardBackground else Color(0xFFFFF1F2),
+                                            border = BorderStroke(1.dp, Coral400),
+                                            modifier = Modifier.clickable {
+                                                tempBbtDialogInput = bbtInputText
+                                                isBbtDialogOpen = true
+                                            }
+                                        ) {
+                                            Text(
+                                                text = "$bbtInputText °C",
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Black,
+                                                fontFamily = FontFamily.Monospace,
+                                                color = Coral600,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                            )
+                                        }
+
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = if (isDarkMode) DarkCardBackground else Slate200,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .clickable {
+                                                    val current = bbtInputText.toDoubleOrNull() ?: 36.50
+                                                    val next = (current + 0.10).coerceAtMost(39.50)
+                                                    bbtInputText = String.format(Locale.US, "%.2f", next)
+                                                }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text("+", fontSize = 16.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Text(
+                                        text = stringResource(R.string.daily_temp_not_measured),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Slate400,
+                                        modifier = Modifier
+                                            .padding(vertical = 4.dp)
+                                            .clickable { isBbtRecorded = true }
+                                    )
+                                }
+                            }
+                        }
+
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isDarkMode) DarkBackground else Slate50,
+                            border = BorderStroke(1.dp, if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(stringResource(R.string.daily_analgesic_label), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                                    Text(stringResource(R.string.daily_take_medication), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Checkbox(
+                                    checked = hasTakenAnalgesic,
+                                    onCheckedChange = { hasTakenAnalgesic = it },
+                                    colors = CheckboxDefaults.colors(checkedColor = Coral500)
+                                )
+                            }
+                        }
+                    }
+
+                    // Cervical Mucus Selector
+                    // Cervical Mucus Selector — chips wrap, so longer labels never get clipped.
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(stringResource(R.string.daily_cervical_mucus_title), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        @OptIn(ExperimentalLayoutApi::class)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf(
+                                CervicalMucusType.NONE to stringResource(R.string.app_option_no),
+                                CervicalMucusType.DRY to stringResource(R.string.mucus_dry),
+                                CervicalMucusType.STICKY to stringResource(R.string.mucus_sticky),
+                                CervicalMucusType.CREAMY to stringResource(R.string.mucus_creamy),
+                                CervicalMucusType.WATERY to stringResource(R.string.mucus_watery),
+                                CervicalMucusType.EGG_WHITE to stringResource(R.string.mucus_egg_white)
+                            ).forEach { (mucus, label) ->
+                                val isSelected = mucus == selectedMucus
+                                Surface(
+                                    modifier = Modifier.clickable { selectedMucus = mucus },
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (isSelected) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                                    border = BorderStroke(1.dp, if (isSelected) Coral400 else if (isDarkMode) DarkBorder else Slate200.copy(alpha = 0.6f))
+                                ) {
+                                    Text(
+                                        text = label,
+                                        fontSize = 13.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Coral600 else Slate600,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    // Clinical Notes Field
+                    Column {
+                        Text(stringResource(R.string.daily_notes_title), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = clinicalNotesInput,
+                            onValueChange = { clinicalNotesInput = it },
+                            placeholder = { Text(stringResource(R.string.daily_notes_hint), fontSize = 13.sp, color = Slate400) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            minLines = 2,
+                            maxLines = 3
+                        )
+                    }
+                } // end detail
             }
+
+            // Layer 3 — one primary action, always reachable without scrolling.
+            Surface(
+                color = if (isDarkMode) DarkCardBackground else Color.White,
+                shadowElevation = 12.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 10.dp, bottom = 20.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.daily_save_hint),
+                        fontSize = 12.sp,
+                        color = Slate400,
+                        lineHeight = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = saveLog,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Coral500)
+                    ) {
+                        Text(stringResource(R.string.daily_save_log), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    }
+                }
+            }
+        }
+
+        if (showDiscardDialog) {
+            AlertDialog(
+                onDismissRequest = { showDiscardDialog = false },
+                title = { Text(stringResource(R.string.daily_discard_title), fontSize = 16.sp, fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.daily_discard_message), fontSize = 13.sp, color = textSecondary) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDiscardDialog = false
+                        onDismiss()
+                    }) {
+                        Text(stringResource(R.string.daily_discard_confirm), fontSize = 13.sp, color = Coral600, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDiscardDialog = false }) {
+                        Text(stringResource(R.string.daily_discard_keep), fontSize = 13.sp)
+                    }
+                }
+            )
         }
 
         if (isAddCustomDialogOpen) {
@@ -4136,12 +4248,12 @@ fun DailyLogBottomSheet(
                 title = { Text(stringResource(R.string.daily_custom_symptom_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text(stringResource(R.string.daily_custom_symptom_prompt), fontSize = 12.sp, color = Slate500)
+                        Text(stringResource(R.string.daily_custom_symptom_prompt), fontSize = 14.sp, color = Slate500)
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = newCustomSymptomInput,
                             onValueChange = { newCustomSymptomInput = it },
-                            placeholder = { Text(stringResource(R.string.daily_custom_symptom_hint), fontSize = 11.sp) },
+                            placeholder = { Text(stringResource(R.string.daily_custom_symptom_hint), fontSize = 13.sp) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -4166,12 +4278,12 @@ fun DailyLogBottomSheet(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                     ) {
-                        Text(stringResource(R.string.daily_save), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.daily_save), fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { isAddCustomDialogOpen = false }) {
-                        Text(stringResource(R.string.settings_cancel), fontSize = 12.sp)
+                        Text(stringResource(R.string.settings_cancel), fontSize = 14.sp)
                     }
                 }
             )
@@ -4182,7 +4294,7 @@ fun DailyLogBottomSheet(
                 title = { Text(stringResource(R.string.daily_basal_temp_dialog_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text(stringResource(R.string.daily_basal_temp_dialog_hint), fontSize = 12.sp, color = textSecondary)
+                        Text(stringResource(R.string.daily_basal_temp_dialog_hint), fontSize = 14.sp, color = textSecondary)
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = tempBbtDialogInput,
@@ -4235,6 +4347,8 @@ fun AppBottomNavigation(
         contentAlignment = Alignment.BottomCenter
     ) {
         Surface(
+            // Fixed height on purpose: the Row inside fills the height, so an unbounded
+            // height would let it grow and squeeze the screen content to nothing.
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
@@ -4292,7 +4406,7 @@ fun NavButton(icon: ImageVector, label: String, isSelected: Boolean, onClick: ()
     ) {
         Icon(icon, contentDescription = label, tint = if (isSelected) Coral600 else Slate400, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.height(2.dp))
-        Text(label, fontSize = 9.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium, color = if (isSelected) Coral600 else Slate400)
+        Text(label, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium, color = if (isSelected) Coral600 else Slate400)
     }
 }
 
@@ -4321,7 +4435,7 @@ fun PinSetupDialog(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(stringResource(R.string.pin_setup_title), fontSize = 15.sp, fontWeight = FontWeight.Black, color = textPrimary)
-                Text(stringResource(R.string.pin_setup_subtitle), fontSize = 11.sp, color = Slate400)
+                Text(stringResource(R.string.pin_setup_subtitle), fontSize = 13.sp, color = Slate400)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -4347,7 +4461,7 @@ fun PinSetupDialog(
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .height(44.dp)
+                                        .heightIn(min = 44.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(if (item.isNotEmpty()) (if (isDarkMode) DarkBackground else Slate100) else Color.Transparent)
                                         .clickable(enabled = item.isNotEmpty()) {
@@ -4375,11 +4489,11 @@ fun PinSetupDialog(
                 Button(
                     onClick = { onSave(pin) },
                     enabled = pin.length == 4,
-                    modifier = Modifier.fillMaxWidth().height(46.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 46.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                 ) {
-                    Text(stringResource(R.string.pin_setup_save), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text(stringResource(R.string.pin_setup_save), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }

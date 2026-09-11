@@ -83,18 +83,18 @@ fun CycleHistoryRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = periodTitle,
-                    fontSize = 12.5.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = textColor
                 )
                 if (onClick != null) {
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("›", fontSize = 14.sp, color = subTextColor, fontWeight = FontWeight.Bold)
+                    Text("›", fontSize = 15.sp, color = subTextColor, fontWeight = FontWeight.Bold)
                 }
             }
             Text(
                 text = lengthLabel,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = subTextColor
             )

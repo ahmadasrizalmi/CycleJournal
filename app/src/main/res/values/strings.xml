@@ -232,6 +232,15 @@ Notes: "</string>
     <string name="daily_pain_scale_title">Pain Level (Scale 0–10)</string>
     <string name="daily_save">Save</string>
     <string name="daily_save_log">Save Today\'s Log</string>
+    <string name="daily_detail_show">Add clinical detail</string>
+    <string name="daily_detail_hide">Hide clinical detail</string>
+    <string name="daily_detail_subtitle_empty">Basal temp · cervical mucus · symptoms · notes</string>
+    <string name="daily_detail_subtitle_filled">%1$d of 5 details filled</string>
+    <string name="daily_save_hint">Saves bleeding, pain level and any detail you filled in</string>
+    <string name="daily_discard_title">Discard changes?</string>
+    <string name="daily_discard_message">This log has unsaved changes.</string>
+    <string name="daily_discard_confirm">Discard</string>
+    <string name="daily_discard_keep">Keep editing</string>
     <string name="daily_symptom_bloating">Bloating</string>
     <string name="daily_symptom_fatigue">Fatigue</string>
     <string name="daily_symptom_headache">Headache</string>
