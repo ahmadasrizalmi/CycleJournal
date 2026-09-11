@@ -16,8 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.cyclejournal.R
-import com.app.cyclejournal.ui.onboarding.NumericKeypad
-import com.app.cyclejournal.ui.onboarding.PinDotsView
 import com.app.cyclejournal.ui.theme.AlertText
 import com.app.cyclejournal.ui.theme.BackgroundWhite
 import com.app.cyclejournal.ui.theme.PrimaryPink

@@ -8,7 +8,6 @@ import com.app.cyclejournal.data.local.AppDatabase
 import com.app.cyclejournal.data.local.dao.CycleDao
 import com.app.cyclejournal.data.local.dao.DailyLogDao
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
-import com.app.cyclejournal.data.preferences.PrivacyPreferenceManager
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
 import com.app.cyclejournal.domain.engine.AnomalyDetector
 import com.app.cyclejournal.domain.manager.LocalBackupManager
@@ -160,9 +159,4 @@ object AppModule {
         return AnomalyDetector()
     }
 
-    @Provides
-    @Singleton
-    fun providePrivacyPreferenceManager(@ApplicationContext context: Context): PrivacyPreferenceManager {
-        return PrivacyPreferenceManager(context)
-    }
 }

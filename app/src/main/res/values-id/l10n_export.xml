@@ -24,4 +24,5 @@
     <string name="export_pdf_share_title">Rekap Siklus</string>
     <string name="export_pdf_share_chooser_title">Bagikan Rekap Siklus via...</string>
     <string name="export_pdf_empty_reader_toast">Tidak ada aplikasi pembaca PDF terpasang</string>
+    <string name="export_pdf_filename_prefix">Rekap_Siklus</string>
 </resources>

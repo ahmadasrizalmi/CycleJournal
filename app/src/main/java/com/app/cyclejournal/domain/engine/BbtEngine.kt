@@ -19,11 +19,8 @@ data class BbtEvaluationResult(
 /**
  * 4 distinct clinical hormonal phases of the female menstrual cycle.
  */
-enum class HormonalPhase(val displayName: String, val discreetName: String) {
-    MENSTRUAL("Fase Menstruasi", "Fase 01"),
-    FOLLICULAR("Fase Folikuler", "Fase 02"),
-    FERTILE_OVULATION("Jendela Subur & Ovulasi", "Fase Tengah"),
-    LUTEAL("Fase Luteal", "Fase 03")
+enum class HormonalPhase {
+    MENSTRUAL, FOLLICULAR, FERTILE_OVULATION, LUTEAL
 }
 
 /**

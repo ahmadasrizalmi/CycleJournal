@@ -10,6 +10,7 @@ import com.app.cyclejournal.data.local.dao.DailyLogDao
 import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
+import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.domain.engine.ClinicalCycleEngine
 import com.app.cyclejournal.domain.engine.CycleAggregator
 import com.app.cyclejournal.domain.model.AnomalyAlert
@@ -132,7 +133,8 @@ class CycleViewModel @Inject constructor(
 
             val cacheDir = File(context.cacheDir, "reports")
             cacheDir.mkdirs()
-            val fileName = "Rekap_Siklus_${LocalDate.now().toString().replace("-", "")}_${System.currentTimeMillis().toString().takeLast(4)}.pdf"
+            val fileNamePrefix = AppLocale.wrap(context).getString(R.string.export_pdf_filename_prefix)
+            val fileName = "${fileNamePrefix}_${LocalDate.now().toString().replace("-", "")}_${System.currentTimeMillis().toString().takeLast(4)}.pdf"
             val pdfFile = File(cacheDir, fileName)
 
             val generator = ClinicalPdfReportGenerator(context)

@@ -19,4 +19,5 @@
     <string name="export_pdf_share_title">Cycle Summary</string>
     <string name="export_pdf_share_chooser_title">Share Cycle Summary via...</string>
     <string name="export_pdf_empty_reader_toast">No PDF reader app installed</string>
+    <string name="export_pdf_filename_prefix">Cycle_Report</string>
 </resources>
