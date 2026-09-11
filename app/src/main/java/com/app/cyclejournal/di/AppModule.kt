@@ -11,6 +11,7 @@ import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.data.preferences.PrivacyPreferenceManager
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
 import com.app.cyclejournal.domain.engine.AnomalyDetector
+import com.app.cyclejournal.domain.manager.LocalBackupManager
 import com.app.cyclejournal.domain.engine.BbtEngine
 import com.app.cyclejournal.domain.engine.ClinicalCycleEngine
 import com.app.cyclejournal.domain.engine.CycleAggregator
@@ -78,6 +79,15 @@ object AppModule {
         return CloudflareBackupClient(baseUrl)
     }
 
+    @Provides
+    @Singleton
+    fun provideLocalBackupManager(
+        database: AppDatabase,
+        cycleAggregator: CycleAggregator,
+        cryptoEngine: BackupCryptoEngine
+    ): LocalBackupManager {
+        return LocalBackupManager(database, cycleAggregator, cryptoEngine)
+    }
     @Provides
     @Singleton
     fun provideDataRestoreManager(

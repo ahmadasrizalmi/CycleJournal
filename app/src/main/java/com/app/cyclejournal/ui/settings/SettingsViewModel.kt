@@ -8,6 +8,10 @@ import com.app.cyclejournal.data.local.AppDatabase
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.data.remote.CloudflareBackupClient
 import com.app.cyclejournal.data.remote.model.BackupUploadRequest
+import android.net.Uri
+import com.app.cyclejournal.domain.manager.BackupFileInspection
+import com.app.cyclejournal.domain.manager.LocalBackupManager
+import com.app.cyclejournal.domain.manager.LocalRestoreOutcome
 import com.app.cyclejournal.export.pdf.PdfShareHelper
 import com.app.cyclejournal.domain.manager.DataRestoreManager
 import com.app.cyclejournal.domain.manager.DataRestoreOutcome
@@ -40,6 +44,7 @@ class SettingsViewModel @Inject constructor(
     private val cryptoEngine: BackupCryptoEngine,
     private val backupClient: CloudflareBackupClient,
     private val restoreManager: DataRestoreManager,
+    private val localBackupManager: LocalBackupManager,
     private val wipeManager: DataWipeManager
 ) : ViewModel() {
 
@@ -81,6 +86,71 @@ class SettingsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _syncState.value = SyncState.Error(e.message ?: "Terjadi kesalahan saat mencadangkan.")
+            }
+        }
+    }
+    fun createLocalBackup(
+        context: Context,
+        isEncrypted: Boolean,
+        pin: String? = null,
+        onComplete: (PdfShareHelper.SaveResult) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = localBackupManager.createBackupFile(context, anonymousUserId, isEncrypted, pin)
+            withContext(Dispatchers.Main) {
+                onComplete(result)
+            }
+        }
+    }
+
+    fun restoreFromBackupFile(
+        context: Context,
+        fileUri: Uri,
+        pin: String? = null,
+        onNeedsPin: (BackupFileInspection) -> Unit,
+        onComplete: (LocalRestoreOutcome) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val content = try {
+                context.contentResolver.openInputStream(fileUri)?.bufferedReader()?.use { it.readText() } ?: ""
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onComplete(LocalRestoreOutcome.Error("Gagal membaca berkas: ${e.message}"))
+                }
+                return@launch
+            }
+
+            val inspection = localBackupManager.inspectBackupFile(content)
+            if (!inspection.isValid) {
+                withContext(Dispatchers.Main) {
+                    onComplete(LocalRestoreOutcome.InvalidFileFormat)
+                }
+                return@launch
+            }
+
+            if (inspection.isEncrypted && pin.isNullOrEmpty()) {
+                withContext(Dispatchers.Main) {
+                    onNeedsPin(inspection)
+                }
+                return@launch
+            }
+
+            val outcome = localBackupManager.restoreFromData(inspection, pin)
+            withContext(Dispatchers.Main) {
+                onComplete(outcome)
+            }
+        }
+    }
+
+    fun restoreInspectedBackup(
+        inspection: BackupFileInspection,
+        pin: String,
+        onComplete: (LocalRestoreOutcome) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val outcome = localBackupManager.restoreFromData(inspection, pin)
+            withContext(Dispatchers.Main) {
+                onComplete(outcome)
             }
         }
     }

@@ -97,8 +97,8 @@ fun CycleJournalApp(
     onSharePdf: (() -> Unit)? = null,
     onExportCsv: (() -> Unit)? = null,
     onBuyPro: (() -> Unit)? = null,
-    onBackupCloud: ((String) -> Unit)? = null,
-    onRestoreCloud: ((String) -> Unit)? = null,
+    onBackupLocal: ((Boolean, String?) -> Unit)? = null,
+    onRestoreLocal: (() -> Unit)? = null,
     onNukeData: (() -> Unit)? = null,
     isProUserActive: Boolean = false,
     anonymousRecoveryKey: String = "px-7f9a2b1c4e0d",
@@ -312,12 +312,8 @@ fun CycleJournalApp(
                         onCopyRecoveryKey = {
                             showToast("Kunci Pemulihan Cadangan Disalin: $anonymousRecoveryKey")
                         },
-                        onBackupCloud = { pin ->
-                            onBackupCloud?.invoke(pin) ?: showToast("Enkripsi & Cadangan Cloud Berhasil")
-                        },
-                        onRestoreCloud = { pin ->
-                            onRestoreCloud?.invoke(pin) ?: showToast("Data Arsip Berhasil Dipulihkan")
-                        },
+                        onBackupLocal = onBackupLocal,
+                        onRestoreLocal = onRestoreLocal,
                         onNukeData = {
                             onNukeData?.invoke() ?: run {
                                 showToast("Seluruh data lokal & cloud berhasil dibersihkan")
@@ -385,8 +381,17 @@ fun CycleJournalApp(
             val res = downloadedReport
             val context = LocalContext.current
             val isCsv = res.fileName.endsWith(".csv", ignoreCase = true)
-            val fileTypeTitle = if (isCsv) "Data CSV (Excel)" else "Rekap Siklus PDF"
-            val openButtonLabel = if (isCsv) "Buka CSV" else "Buka PDF"
+            val isBackup = res.fileName.endsWith(".cjbackup", ignoreCase = true)
+            val fileTypeTitle = when {
+                isBackup -> "Berkas Cadangan (.cjbackup)"
+                isCsv -> "Data CSV (Excel)"
+                else -> "Rekap Siklus PDF"
+            }
+            val openButtonLabel = when {
+                isBackup -> "Bagikan ke Drive / Chat"
+                isCsv -> "Buka CSV"
+                else -> "Buka PDF"
+            }
 
             AlertDialog(
                 onDismissRequest = onDismissDownloadDialog,
@@ -423,7 +428,9 @@ fun CycleJournalApp(
                 confirmButton = {
                     Button(
                         onClick = {
-                            if (isCsv) {
+                            if (isBackup) {
+                                com.app.cyclejournal.export.csv.CsvExportHelper.shareCsv(context, res, "Berkas Cadangan CycleJournal")
+                            } else if (isCsv) {
                                 com.app.cyclejournal.export.csv.CsvExportHelper.openCsv(context, res)
                             } else {
                                 PdfShareHelper.openPdf(context, res)
@@ -2417,8 +2424,8 @@ fun SettingsScreenView(
     onOpenPin: () -> Unit,
     onBuyPro: () -> Unit,
     onCopyRecoveryKey: (() -> Unit)? = null,
-    onBackupCloud: ((String) -> Unit)? = null,
-    onRestoreCloud: ((String) -> Unit)? = null,
+    onBackupLocal: ((Boolean, String?) -> Unit)? = null,
+    onRestoreLocal: (() -> Unit)? = null,
     onNukeData: () -> Unit,
     onToast: (String) -> Unit
 ) {
@@ -2427,9 +2434,9 @@ fun SettingsScreenView(
     val textPrimary = if (isDarkMode) Color.White else Slate900
     val textSecondary = if (isDarkMode) Slate400 else Slate500
     var isBiometricEnabled by remember { mutableStateOf(false) }
-    var isCloudPinDialogOpen by remember { mutableStateOf(false) }
-    var cloudPinActionType by remember { mutableStateOf("") }
-    var cloudPinInput by remember { mutableStateOf("") }
+    var isBackupOptionsDialogOpen by remember { mutableStateOf(false) }
+    var isBackupEncrypted by remember { mutableStateOf(false) }
+    var backupPinInput by remember { mutableStateOf("") }
     val uriHandler = LocalUriHandler.current
     LazyColumn(
         modifier = Modifier
@@ -2578,6 +2585,7 @@ fun SettingsScreenView(
         }
 
         // GROUP 2: PRIVASI & CADANGAN DATA
+        // GROUP 2: CADANGAN DATA MANDIRI
         item {
             Surface(
                 shape = RoundedCornerShape(22.dp),
@@ -2586,7 +2594,7 @@ fun SettingsScreenView(
                 shadowElevation = 1.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("PRIVASI & CADANGAN", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                    Text("CADANGAN DATA MANDIRI", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Coral600)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -2627,24 +2635,31 @@ fun SettingsScreenView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Cadangan Cloud Terkunci", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            Text("Hanya tersimpan dalam bentuk terenkripsi", fontSize = 10.sp, color = textSecondary)
+                            Text("Cadangan Berkas (.cjbackup)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text("Simpan di HP, Google Drive, atau kirim ke chat pribadi", fontSize = 10.sp, color = textSecondary)
                         }
-                        Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            color = Color(0xFFECFDF5),
-                            border = BorderStroke(1.dp, Color(0xFFA7F3D0))
-                        ) {
-                            Text("Aktif", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF065F46), modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
-                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xFFECFDF5),
+                        border = BorderStroke(1.dp, Color(0xFFA7F3D0))
+                    ) {
+                        Text(
+                            text = "100% Bebas Server • Data Milik Anda Sepenuhnya",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF065F46),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
                     }
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
                             onClick = {
-                                cloudPinActionType = "backup"
-                                cloudPinInput = ""
-                                isCloudPinDialogOpen = true
+                                backupPinInput = ""
+                                isBackupEncrypted = false
+                                isBackupOptionsDialogOpen = true
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
@@ -2655,9 +2670,7 @@ fun SettingsScreenView(
                         }
                         OutlinedButton(
                             onClick = {
-                                cloudPinActionType = "restore"
-                                cloudPinInput = ""
-                                isCloudPinDialogOpen = true
+                                onRestoreLocal?.invoke() ?: onToast("Membuka pengelola berkas...")
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
@@ -2894,55 +2907,100 @@ fun SettingsScreenView(
             )
         }
     }
-        if (isCloudPinDialogOpen) {
-            val isBackup = cloudPinActionType == "backup"
+        if (isBackupOptionsDialogOpen) {
             AlertDialog(
-                onDismissRequest = { isCloudPinDialogOpen = false },
+                onDismissRequest = { isBackupOptionsDialogOpen = false },
                 title = {
-                    Text(
-                        if (isBackup) "Kunci PIN Cadangan Cloud" else "PIN Dekripsi Pemulihan",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Cadangkan Data Mandiri", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 },
                 text = {
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            if (isBackup)
-                                "Masukkan PIN 4-digit untuk mengenkripsi cadangan data Anda secara aman di Cloud:"
-                            else
-                                "Masukkan PIN 4-digit yang Anda gunakan saat mencadangkan data:",
+                            text = "Pilih metode penguncian berkas cadangan Anda:",
                             fontSize = 12.sp,
                             color = textSecondary
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
-                            value = cloudPinInput,
-                            onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) cloudPinInput = it },
-                            placeholder = { Text("4 Digit Angka") },
-                            singleLine = true,
-                            shape = RoundedCornerShape(10.dp)
-                        )
+
+                        // Option 1: Standar
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (!isBackupEncrypted) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                            border = BorderStroke(1.dp, if (!isBackupEncrypted) Coral400 else Color.Transparent),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isBackupEncrypted = false }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = !isBackupEncrypted,
+                                    onClick = { isBackupEncrypted = false },
+                                    colors = RadioButtonDefaults.colors(selectedColor = Coral500)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Column {
+                                    Text("Standar (Bebas PIN)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (!isBackupEncrypted) Coral600 else textPrimary)
+                                    Text("Langsung pulih tanpa password. Cocok jika Anda sering lupa PIN dan menyimpan file di Google Drive pribadi.", fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                }
+                            }
+                        }
+
+                        // Option 2: Terenkripsi PIN
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isBackupEncrypted) Color(0xFFFFF1F2) else if (isDarkMode) DarkBackground else Slate100,
+                            border = BorderStroke(1.dp, if (isBackupEncrypted) Coral400 else Color.Transparent),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isBackupEncrypted = true }
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(
+                                        selected = isBackupEncrypted,
+                                        onClick = { isBackupEncrypted = true },
+                                        colors = RadioButtonDefaults.colors(selectedColor = Coral500)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Terenkripsi dengan PIN", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isBackupEncrypted) Coral600 else textPrimary)
+                                        Text("Diberi kunci enkripsi AES-256. Wajib memasukkan PIN yang sama saat memulihkan berkas.", fontSize = 10.sp, color = textSecondary, lineHeight = 13.sp)
+                                    }
+                                }
+                                if (isBackupEncrypted) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    OutlinedTextField(
+                                        value = backupPinInput,
+                                        onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) backupPinInput = it },
+                                        placeholder = { Text("Ketik 4 Digit PIN") },
+                                        singleLine = true,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 confirmButton = {
-                    TextButton(
-                        enabled = cloudPinInput.length == 4,
+                    Button(
+                        enabled = !isBackupEncrypted || backupPinInput.length == 4,
                         onClick = {
-                            val pin = cloudPinInput
-                            isCloudPinDialogOpen = false
-                            if (isBackup) {
-                                onBackupCloud?.invoke(pin) ?: onToast("Enkripsi & Cadangan Cloud Berhasil")
-                            } else {
-                                onRestoreCloud?.invoke(pin) ?: onToast("Data Arsip Berhasil Dipulihkan")
-                            }
-                        }
+                            isBackupOptionsDialogOpen = false
+                            onBackupLocal?.invoke(
+                                isBackupEncrypted,
+                                if (isBackupEncrypted) backupPinInput else null
+                            ) ?: onToast("Membuat berkas cadangan...")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Coral500),
+                        shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text(if (isBackup) "Cadangkan" else "Pulihkan", fontWeight = FontWeight.Bold, color = Coral600)
+                        Text("Buat Cadangan", fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { isCloudPinDialogOpen = false }) {
+                    TextButton(onClick = { isBackupOptionsDialogOpen = false }) {
                         Text("Batal")
                     }
                 }
