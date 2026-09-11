@@ -272,7 +272,6 @@ Catatan: "</string>
     <string name="dash_bbt_chart_title">Tren Kurva Suhu Basal (BBT)</string>
     <string name="dash_bbt_coverline">Coverline 36.40°C</string>
     <string name="dash_bbt_empty_hint">Ukur suhu basal pagi hari sebelum beranjak dari tempat tidur untuk memantau pergeseran ovulasi.</string>
-    <string name="dash_bbt_empty_title">Belum ada rekaman suhu BBT harian.</string>
     <string name="dash_bbt_phase_follicular_low">Folikuler (Rendah)</string>
     <string name="dash_bbt_phase_luteal_high">Luteal (Tinggi)</string>
     <string name="dash_bbt_rise">Kenaikan BBT (+0.28°C)</string>

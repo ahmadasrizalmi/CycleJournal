@@ -1042,10 +1042,12 @@ fun DashboardScreenView(
         }
 
         // 3. BBT BIPHASIC SPARKLINE TREND CARD (Driven by Real Backend Log Entries)
+        // Hidden until the user records a basal temperature: not everyone owns a thermometer,
+        // and an empty chart is noise on the dashboard. It appears as soon as data exists.
         item {
             val logsWithBbt = allLogs.filter { it.basalBodyTempCelsius != null }.sortedBy { it.date }.takeLast(7)
-            val hasRealBbt = logsWithBbt.isNotEmpty()
 
+            if (logsWithBbt.isNotEmpty()) {
             Surface(
                 shape = RoundedCornerShape(22.dp),
                 color = cardBg,
@@ -1079,14 +1081,14 @@ fun DashboardScreenView(
 
                         Surface(
                             shape = RoundedCornerShape(10.dp),
-                            color = if (hasRealBbt) Color(0xFFECFDF5) else Slate100,
-                            border = BorderStroke(1.dp, if (hasRealBbt) Color(0xFFA7F3D0) else Slate200)
+                            color = Color(0xFFECFDF5),
+                            border = BorderStroke(1.dp, Color(0xFFA7F3D0))
                         ) {
                             Text(
-                                text = if (hasRealBbt) stringResource(R.string.dash_bbt_status_normal) else stringResource(R.string.dash_bbt_status_no_data),
+                                text = stringResource(R.string.dash_bbt_status_normal),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (hasRealBbt) Color(0xFF065F46) else Slate500,
+                                color = Color(0xFF065F46),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                             )
                         }
@@ -1109,7 +1111,7 @@ fun DashboardScreenView(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    if (hasRealBbt && logsWithBbt.size >= 2) {
+                    if (logsWithBbt.size >= 2) {
                         Canvas(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -1182,13 +1184,6 @@ fun DashboardScreenView(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(R.string.dash_bbt_empty_title),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = textPrimary
-                            )
-                            Spacer(modifier = Modifier.height(3.dp))
-                            Text(
                                 text = stringResource(R.string.dash_bbt_empty_hint),
                                 fontSize = 12.sp,
                                 color = textSecondary,
@@ -1198,18 +1193,20 @@ fun DashboardScreenView(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.dash_bbt_phase_follicular_low), fontSize = 12.sp, color = textSecondary)
-                        Text(stringResource(R.string.dash_bbt_rise), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
-                        Text(stringResource(R.string.dash_bbt_phase_luteal_high), fontSize = 12.sp, color = textSecondary)
+                    if (logsWithBbt.size >= 2) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(stringResource(R.string.dash_bbt_phase_follicular_low), fontSize = 12.sp, color = textSecondary)
+                            Text(stringResource(R.string.dash_bbt_rise), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Coral600)
+                            Text(stringResource(R.string.dash_bbt_phase_luteal_high), fontSize = 12.sp, color = textSecondary)
+                        }
                     }
                 }
+            }
             }
         }
 
@@ -3810,14 +3807,15 @@ fun DailyLogBottomSheet(
         // Sheet frame: scrollable content on top, pinned save action below.
         Column(modifier = Modifier.fillMaxWidth()) {
             Column(
-                // The scroll area takes the remaining height so the save action stays pinned
-                // at the bottom of the sheet instead of hiding below the fold.
+                // fill = false lets the sheet shrink to its content, so a collapsed detail
+                // section leaves no empty gap; when the detail is open the area is capped and
+                // scrolls, keeping the save action pinned below it.
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f, fill = false)
                     .padding(horizontal = 20.dp, vertical = 6.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -4262,7 +4260,10 @@ fun DailyLogBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
-                        .padding(top = 10.dp, bottom = 20.dp)
+                        .padding(top = 10.dp)
+                        // Keeps the save button clear of the system navigation gesture area.
+                        .navigationBarsPadding()
+                        .padding(bottom = 22.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.daily_save_hint),

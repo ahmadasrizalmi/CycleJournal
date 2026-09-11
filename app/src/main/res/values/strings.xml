@@ -268,7 +268,6 @@ Notes: "</string>
     <string name="dash_bbt_chart_title">Basal Temperature Curve Trend (BBT)</string>
     <string name="dash_bbt_coverline">Coverline 36.40°C</string>
     <string name="dash_bbt_empty_hint">Measure your basal temperature in the morning before getting out of bed to monitor ovulation shifts.</string>
-    <string name="dash_bbt_empty_title">No daily BBT temperature records yet.</string>
     <string name="dash_bbt_phase_follicular_low">Follicular (Low)</string>
     <string name="dash_bbt_phase_luteal_high">Luteal (High)</string>
     <string name="dash_bbt_rise">BBT Rise (+0.28°C)</string>
