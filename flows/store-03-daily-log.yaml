@@ -1,0 +1,15 @@
+steps:
+  - echo: 'Daily log sheet collapsed. The detail card has no usable resource id inside the sheet window and its label is locale specific, so it is tapped by position: the sheet sits at the bottom, the card is ~300dp below its top, i.e. 0.82 of the screen height.'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      id: fab_log
+  - wait: 2000
+  - tap:
+      x: 0.5
+      y: 0.82
+  - wait: 2000
+  - await:
+      idle: true

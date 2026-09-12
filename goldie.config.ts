@@ -1,20 +1,27 @@
 /**
- * Goldie configuration for CycleJournal Play Store & App Store Screenshots
- * Drives automated captures and compositing with the Coral-to-Pink brand gradient.
+ * Goldie configuration for CycleJournal Play Store screenshots.
+ *
+ * Eight scenes cover every page (dashboard, calendar, analysis, settings) and the features the
+ * store listing leads with: two-tap logging, clinical biomarkers, the BBT curve, the doctor-ready
+ * report, bilingual UI with adjustable text size, and the privacy controls.
+ *
+ * The captures come from the demo-seeded release build, so the screens show a populated app.
+ * Build it with: gradlew :app:assembleRelease -PdemoSeed=true
  */
 export default {
   appRoot: ".",
   flowsDir: "./flows",
   android: {
     applicationId: "com.app.cyclejournal",
-    appPath: "./app/build/outputs/apk/release/app-release.apk",
+    // Demo-seeded build: goldie installs it with cleared data, so the app seeds itself on launch.
+    appPath: "./out/demo/app-release-demo.apk",
   },
   devices: ["pixel-10-pro"],
   locales: ["en-US", "id-ID"],
   appearance: "light",
   frame: { variant: "17-pro-blue" },
   theme: {
-    // Brand Gradient: Coral (#FF8A71) to Pink (#FF5E7D)
+    // Brand gradient: coral to pink.
     background: "linear-gradient(145deg, #FF8A71 0%, #FF5E7D 100%)",
     headlineColor: "#FFFFFF",
     subheadColor: "#FFF1F2",
@@ -22,7 +29,7 @@ export default {
     copyHeightRatio: 0.22,
     deviceWidthRatio: 0.86,
     layout: "classic",
-    template: "uniform",
+    template: "magazine",
   },
   store: {
     name: "CycleJournal",
@@ -49,65 +56,80 @@ export default {
       kind: "screenshot",
       id: "dashboard",
       flow: "store-01-dashboard",
-      headline: {
-        "en-US": "Medical-Grade Cycle Tracking",
-        "id-ID": "Pelacak Siklus Berstandar Medis",
-      },
+      headline: { "en-US": "Your cycle, clinically tracked", "id-ID": "Siklus Anda, terpantau klinis" },
       subhead: {
-        "en-US": "Accurate period, ovulation, and fertile predictions based on FIGO clinical guidelines.",
-        "id-ID": "Prediksi haid, ovulasi, dan masa subur presisi berdasar konsensus klinis FIGO.",
+        "en-US": "Period, ovulation and fertile window predicted from FIGO guidance.",
+        "id-ID": "Haid, ovulasi, dan masa subur diprediksi berdasar panduan FIGO.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "calendar",
+      flow: "store-02-calendar",
+      headline: { "en-US": "See the whole cycle at once", "id-ID": "Lihat seluruh siklus sekilas" },
+      subhead: {
+        "en-US": "Every logged day, phase and fertile window on one month map.",
+        "id-ID": "Semua catatan harian, fase, dan masa subur dalam satu peta bulan.",
       },
     },
     {
       kind: "screenshot",
       id: "daily-log",
-      flow: "store-02-daily-log",
-      headline: {
-        "en-US": "Clinical Biomarker & Pain Journal",
-        "id-ID": "Jurnal Gejala & Skala Nyeri Klinis",
-      },
+      flow: "store-03-daily-log",
+      headline: { "en-US": "Log a day in two taps", "id-ID": "Catat harian dalam dua ketukan" },
       subhead: {
-        "en-US": "Log BBT, cervical mucus, flow, and VAS pain intensity with clean vector icons and zero emojis.",
-        "id-ID": "Catat BBT, lendir serviks, darah haid, dan skala nyeri VAS dengan ikon vektor tanpa emoji.",
+        "en-US": "Bleeding and pain first; everything else stays out of the way until you need it.",
+        "id-ID": "Darah haid dan nyeri lebih dulu; sisanya menunggu sampai Anda butuh.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "clinical-detail",
+      flow: "store-04-clinical-detail",
+      headline: { "en-US": "Basal temp, mucus, symptoms", "id-ID": "Suhu basal, lendir, gejala" },
+      subhead: {
+        "en-US": "Symptothermal detail in one panel, counted so you know what is still missing.",
+        "id-ID": "Detail simptotermal dalam satu panel, lengkap dengan hitungan yang belum diisi.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "bbt-chart",
+      flow: "store-05-bbt",
+      headline: { "en-US": "Watch the thermal shift", "id-ID": "Pantau pergeseran suhu" },
+      subhead: {
+        "en-US": "A three-over-six curve confirms ovulation from your own morning readings.",
+        "id-ID": "Kurva three-over-six memastikan ovulasi dari catatan suhu pagi Anda.",
       },
     },
     {
       kind: "screenshot",
       id: "medical-report",
-      flow: "store-03-medical-report",
-      headline: {
-        "en-US": "OB-GYN Ready Clinical Reports",
-        "id-ID": "Laporan Medis Siap Dokter SpOG",
-      },
+      flow: "store-06-medical-report",
+      headline: { "en-US": "A report your doctor can read", "id-ID": "Laporan siap dibaca dokter" },
       subhead: {
-        "en-US": "Export 1-page A4 PDF medical summaries with FIGO metrics, red flags, and doctor sign-off.",
-        "id-ID": "Ekspor ringkasan medis PDF A4 1-halaman dengan metrik FIGO, anomali, dan cap dokter.",
+        "en-US": "One-page A4 PDF with FIGO metrics, anomalies and a printable summary.",
+        "id-ID": "PDF A4 satu halaman berisi metrik FIGO, anomali, dan ringkasan siap cetak.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "bilingual-text-size",
+      flow: "store-07-settings",
+      headline: { "en-US": "Bilingual, and sized for you", "id-ID": "Dua bahasa, ukuran sesuai Anda" },
+      subhead: {
+        "en-US": "Indonesian or English, with four text sizes on top of your system setting.",
+        "id-ID": "Indonesia atau Inggris, dengan empat ukuran teks di atas setelan sistem.",
       },
     },
     {
       kind: "screenshot",
       id: "privacy-security",
-      flow: "store-04-privacy-security",
-      headline: {
-        "en-US": "Absolute Zero-Knowledge Privacy",
-        "id-ID": "Privasi Mutlak Zero-Knowledge",
-      },
+      flow: "store-08-security",
+      headline: { "en-US": "Private by design", "id-ID": "Privat sejak dirancang" },
       subhead: {
-        "en-US": "100% offline-first with hardware SQLCipher encryption and zero third-party tracking.",
-        "id-ID": "100% offline dengan enkripsi hardware SQLCipher tanpa pelacak pihak ketiga.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "data-portability",
-      flow: "store-05-data-portability",
-      headline: {
-        "en-US": "Total Data Sovereignty",
-        "id-ID": "Kedaulatan Penuh Atas Data Anda",
-      },
-      subhead: {
-        "en-US": "Store your private recovery key, sync zero-knowledge cloud backups, or permanently purge all data in one tap.",
-        "id-ID": "Simpan kunci pemulihan unik, cadangkan ke cloud terenkripsi, atau musnahkan total data dalam satu sentuhan.",
+        "en-US": "PIN lock, biometrics, discreet mode and encrypted backups you own.",
+        "id-ID": "Kunci PIN, biometrik, mode samaran, dan cadangan terenkripsi milik Anda.",
       },
     },
   ],

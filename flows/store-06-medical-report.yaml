@@ -1,8 +1,11 @@
 steps:
-  - echo: 'Dashboard with demo data: goldie installs the seeded release build with cleared data'
+  - echo: 'Analysis tab with the FIGO summary and export actions'
   - launch: com.app.cyclejournal
   - wait: 10000
   - await:
       idle: true
+  - tap:
+      id: nav_report
+  - wait: 2500
   - await:
       idle: true

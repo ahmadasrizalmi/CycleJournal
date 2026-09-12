@@ -1,11 +1,16 @@
 package com.app.cyclejournal
 
 import android.app.Application
+import com.app.cyclejournal.data.local.AppDatabase
+import com.app.cyclejournal.data.local.DemoDataSeeder
 import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.scheduler.alarm.CycleAlarmScheduler
 import com.app.cyclejournal.scheduler.notification.NotificationChannelManager
 import com.app.cyclejournal.scheduler.worker.BackupScheduler
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class CycleApplication : Application() {
@@ -22,5 +27,12 @@ class CycleApplication : Application() {
         // 3. Initialize daily morning waking BBT reminder
         val alarmScheduler = CycleAlarmScheduler(this)
         alarmScheduler.scheduleDailyBbtReminder(6, 0)
+
+        // 4. Marketing screenshot builds (-PdemoSeed=true) start from a populated history
+        if (BuildConfig.DEMO_SEED) {
+            CoroutineScope(Dispatchers.IO).launch {
+                DemoDataSeeder.seedIfEmpty(AppDatabase.getInstance(this@CycleApplication))
+            }
+        }
     }
 }

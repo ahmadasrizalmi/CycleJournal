@@ -1,0 +1,11 @@
+steps:
+  - echo: 'Cycle calendar, reached with the bottom navigation tag'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      id: nav_calendar
+  - wait: 2000
+  - await:
+      idle: true

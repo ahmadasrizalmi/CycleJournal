@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T16:25:12.410Z",
+  "generatedAt": "2026-09-12T06:38:37.571Z",
   "app": {
     "name": "CycleJournal",
     "icon": "store_assets/play_store_icon_512.png",
@@ -61,35 +61,56 @@
             "url": "screenshots/pixel-10-pro/en-US/01-dashboard.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 304069
+            "bytes": 444329
+          },
+          {
+            "sceneId": "calendar",
+            "url": "screenshots/pixel-10-pro/en-US/02-calendar.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 339566
           },
           {
             "sceneId": "daily-log",
-            "url": "screenshots/pixel-10-pro/en-US/02-daily-log.png",
+            "url": "screenshots/pixel-10-pro/en-US/03-daily-log.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 289760
+            "bytes": 496794
+          },
+          {
+            "sceneId": "clinical-detail",
+            "url": "screenshots/pixel-10-pro/en-US/04-clinical-detail.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 416481
+          },
+          {
+            "sceneId": "bbt-chart",
+            "url": "screenshots/pixel-10-pro/en-US/05-bbt-chart.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 395725
           },
           {
             "sceneId": "medical-report",
-            "url": "screenshots/pixel-10-pro/en-US/03-medical-report.png",
+            "url": "screenshots/pixel-10-pro/en-US/06-medical-report.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 420957
+            "bytes": 398768
+          },
+          {
+            "sceneId": "bilingual-text-size",
+            "url": "screenshots/pixel-10-pro/en-US/07-bilingual-text-size.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 391326
           },
           {
             "sceneId": "privacy-security",
-            "url": "screenshots/pixel-10-pro/en-US/04-privacy-security.png",
+            "url": "screenshots/pixel-10-pro/en-US/08-privacy-security.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 307787
-          },
-          {
-            "sceneId": "data-portability",
-            "url": "screenshots/pixel-10-pro/en-US/05-data-portability.png",
-            "width": 1080,
-            "height": 1920,
-            "bytes": 334036
+            "bytes": 390360
           }
         ],
         "preview": null
@@ -101,35 +122,56 @@
             "url": "screenshots/pixel-10-pro/id-ID/01-dashboard.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 300443
+            "bytes": 441085
+          },
+          {
+            "sceneId": "calendar",
+            "url": "screenshots/pixel-10-pro/id-ID/02-calendar.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 335591
           },
           {
             "sceneId": "daily-log",
-            "url": "screenshots/pixel-10-pro/id-ID/02-daily-log.png",
+            "url": "screenshots/pixel-10-pro/id-ID/03-daily-log.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 289297
+            "bytes": 496203
+          },
+          {
+            "sceneId": "clinical-detail",
+            "url": "screenshots/pixel-10-pro/id-ID/04-clinical-detail.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 413412
+          },
+          {
+            "sceneId": "bbt-chart",
+            "url": "screenshots/pixel-10-pro/id-ID/05-bbt-chart.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 395725
           },
           {
             "sceneId": "medical-report",
-            "url": "screenshots/pixel-10-pro/id-ID/03-medical-report.png",
+            "url": "screenshots/pixel-10-pro/id-ID/06-medical-report.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 421016
+            "bytes": 397592
+          },
+          {
+            "sceneId": "bilingual-text-size",
+            "url": "screenshots/pixel-10-pro/id-ID/07-bilingual-text-size.png",
+            "width": 1080,
+            "height": 1920,
+            "bytes": 394427
           },
           {
             "sceneId": "privacy-security",
-            "url": "screenshots/pixel-10-pro/id-ID/04-privacy-security.png",
+            "url": "screenshots/pixel-10-pro/id-ID/08-privacy-security.png",
             "width": 1080,
             "height": 1920,
-            "bytes": 304473
-          },
-          {
-            "sceneId": "data-portability",
-            "url": "screenshots/pixel-10-pro/id-ID/05-data-portability.png",
-            "width": 1080,
-            "height": 1920,
-            "bytes": 334036
+            "bytes": 393020
           }
         ],
         "preview": null
@@ -391,56 +433,89 @@
       {
         "id": "dashboard",
         "headline": {
-          "en-US": "Medical-Grade Cycle Tracking",
-          "id-ID": "Pelacak Siklus Berstandar Medis"
+          "en-US": "Your cycle, clinically tracked",
+          "id-ID": "Siklus Anda, terpantau klinis"
         },
         "subhead": {
-          "en-US": "Accurate period, ovulation, and fertile predictions based on FIGO clinical guidelines.",
-          "id-ID": "Prediksi haid, ovulasi, dan masa subur presisi berdasar konsensus klinis FIGO."
+          "en-US": "Period, ovulation and fertile window predicted from FIGO guidance.",
+          "id-ID": "Haid, ovulasi, dan masa subur diprediksi berdasar panduan FIGO."
+        }
+      },
+      {
+        "id": "calendar",
+        "headline": {
+          "en-US": "See the whole cycle at once",
+          "id-ID": "Lihat seluruh siklus sekilas"
+        },
+        "subhead": {
+          "en-US": "Every logged day, phase and fertile window on one month map.",
+          "id-ID": "Semua catatan harian, fase, dan masa subur dalam satu peta bulan."
         }
       },
       {
         "id": "daily-log",
         "headline": {
-          "en-US": "Clinical Biomarker & Pain Journal",
-          "id-ID": "Jurnal Gejala & Skala Nyeri Klinis"
+          "en-US": "Log a day in two taps",
+          "id-ID": "Catat harian dalam dua ketukan"
         },
         "subhead": {
-          "en-US": "Log BBT, cervical mucus, flow, and VAS pain intensity with clean vector icons and zero emojis.",
-          "id-ID": "Catat BBT, lendir serviks, darah haid, dan skala nyeri VAS dengan ikon vektor tanpa emoji."
+          "en-US": "Bleeding and pain first; everything else stays out of the way until you need it.",
+          "id-ID": "Darah haid dan nyeri lebih dulu; sisanya menunggu sampai Anda butuh."
+        }
+      },
+      {
+        "id": "clinical-detail",
+        "headline": {
+          "en-US": "Basal temp, mucus, symptoms",
+          "id-ID": "Suhu basal, lendir, gejala"
+        },
+        "subhead": {
+          "en-US": "Symptothermal detail in one panel, counted so you know what is still missing.",
+          "id-ID": "Detail simptotermal dalam satu panel, lengkap dengan hitungan yang belum diisi."
+        }
+      },
+      {
+        "id": "bbt-chart",
+        "headline": {
+          "en-US": "Watch the thermal shift",
+          "id-ID": "Pantau pergeseran suhu"
+        },
+        "subhead": {
+          "en-US": "A three-over-six curve confirms ovulation from your own morning readings.",
+          "id-ID": "Kurva three-over-six memastikan ovulasi dari catatan suhu pagi Anda."
         }
       },
       {
         "id": "medical-report",
         "headline": {
-          "en-US": "OB-GYN Ready Clinical Reports",
-          "id-ID": "Laporan Medis Siap Dokter SpOG"
+          "en-US": "A report your doctor can read",
+          "id-ID": "Laporan siap dibaca dokter"
         },
         "subhead": {
-          "en-US": "Export 1-page A4 PDF medical summaries with FIGO metrics, red flags, and doctor sign-off.",
-          "id-ID": "Ekspor ringkasan medis PDF A4 1-halaman dengan metrik FIGO, anomali, dan cap dokter."
+          "en-US": "One-page A4 PDF with FIGO metrics, anomalies and a printable summary.",
+          "id-ID": "PDF A4 satu halaman berisi metrik FIGO, anomali, dan ringkasan siap cetak."
+        }
+      },
+      {
+        "id": "bilingual-text-size",
+        "headline": {
+          "en-US": "Bilingual, and sized for you",
+          "id-ID": "Dua bahasa, ukuran sesuai Anda"
+        },
+        "subhead": {
+          "en-US": "Indonesian or English, with four text sizes on top of your system setting.",
+          "id-ID": "Indonesia atau Inggris, dengan empat ukuran teks di atas setelan sistem."
         }
       },
       {
         "id": "privacy-security",
         "headline": {
-          "en-US": "Absolute Zero-Knowledge Privacy",
-          "id-ID": "Privasi Mutlak Zero-Knowledge"
+          "en-US": "Private by design",
+          "id-ID": "Privat sejak dirancang"
         },
         "subhead": {
-          "en-US": "100% offline-first with hardware SQLCipher encryption and zero third-party tracking.",
-          "id-ID": "100% offline dengan enkripsi hardware SQLCipher tanpa pelacak pihak ketiga."
-        }
-      },
-      {
-        "id": "data-portability",
-        "headline": {
-          "en-US": "Total Data Sovereignty",
-          "id-ID": "Kedaulatan Penuh Atas Data Anda"
-        },
-        "subhead": {
-          "en-US": "Store your private recovery key, sync zero-knowledge cloud backups, or permanently purge all data in one tap.",
-          "id-ID": "Simpan kunci pemulihan unik, cadangkan ke cloud terenkripsi, atau musnahkan total data dalam satu sentuhan."
+          "en-US": "PIN lock, biometrics, discreet mode and encrypted backups you own.",
+          "id-ID": "Kunci PIN, biometrik, mode samaran, dan cadangan terenkripsi milik Anda."
         }
       }
     ],
@@ -453,20 +528,32 @@
             "url": "raw/pixel-10-pro/dashboard.png"
           },
           {
+            "sceneId": "calendar",
+            "url": "raw/pixel-10-pro/calendar.png"
+          },
+          {
             "sceneId": "daily-log",
             "url": "raw/pixel-10-pro/daily-log.png"
+          },
+          {
+            "sceneId": "clinical-detail",
+            "url": "raw/pixel-10-pro/clinical-detail.png"
+          },
+          {
+            "sceneId": "bbt-chart",
+            "url": "raw/pixel-10-pro/bbt-chart.png"
           },
           {
             "sceneId": "medical-report",
             "url": "raw/pixel-10-pro/medical-report.png"
           },
           {
-            "sceneId": "privacy-security",
-            "url": "raw/pixel-10-pro/privacy-security.png"
+            "sceneId": "bilingual-text-size",
+            "url": "raw/pixel-10-pro/bilingual-text-size.png"
           },
           {
-            "sceneId": "data-portability",
-            "url": "raw/pixel-10-pro/data-portability.png"
+            "sceneId": "privacy-security",
+            "url": "raw/pixel-10-pro/privacy-security.png"
           }
         ],
         "clips": null

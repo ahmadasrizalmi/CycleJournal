@@ -1,0 +1,19 @@
+steps:
+  - echo: 'Settings scrolled to language and text size'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      id: nav_settings
+  - wait: 2500
+  - tool: gesture-swipe
+    args:
+      fromX: 0.5
+      fromY: 0.80
+      toX: 0.5
+      toY: 0.35
+      durationMs: 600
+  - wait: 900
+  - await:
+      idle: true

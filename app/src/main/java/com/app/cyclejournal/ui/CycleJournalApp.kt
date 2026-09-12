@@ -11,6 +11,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import android.content.Context
 import android.content.res.Resources
 import androidx.compose.animation.core.*
@@ -29,7 +30,10 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -113,6 +117,7 @@ private fun mucusLabelFor(type: CervicalMucusType, resources: Resources): String
 }
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 fun CycleJournalApp(
     onSharePdf: (() -> Unit)? = null,
     onExportCsv: (() -> Unit)? = null,
@@ -216,6 +221,9 @@ fun CycleJournalApp(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
+            // Exposes testTag values as resource ids so the screenshot flows can select screens
+            // and controls by identifier instead of locale-specific text.
+            .semantics { testTagsAsResourceId = true }
     ) {
         Scaffold(
             containerColor = backgroundColor,
@@ -250,6 +258,7 @@ fun CycleJournalApp(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .testTag("screen_" + currentScreen.name.lowercase())
             ) {
                 when (currentScreen) {
                     AppScreen.DASHBOARD -> DashboardScreenView(
@@ -2888,6 +2897,7 @@ fun SettingsScreenView(
         // GROUP: PILIHAN BAHASA / LANGUAGE PREFERENCE
         item {
             Surface(
+                modifier = Modifier.testTag("settings_language"),
                 shape = RoundedCornerShape(22.dp),
                 color = cardBg,
                 border = BorderStroke(1.dp, borderCol),
@@ -2961,6 +2971,7 @@ fun SettingsScreenView(
         // GROUP: UKURAN TEKS / TEXT SIZE
         item {
             Surface(
+                modifier = Modifier.testTag("settings_text_size"),
                 shape = RoundedCornerShape(22.dp),
                 color = cardBg,
                 border = BorderStroke(1.dp, borderCol),
@@ -3676,7 +3687,7 @@ fun SettingsScreenView(
 }
 
 // 6. DAILY LOG BOTTOM SHEET: Pre-populated with real database record
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun DailyLogBottomSheet(
     isDarkMode: Boolean,
@@ -3804,8 +3815,14 @@ fun DailyLogBottomSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = if (isDarkMode) DarkCardBackground else Color.White
     ) {
-        // Sheet frame: scrollable content on top, pinned save action below.
-        Column(modifier = Modifier.fillMaxWidth()) {
+        // Sheet frame: scrollable content on top, pinned save action below. The sheet renders in
+        // its own window, so it needs the resource-id opt-in again for the screenshot flows.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { testTagsAsResourceId = true }
+                .testTag("sheet_daily_log")
+        ) {
             Column(
                 // fill = false lets the sheet shrink to its content, so a collapsed detail
                 // section leaves no empty gap; when the detail is open the area is capped and
@@ -3954,6 +3971,7 @@ fun DailyLogBottomSheet(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag("sheet_detail_toggle")
                         .clickable { isDetailExpanded = !isDetailExpanded },
                     shape = RoundedCornerShape(14.dp),
                     color = if (isDarkMode) DarkBackground else Slate50,
@@ -4276,7 +4294,7 @@ fun DailyLogBottomSheet(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = saveLog,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("sheet_save"),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Coral500)
                     ) {
@@ -4429,14 +4447,14 @@ fun AppBottomNavigation(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                NavButton(Icons.Default.Home, stringResource(R.string.nav_home), currentScreen == AppScreen.DASHBOARD) { onSelect(AppScreen.DASHBOARD) }
-                NavButton(Icons.Default.DateRange, stringResource(R.string.nav_calendar), currentScreen == AppScreen.CALENDAR) { onSelect(AppScreen.CALENDAR) }
+                NavButton(Icons.Default.Home, stringResource(R.string.nav_home), currentScreen == AppScreen.DASHBOARD, "nav_home") { onSelect(AppScreen.DASHBOARD) }
+                NavButton(Icons.Default.DateRange, stringResource(R.string.nav_calendar), currentScreen == AppScreen.CALENDAR, "nav_calendar") { onSelect(AppScreen.CALENDAR) }
 
                 // Spacer to reserve central notch space for the elevated FAB
                 Spacer(modifier = Modifier.size(54.dp))
 
-                NavButton(Icons.Default.Description, stringResource(R.string.nav_report), currentScreen == AppScreen.REPORT) { onSelect(AppScreen.REPORT) }
-                NavButton(Icons.Default.Settings, stringResource(R.string.nav_settings), currentScreen == AppScreen.SETTINGS) { onSelect(AppScreen.SETTINGS) }
+                NavButton(Icons.Default.Description, stringResource(R.string.nav_report), currentScreen == AppScreen.REPORT, "nav_report") { onSelect(AppScreen.REPORT) }
+                NavButton(Icons.Default.Settings, stringResource(R.string.nav_settings), currentScreen == AppScreen.SETTINGS, "nav_settings") { onSelect(AppScreen.SETTINGS) }
             }
         }
 
@@ -4450,6 +4468,7 @@ fun AppBottomNavigation(
                 .shadow(12.dp, CircleShape, spotColor = Coral600)
                 .clip(CircleShape)
                 .background(CoralLinearGradient)
+                .testTag("fab_log")
                 .clickable { onOpenFab() },
             contentAlignment = Alignment.Center
         ) {
@@ -4464,10 +4483,12 @@ fun AppBottomNavigation(
 }
 
 @Composable
-fun NavButton(icon: ImageVector, label: String, isSelected: Boolean, onClick: () -> Unit) {
+fun NavButton(icon: ImageVector, label: String, isSelected: Boolean, tag: String, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClick() }
+        modifier = Modifier
+            .testTag(tag)
+            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClick() }
     ) {
         Icon(icon, contentDescription = label, tint = if (isSelected) Coral600 else Slate400, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.height(2.dp))

@@ -1,25 +1,40 @@
 {
   "device": "pixel-10-pro",
+  "udid": "emulator-5554",
+  "capturedAt": "2026-09-12T06:35:00.286Z",
   "screenshots": [
     {
       "sceneId": "dashboard",
-      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/dashboard.png"
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\dashboard.png"
+    },
+    {
+      "sceneId": "calendar",
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\calendar.png"
     },
     {
       "sceneId": "daily-log",
-      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/daily-log.png"
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\daily-log.png"
+    },
+    {
+      "sceneId": "clinical-detail",
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\clinical-detail.png"
+    },
+    {
+      "sceneId": "bbt-chart",
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\bbt-chart.png"
     },
     {
       "sceneId": "medical-report",
-      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/medical-report.png"
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\medical-report.png"
+    },
+    {
+      "sceneId": "bilingual-text-size",
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\bilingual-text-size.png"
     },
     {
       "sceneId": "privacy-security",
-      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/privacy-security.png"
-    },
-    {
-      "sceneId": "data-portability",
-      "file": "D:/9 KANDA/APPS Android/CycleJournal/out/raw/pixel-10-pro/data-portability.png"
+      "file": "D:\\9 KANDA\\APPS Android\\CycleJournal\\out\\raw\\pixel-10-pro\\privacy-security.png"
     }
-  ]
+  ],
+  "preview": null
 }

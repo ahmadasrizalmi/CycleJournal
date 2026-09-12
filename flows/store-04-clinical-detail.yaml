@@ -1,0 +1,11 @@
+steps:
+  - echo: 'Daily log sheet with clinical detail, the way seeded data opens it'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      id: fab_log
+  - wait: 2500
+  - await:
+      idle: true
