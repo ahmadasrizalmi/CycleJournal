@@ -4261,9 +4261,11 @@ fun DailyLogBottomSheet(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .padding(top = 10.dp)
-                        // Keeps the save button clear of the system navigation gesture area.
+                        // System navigation area first, then the optical margin. 32dp below the
+                        // button against ~34dp above it (hint + padding) keeps the primary action
+                        // anchored instead of pressed against the screen edge.
                         .navigationBarsPadding()
-                        .padding(bottom = 22.dp)
+                        .padding(bottom = 32.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.daily_save_hint),
