@@ -25,6 +25,11 @@
 
 ## 2. Listing Toko Aplikasi (Store Listing Metadata)
 
+> **Copy terbaru (rekomendasi): `docs/COPYWRITING_STORE.md`.** Dokumen itu memuat copy bahasa awam
+> yang dipakai di aset store — headline/subhead per screenshot, deskripsi singkat, dan deskripsi
+> lengkap versi bahasa sederhana. Blok di bawah ini dipertahankan sebagai versi panjang untuk
+> kebutuhan kata kunci (ASO); kalau tidak yakin, pakai versi di dokumen copywriting.
+
 ### 🇮🇩 Bahasa Indonesia (Indonesian Listing — Bahasa Utama)
 
 * **Nama Aplikasi (Maks. 30 Karakter):**
@@ -35,9 +40,10 @@
 
 * **Deskripsi Singkat (Maks. 80 Karakter):**
   ```
-  Kalender haid & subur medis: 100% offline, FIGO, enkripsi & laporan PDF SpOG.
+  Siap sebelum menstruasi datang
   ```
-  *(77 karakter — padat nilai jual: medis, offline, standar FIGO, enkripsi, PDF SpOG)*
+  *(30 karakter — bahasa awam, langsung menyebut manfaat. Dipakai juga sebagai subtitle di aset
+  store; versi Inggris: `Never be surprised by your period`)*
 
 * **Deskripsi Lengkap (Maks. 4000 Karakter):**
   ```
