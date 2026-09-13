@@ -13,8 +13,8 @@ android {
         applicationId = "com.app.cyclejournal"
         minSdk = 26
         targetSdk = 36
-        versionCode = 16
-        versionName = "1.1.14"
+        versionCode = 17
+        versionName = "1.1.15"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Marketing screenshots run the release build with -PdemoSeed=true so the store shots
         // show a populated app. Off by default, so the shipped build never seeds content.
@@ -130,6 +130,8 @@ dependencies {
 
     // Local Testing (JVM)
     testImplementation("junit:junit:4.13.2")
+    // Real org.json on the unit-test classpath: the android.jar stub throws when called from the JVM.
+    testImplementation("org.json:json:20240303")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 }

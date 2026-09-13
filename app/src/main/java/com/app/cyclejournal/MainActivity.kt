@@ -2,6 +2,7 @@ package com.app.cyclejournal
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.view.WindowManager
@@ -149,6 +150,29 @@ class MainActivity : FragmentActivity() {
             // A report the MediaStore refused still has to be reachable: the system picker writes it
             // wherever the user chooses (Downloads, Drive, a USB stick).
             var pendingSaveAs by remember { mutableStateOf<PdfShareHelper.SaveResult?>(null) }
+            // Android 8/9 need WRITE_EXTERNAL_STORAGE granted at runtime before the public
+            // Downloads write can succeed; the Save to… picker stays available either way.
+            var pendingExport by remember { mutableStateOf<(() -> Unit)?>(null) }
+            val storagePermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) {
+                val run = pendingExport
+                pendingExport = null
+                run?.invoke()
+            }
+            val needsLegacyStorage = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+            val runWithStorage: (() -> Unit) -> Unit = { block ->
+                val alreadyGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+                    this@MainActivity,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                if (needsLegacyStorage && !alreadyGranted) {
+                    pendingExport = block
+                    storagePermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                } else {
+                    block()
+                }
+            }
             val saveReportAsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.CreateDocument("application/octet-stream")
             ) { uri ->
@@ -285,19 +309,23 @@ class MainActivity : FragmentActivity() {
                     } else {
                     CycleJournalApp(
                         onSharePdf = {
-                            cycleViewModel.exportAndSharePdfReport(this@MainActivity)
+                            runWithStorage { cycleViewModel.exportAndSharePdfReport(this@MainActivity) }
                         },
                         onExportCsv = {
-                            settingsViewModel.exportAndDownloadCsv(this@MainActivity) { saveResult ->
-                                cycleViewModel.setDownloadedReport(saveResult)
+                            runWithStorage {
+                                settingsViewModel.exportAndDownloadCsv(this@MainActivity) { saveResult ->
+                                    cycleViewModel.setDownloadedReport(saveResult)
+                                }
                             }
                         },
                         onBuyPro = {
                             billingManager.launchPurchaseFlow(this@MainActivity)
                         },
                         onBackupLocal = { isEncrypted, pin ->
-                            settingsViewModel.createLocalBackup(this@MainActivity, isEncrypted, pin) { saveResult ->
-                                cycleViewModel.setDownloadedReport(saveResult)
+                            runWithStorage {
+                                settingsViewModel.createLocalBackup(this@MainActivity, isEncrypted, pin) { saveResult ->
+                                    cycleViewModel.setDownloadedReport(saveResult)
+                                }
                             }
                         },
                         onRestoreLocal = {
