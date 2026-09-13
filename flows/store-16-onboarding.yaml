@@ -1,0 +1,6 @@
+steps:
+  - echo: 'First run, before any data exists: the app opens on the welcome carousel.'
+  - launch: com.app.cyclejournal
+  - wait: 12000
+  - await:
+      idle: true

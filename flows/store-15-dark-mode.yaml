@@ -1,0 +1,11 @@
+steps:
+  - echo: 'Home in dark mode, toggled from the header action. The header button is labelled per locale, so this flow runs with the device language the capture uses.'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      text: 'Switch to dark theme'
+  - wait: 2000
+  - await:
+      idle: true

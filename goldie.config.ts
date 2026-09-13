@@ -1,13 +1,16 @@
 /**
  * Goldie configuration for CycleJournal Play Store screenshots.
  *
- * Fourteen scenes cover every page the app has: the four tabs (home, calendar, analysis,
- * settings), the sheets they open (daily log, clinical detail, calendar day detail) and the
- * dialogs behind them (mucus explainer, language, PIN, backup).
+ * Writing rules for the copy below, so the next edit keeps the same voice:
+ *  - A headline names the problem the screen solves, not the feature it contains.
+ *  - A subhead is one concrete sentence: who it helps and what they get.
+ *  - The audience is every woman, not only someone trying to conceive - the home, log and
+ *    privacy scenes speak to students and busy people, the fertility scenes to promil.
+ *  - Plain advertising language. No "basal", "cervical mucus", "VAS", "biphasic", "luteal",
+ *    "self-managed" or "AES-256", and Indonesian copy says "menstruasi", never "haid".
  *
- * The copy on the scenes and in the store listing is written in plain language: no FIGO, no
- * "symptothermal", no "zero-knowledge". Anyone should understand a screenshot without a medical
- * or technical background.
+ * Sixteen scenes cover every page: the four tabs, the sheets they open and the dialogs
+ * behind them, plus the appearance and first-run screens.
  *
  * The captures come from the demo-seeded release build, so the screens show a populated app.
  * Build it with: gradlew :app:assembleRelease -PdemoSeed=true
@@ -39,8 +42,8 @@ export default {
     name: "CycleJournal",
     icon: "store_assets/play_store_icon_512.png",
     subtitle: {
-      "en-US": "Period calendar and daily journal",
-      "id-ID": "Kalender haid dan catatan harian",
+      "en-US": "Never be surprised by your period",
+      "id-ID": "Siap sebelum menstruasi datang",
     },
     developer: "CycleJournal Health",
     category: "Health & Fitness",
@@ -50,9 +53,9 @@ export default {
     price: "Free",
     description: {
       "en-US":
-        "CycleJournal is a period calendar and daily journal that works without internet. Write down your period, morning temperature, mucus and symptoms; the app estimates your next period and fertile days, points out anything worth a closer look, and can build a PDF report to bring to your doctor. Everything stays on your phone and can be locked with a PIN.",
+        "CycleJournal helps you understand your own body. Log your period, pain and mood in two taps, then see your next period and fertile days on a calendar that is easy to read.\n\nIt works for anyone: if you are a teenager who just started tracking, if you are busy and want to stop being caught off guard, or if you are trying for a baby and want to follow signs like morning temperature and cervical fluid - each one explained in plain words.\n\nWhat you get:\n- Predictions for your next period and your fertile days\n- Fast daily log: flow, pain, symptoms, notes\n- Monthly calendar and cycle history\n- A PDF report ready to show your doctor\n- PIN and fingerprint lock, no account, data stays on your phone\n- Dark mode, two languages, four text sizes",
       "id-ID":
-        "CycleJournal adalah kalender haid dan catatan harian yang bisa dipakai tanpa internet. Catat haid, suhu pagi, lendir, dan gejalamu; aplikasi memperkirakan haid dan masa subur berikutnya, menandai hal yang perlu diperhatikan, dan bisa membuat laporan PDF untuk dibawa ke dokter. Semua data tersimpan di HP-mu dan bisa dikunci dengan PIN.",
+        "CycleJournal membantumu mengenali tubuhmu sendiri. Catat menstruasi, nyeri, dan suasana hati dalam dua ketukan, lalu lihat perkiraan menstruasi dan masa subur berikutnya di kalender yang mudah dibaca.\n\nCocok untuk siapa saja: untuk remaja yang baru mulai mencatat, untuk kamu yang sibuk dan tidak mau lagi ketahuan mendadak, sampai untuk yang sedang program hamil dan ingin memantau tanda kesuburan seperti suhu pagi dan cairan serviks - semuanya dijelaskan dengan bahasa sederhana.\n\nYang kamu dapat:\n- Perkiraan menstruasi dan masa subur berikutnya\n- Catatan harian cepat: aliran, nyeri, gejala, catatan\n- Kalender bulanan dan riwayat siklus\n- Laporan PDF siap dibawa ke dokter\n- Kunci PIN dan sidik jari, tanpa akun, data tersimpan di HP-mu\n- Mode gelap, dua bahasa, empat ukuran huruf",
     },
   },
   scenes: [
@@ -60,140 +63,83 @@ export default {
       kind: "screenshot",
       id: "dashboard",
       flow: "store-01-dashboard",
-      headline: { "en-US": "Everything about your cycle, in one place", "id-ID": "Semua soal haidmu, di satu layar" },
+      headline: { "en-US": "No more surprises", "id-ID": "Tidak ada lagi kejadian mendadak" },
       subhead: {
-        "en-US": "Your next period, fertile days and daily notes, all on the home screen.",
-        "id-ID": "Perkiraan haid, masa subur, dan catatan harian dalam satu layar.",
+        "en-US": "Your next period stays on the home screen, so you are ready before it arrives - at school, on campus, or at work.",
+        "id-ID": "Perkiraan menstruasi berikutnya selalu terlihat di layar utama, jadi kamu siap sebelum harinya tiba - di sekolah, kampus, atau kantor.",
       },
     },
     {
       kind: "screenshot",
       id: "calendar",
       flow: "store-02-calendar",
-      headline: { "en-US": "See your whole month at a glance", "id-ID": "Lihat sebulan penuh sekilas" },
+      headline: { "en-US": "Plan the month with confidence", "id-ID": "Rencanakan sebulan tanpa was-was" },
       subhead: {
-        "en-US": "Every day you logged, plus period and fertile days, on one calendar.",
-        "id-ID": "Semua hari yang kamu catat, plus hari haid dan masa subur, dalam satu kalender.",
+        "en-US": "Every note you kept, your fertile days and your next period on one calendar that is easy to read.",
+        "id-ID": "Semua catatanmu, masa subur, dan perkiraan menstruasi tersusun di satu kalender yang mudah dibaca.",
       },
     },
     {
       kind: "screenshot",
       id: "daily-log",
       flow: "store-03-daily-log",
-      headline: { "en-US": "Log your day in two taps", "id-ID": "Catat harian cuma dua ketukan" },
+      headline: { "en-US": "Log today in two taps", "id-ID": "Catat hari ini dalam dua ketukan" },
       subhead: {
-        "en-US": "Bleeding and pain first; the rest waits until you need it.",
-        "id-ID": "Darah haid dan nyeri dulu; sisanya menunggu sampai kamu butuh.",
+        "en-US": "Pick what you feel today and you are done in seconds - easy to use between classes or on a break.",
+        "id-ID": "Pilih yang kamu rasakan hari ini, selesai dalam hitungan detik - praktis dipakai di sela kelas atau jam istirahat.",
       },
     },
     {
       kind: "screenshot",
-      id: "clinical-detail",
+      id: "fertility-signs",
       flow: "store-04-clinical-detail",
-      headline: { "en-US": "Morning temperature, mucus and symptoms", "id-ID": "Suhu pagi, lendir, dan gejala" },
-      subhead: {
-        "en-US": "Every detail in one panel, with a marker for what is still empty.",
-        "id-ID": "Semua detail dalam satu panel, lengkap dengan penanda yang belum diisi.",
+      headline: {
+        "en-US": "Trying for a baby? Track your fertility signs",
+        "id-ID": "Sedang program hamil? Pantau tanda suburmu",
       },
-    },
-    {
-      kind: "screenshot",
-      id: "bbt-chart",
-      flow: "store-05-bbt",
-      headline: { "en-US": "See your morning temperature pattern", "id-ID": "Lihat pola suhu pagimu" },
       subhead: {
-        "en-US": "The curve helps estimate when your body releases an egg.",
-        "id-ID": "Grafiknya membantu memperkirakan kapan sel telur dilepas.",
+        "en-US": "Morning temperature, cervical fluid and pain in one place, so you know when your chances are highest.",
+        "id-ID": "Suhu pagi, cairan serviks, dan nyeri tercatat rapi, jadi kamu tahu kapan peluang kehamilan paling besar.",
       },
     },
     {
       kind: "screenshot",
       id: "medical-report",
       flow: "store-06-medical-report",
-      headline: { "en-US": "A report your doctor can read", "id-ID": "Laporan yang bisa dibaca dokter" },
+      headline: { "en-US": "See your doctor with data, not guesses", "id-ID": "Ke dokter bawa data, bukan tebakan" },
       subhead: {
-        "en-US": "One PDF page: cycle summary, temperature and anything worth a closer look.",
-        "id-ID": "PDF satu halaman: ringkasan siklus, suhu, dan hal yang perlu diperhatikan.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "bilingual-text-size",
-      flow: "store-07-settings",
-      headline: { "en-US": "Your language, your text size", "id-ID": "Bahasa dan ukuran teks sesuai kamu" },
-      subhead: {
-        "en-US": "Indonesian or English, with four text sizes on top of your phone setting.",
-        "id-ID": "Indonesia atau Inggris, dengan empat ukuran huruf di atas setelan HP-mu.",
+        "en-US": "One PDF with your cycle history, your pain and the patterns found in your notes - just show it at the appointment.",
+        "id-ID": "Satu laporan PDF berisi riwayat siklus, nyeri, dan pola dari catatanmu - tinggal ditunjukkan saat konsultasi.",
       },
     },
     {
       kind: "screenshot",
       id: "privacy-security",
       flow: "store-08-security",
-      headline: { "en-US": "Your data stays yours", "id-ID": "Datamu milikmu sendiri" },
+      headline: { "en-US": "Your journal stays private", "id-ID": "Isi jurnalmu tetap rahasia" },
       subhead: {
-        "en-US": "PIN lock, fingerprint, and encrypted backups you keep yourself.",
-        "id-ID": "Kunci PIN, sidik jari, dan cadangan terenkripsi yang kamu simpan sendiri.",
+        "en-US": "PIN and fingerprint lock keep it away from prying eyes, and everything is stored on your phone - no account needed.",
+        "id-ID": "Kunci PIN dan sidik jari menjaganya dari yang mengintip, dan semua data tersimpan di HP-mu - tanpa akun.",
       },
     },
     {
       kind: "screenshot",
-      id: "day-detail",
-      flow: "store-09-day-detail",
-      headline: { "en-US": "Tap a date to see that day", "id-ID": "Ketuk satu tanggal, lihat catatannya" },
+      id: "dark-mode",
+      flow: "store-15-dark-mode",
+      headline: { "en-US": "Gentle on the eyes at night", "id-ID": "Nyaman dipakai sebelum tidur" },
       subhead: {
-        "en-US": "One day in detail: bleeding, temperature, pain and mucus.",
-        "id-ID": "Rincian satu hari: haid, suhu, nyeri, dan lendir.",
+        "en-US": "Dark mode keeps the screen calm when you log before bed, and it is kinder to your battery.",
+        "id-ID": "Mode gelap menenangkan mata saat mencatat sebelum tidur, dan lebih hemat baterai.",
       },
     },
     {
       kind: "screenshot",
-      id: "report-export",
-      flow: "store-10-report-export",
-      headline: { "en-US": "Share it, or keep the file", "id-ID": "Bagikan, atau simpan filenya" },
+      id: "no-account",
+      flow: "store-16-onboarding",
+      headline: { "en-US": "Start without an account", "id-ID": "Mulai tanpa daftar akun" },
       subhead: {
-        "en-US": "Download a print-ready PDF, or a CSV for your own spreadsheet.",
-        "id-ID": "Unduh PDF siap cetak, atau CSV untuk diolah sendiri.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "mucus-info",
-      flow: "store-11-mucus-info",
-      headline: { "en-US": "Not sure what your mucus means?", "id-ID": "Bingung arti lendirmu?" },
-      subhead: {
-        "en-US": "Tap Keterangan and read what each type means for your fertile days.",
-        "id-ID": "Ketuk Keterangan dan baca arti tiap jenis lendir untuk masa suburmu.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "language",
-      flow: "store-12-language",
-      headline: { "en-US": "Switch language any time", "id-ID": "Ganti bahasa kapan saja" },
-      subhead: {
-        "en-US": "Follow your phone, or pick Indonesian or English yourself.",
-        "id-ID": "Ikuti bahasa HP, atau pilih Indonesia atau Inggris sendiri.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "pin-lock",
-      flow: "store-13-pin",
-      headline: { "en-US": "Lock the app with a PIN", "id-ID": "Kunci aplikasi dengan PIN" },
-      subhead: {
-        "en-US": "Four digits, plus fingerprint if your phone supports it.",
-        "id-ID": "Empat angka, ditambah sidik jari kalau HP-mu mendukung.",
-      },
-    },
-    {
-      kind: "screenshot",
-      id: "backup",
-      flow: "store-14-backup",
-      headline: { "en-US": "Make a backup you control", "id-ID": "Buat cadangan yang aman" },
-      subhead: {
-        "en-US": "Choose a plain backup, or one locked with a PIN.",
-        "id-ID": "Pilih cadangan biasa, atau yang dikunci dengan PIN.",
+        "en-US": "Open the app and log today right away - no email, no login, your data stays on your phone.",
+        "id-ID": "Buka aplikasi dan langsung catat hari ini - tanpa email, tanpa login, data tetap di HP-mu.",
       },
     },
   ],
