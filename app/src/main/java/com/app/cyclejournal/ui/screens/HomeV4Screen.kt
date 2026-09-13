@@ -143,12 +143,10 @@ fun HomeV4Screen(
 
     // The hero is a real carousel: period day -> fertile window -> ovulation peak. Switching the
     // trying-to-conceive mode on brings the ovulation slide forward, which is what that mode is for.
-    val pagerState = rememberPagerState(
-        initialPage = if (isPromilMode) HERO_OVULATION else HERO_PERIOD,
-        pageCount = { HERO_PAGES }
-    )
+    val pagerState = rememberPagerState(initialPage = HERO_PERIOD, pageCount = { HERO_PAGES })
+    // Switching the goal swaps what the first slide shows, so the carousel returns to it.
     LaunchedEffect(isPromilMode) {
-        pagerState.animateScrollToPage(if (isPromilMode) HERO_OVULATION else HERO_PERIOD)
+        pagerState.animateScrollToPage(HERO_PERIOD)
     }
 
     LazyColumn(
@@ -171,8 +169,8 @@ fun HomeV4Screen(
                         .height(240.dp)
                         .testTag("home_hero_pager")
                 ) { page ->
-                    when (page) {
-                        HERO_PERIOD -> PeriodHeroCard(
+                    val periodCard: @Composable () -> Unit = {
+                        PeriodHeroCard(
                             isDiscreet = isDiscreet,
                             isBleeding = isBleedingToday,
                             hasPeriodHistory = hasPeriodHistory,
@@ -182,7 +180,19 @@ fun HomeV4Screen(
                             today = today,
                             onAction = { if (isBleedingToday) onMarkPeriodEnded() else onOpenLog(today) }
                         )
-                        HERO_FERTILE -> FertileHeroCard(
+                    }
+                    when {
+                        // The goal the user picked decides what the hero leads with: trying to conceive
+                        // opens on today's fertility state instead of the period counter.
+                        page == HERO_PERIOD && isPromilMode -> PromilHeroCard(
+                            fertilePrediction = fertilePrediction,
+                            today = today,
+                            onLogToday = { onOpenLog(today) },
+                            onOpenCalendar = onOpenCalendar
+                        )
+                        page == HERO_PERIOD -> periodCard()
+                        page == HERO_FERTILE && isPromilMode -> periodCard()
+                        page == HERO_FERTILE -> FertileHeroCard(
                             isDiscreet = isDiscreet,
                             fertilePrediction = fertilePrediction,
                             today = today,
@@ -417,6 +427,85 @@ private fun OvulationHeroCard(
             ?: stringResource(R.string.v4_home_not_logged),
         actionLabel = stringResource(if (isPromilMode) R.string.v4_cal_log_bbt else R.string.v4_home_open_calendar),
         onAction = if (isPromilMode) onLogBbt else onOpenCalendar
+    )
+}
+
+/**
+ * Promil hero: the fertility state for today, the way 1.1.3's four-state card worked — countdown to
+ * ovulation, the fertile window itself, ovulation day ("best time"), and the closed window after it.
+ */
+@Composable
+private fun PromilHeroCard(
+    fertilePrediction: FertilePrediction?,
+    today: LocalDate,
+    onLogToday: () -> Unit,
+    onOpenCalendar: () -> Unit
+) {
+    val ovulation = fertilePrediction?.predictedOvulationDate
+    val fertileStart = fertilePrediction?.fertileWindowStart
+    val daysToOvulation = daysUntil(today, ovulation)
+    val isPeak = ovulation != null && ovulation == today
+    val inWindow = ovulation != null && fertileStart != null &&
+        !today.isBefore(fertileStart) && today.isBefore(ovulation)
+    val isPast = ovulation != null && today.isAfter(ovulation)
+    val ovulationLabel = ovulation?.shortDay().orEmpty()
+
+    val eyebrow: String
+    val digits: String
+    val big: String
+    val sub: String
+    val actionLabel: String
+    val action: () -> Unit
+    when {
+        ovulation == null -> {
+            eyebrow = stringResource(R.string.dash_hero_fertile_ovulation_header)
+            digits = "--"
+            big = "--"
+            sub = stringResource(R.string.dash_hero_log_for_prediction)
+            actionLabel = stringResource(R.string.v4_home_log_period)
+            action = onLogToday
+        }
+        isPeak -> {
+            eyebrow = stringResource(R.string.dash_hero_ovulation_peak_today)
+            digits = "00"
+            big = stringResource(R.string.dash_hero_best_conceive_time)
+            sub = stringResource(R.string.dash_hero_max_pregnancy_chance)
+            actionLabel = stringResource(R.string.v4_cal_log_bbt)
+            action = onLogToday
+        }
+        inWindow -> {
+            eyebrow = stringResource(R.string.dash_hero_fertile_window_header)
+            digits = paddedDigits(daysToOvulation)
+            big = stringResource(R.string.dash_hero_high_chance)
+            sub = stringResource(R.string.cal_ovulation_peak_format, ovulationLabel, daysToOvulation)
+            actionLabel = stringResource(R.string.v4_cal_log_bbt)
+            action = onLogToday
+        }
+        isPast -> {
+            eyebrow = stringResource(R.string.dash_hero_fertile_window_closed)
+            digits = "--"
+            big = stringResource(R.string.dash_hero_low_chance)
+            sub = stringResource(R.string.dash_hero_awaiting_new_cycle)
+            actionLabel = stringResource(R.string.v4_home_open_calendar)
+            action = onOpenCalendar
+        }
+        else -> {
+            eyebrow = stringResource(R.string.dash_hero_fertile_ovulation_header)
+            digits = paddedDigits(daysToOvulation)
+            big = ovulationLabel
+            sub = stringResource(R.string.v4_home_days_to_go, daysToOvulation)
+            actionLabel = stringResource(R.string.v4_home_open_calendar)
+            action = onOpenCalendar
+        }
+    }
+
+    HeroShell(
+        eyebrow = eyebrow,
+        digits = digits,
+        big = big,
+        sub = sub,
+        actionLabel = actionLabel,
+        onAction = action
     )
 }
 

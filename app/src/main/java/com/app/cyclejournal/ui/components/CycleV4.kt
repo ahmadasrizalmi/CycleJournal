@@ -488,7 +488,19 @@ fun CycleTimelineRow(
     modifier: Modifier = Modifier,
     onLabelClick: (() -> Unit)? = null
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // The row itself opens the cycle detail; the chevron is only the affordance.
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (onLabelClick != null) {
+                    Modifier.clickable(onClick = onLabelClick)
+                } else {
+                    Modifier
+                }
+            ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(label, style = AppType.body.copy(fontWeight = FontWeight.Bold), color = Ink)
             if (onLabelClick != null) {
@@ -496,7 +508,7 @@ fun CycleTimelineRow(
                     Icons.Rounded.ChevronRight,
                     contentDescription = null,
                     tint = Ink3,
-                    modifier = Modifier.size(14.dp).clickable(onClick = onLabelClick)
+                    modifier = Modifier.size(14.dp)
                 )
             }
             Spacer(Modifier.weight(1f))

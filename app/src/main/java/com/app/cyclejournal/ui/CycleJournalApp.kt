@@ -43,6 +43,7 @@ import com.app.cyclejournal.domain.model.FertilePrediction
 import com.app.cyclejournal.ui.theme.*
 import com.app.cyclejournal.ui.components.BottomNavBar
 import com.app.cyclejournal.ui.components.BrandBand
+import com.app.cyclejournal.ui.components.CycleDetailSheetV4
 import com.app.cyclejournal.ui.components.LogSheetV4
 import com.app.cyclejournal.ui.screens.AnalysisV4Screen
 import com.app.cyclejournal.ui.screens.CalendarV4Screen
@@ -116,6 +117,7 @@ fun CycleJournalApp(
     var isDiscreetMode by remember { mutableStateOf(false) }
     var isPinModalOpen by remember { mutableStateOf(false) }
     var isLogModalOpen by remember { mutableStateOf(false) }
+    var detailCycle by remember { mutableStateOf<CycleEntity?>(null) }
     var logModalDate by remember { mutableStateOf(LocalDate.now()) }
     var isProLicenseActive by remember(isProUserActive) { mutableStateOf(isProUserActive) }
     var isPinConfigured by remember(isPinSet) { mutableStateOf(isPinSet) }
@@ -260,6 +262,7 @@ fun CycleJournalApp(
                             currentScreen = AppScreen.CALENDAR
                             showToast(resources.getString(R.string.app_toast_opening_month_in_calendar, date.monthName()))
                         },
+                        onCycleClick = { cycle -> detailCycle = cycle },
                         onToast = showToast
                     )
                     AppScreen.SETTINGS -> SettingsV4Screen(
@@ -339,6 +342,20 @@ fun CycleJournalApp(
                     isPinConfigured = true
                     isPinModalOpen = false
                     showToast(resources.getString(R.string.app_toast_pin_enabled))
+                }
+            )
+        }
+
+        // Cycle detail, opened from a row of the Analysis timeline
+        detailCycle?.let { cycle ->
+            CycleDetailSheetV4(
+                cycle = cycle,
+                allLogs = allLogs,
+                onDismiss = { detailCycle = null },
+                onOpenCalendar = { date ->
+                    detailCycle = null
+                    selectedCalendarDate = date
+                    currentScreen = AppScreen.CALENDAR
                 }
             )
         }

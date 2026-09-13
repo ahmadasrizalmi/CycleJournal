@@ -125,6 +125,7 @@ fun AnalysisV4Screen(
     onExportCsv: (() -> Unit)?,
     onBuyPro: () -> Unit,
     onNavigateToCalendar: (LocalDate) -> Unit,
+    onCycleClick: (CycleEntity) -> Unit,
     onToast: (String) -> Unit
 ) {
     var showTimeline by remember { mutableStateOf(false) }
@@ -176,6 +177,7 @@ fun AnalysisV4Screen(
                 cycleStats = cycleStats,
                 allLogs = allLogs,
                 onNavigateToCalendar = onNavigateToCalendar,
+                onCycleClick = onCycleClick,
                 onToast = onToast
             )
         } else {
@@ -681,6 +683,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.timelineItems(
     cycleStats: CycleStats?,
     allLogs: List<DailyLogEntity>,
     onNavigateToCalendar: (LocalDate) -> Unit,
+    onCycleClick: (CycleEntity) -> Unit,
     onToast: (String) -> Unit
 ) {
     val periodLength = (cycleStats?.averagePeriodDuration?.roundToInt() ?: 5).coerceAtLeast(1)
@@ -770,7 +773,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.timelineItems(
                             todayDay = if (isOngoing) {
                                 (ChronoUnit.DAYS.between(cycle.startDate, LocalDate.now()) + 1).toInt().coerceIn(1, length)
                             } else null,
-                            onLabelClick = { onNavigateToCalendar(cycle.startDate) }
+                            onLabelClick = { onCycleClick(cycle) }
                         )
                     }
                 }
