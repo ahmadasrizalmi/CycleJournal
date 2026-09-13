@@ -1,6 +1,5 @@
 package com.app.cyclejournal.ui.screens
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,11 +59,11 @@ import com.app.cyclejournal.ui.theme.BrandEnd
 import com.app.cyclejournal.ui.theme.BrandGradient
 import com.app.cyclejournal.ui.theme.BrandTint
 import com.app.cyclejournal.ui.theme.BrandTint2
+import com.app.cyclejournal.ui.theme.CanvasSoft
 import com.app.cyclejournal.ui.theme.Dimens
 import com.app.cyclejournal.ui.theme.HeroBottom
 import com.app.cyclejournal.ui.theme.HeroTop
 import com.app.cyclejournal.ui.theme.Ink
-import com.app.cyclejournal.ui.theme.Ink2
 import com.app.cyclejournal.ui.theme.Ink3
 import com.app.cyclejournal.ui.theme.Lavender
 import com.app.cyclejournal.ui.theme.LavenderInk
@@ -100,7 +98,6 @@ private const val PMS_DAYS_BEFORE_PERIOD = 5
  */
 @Composable
 fun CalendarV4Screen(
-    isDiscreet: Boolean,
     periodDates: Set<LocalDate>,
     fertilePrediction: FertilePrediction?,
     allLogs: List<DailyLogEntity>,
@@ -527,7 +524,7 @@ private fun buildTimeline(
     entries += TimelineEntry(
         icon = Icons.Rounded.Thermostat,
         iconTint = Ink,
-        iconBackground = Color(0xFFF7F7FA),
+        iconBackground = CanvasSoft,
         title = bbtTitle,
         subtitle = bbtSub,
         time = "07:00",

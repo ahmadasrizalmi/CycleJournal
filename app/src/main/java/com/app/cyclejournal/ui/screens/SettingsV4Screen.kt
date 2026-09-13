@@ -24,7 +24,6 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Book
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Fingerprint
@@ -35,10 +34,8 @@ import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.Thermostat
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -69,6 +66,7 @@ import com.app.cyclejournal.ui.components.IconTile
 import com.app.cyclejournal.ui.components.SectionLabel
 import com.app.cyclejournal.ui.components.SettingTile
 import com.app.cyclejournal.ui.components.SettingsListRow
+import com.app.cyclejournal.ui.components.V4TextField
 import com.app.cyclejournal.ui.components.SoftCard
 import com.app.cyclejournal.ui.theme.AlertBrown
 import com.app.cyclejournal.ui.theme.AppType
@@ -81,8 +79,6 @@ import com.app.cyclejournal.ui.theme.HeroGradient
 import com.app.cyclejournal.ui.theme.Ink
 import com.app.cyclejournal.ui.theme.Ink2
 import com.app.cyclejournal.ui.theme.Ink3
-import com.app.cyclejournal.ui.theme.Lavender
-import com.app.cyclejournal.ui.theme.LavenderInk
 import com.app.cyclejournal.ui.theme.Line
 import com.app.cyclejournal.ui.theme.OnBrand
 import com.app.cyclejournal.ui.theme.Paper
@@ -108,7 +104,6 @@ private val NUKE_WORDS = listOf("HAPUS", "DELETE")
 @Composable
 fun SettingsV4Screen(
     isDarkMode: Boolean,
-    isDiscreet: Boolean,
     isPro: Boolean,
     appLanguage: String = "system",
     onLanguageChanged: (String) -> Unit = {},
@@ -118,7 +113,6 @@ fun SettingsV4Screen(
     onTogglePromilMode: (Boolean) -> Unit = {},
     isPinConfigured: Boolean,
     anonymousRecoveryKey: String,
-    onToggleDiscreet: () -> Unit,
     onToggleDark: () -> Unit,
     isFingerprintUnlockEnabled: Boolean = false,
     onFingerprintUnlockChanged: (Boolean) -> Unit = {},
@@ -206,15 +200,6 @@ fun SettingsV4Screen(
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                SettingTile(
-                    title = stringResource(R.string.v4_tile_discreet),
-                    subtitle = stringResource(R.string.v4_tile_discreet_sub),
-                    icon = Icons.Rounded.VisibilityOff,
-                    tint = LavenderInk,
-                    background = Lavender,
-                    modifier = Modifier.weight(1f),
-                    trailing = { AppSwitch(checked = isDiscreet, onCheckedChange = { onToggleDiscreet() }) }
-                )
                 SettingTile(
                     title = stringResource(R.string.v4_tile_reminder),
                     subtitle = stringResource(R.string.v4_tile_reminder_sub),
@@ -419,12 +404,10 @@ fun SettingsV4Screen(
                         onClick = { isBackupEncrypted = true }
                     )
                     if (isBackupEncrypted) {
-                        OutlinedTextField(
+                        V4TextField(
                             value = backupPinInput,
                             onValueChange = { input -> backupPinInput = input.filter { it.isDigit() }.take(4) },
-                            label = { Text(stringResource(R.string.restore_pin_placeholder), fontSize = 13.sp) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
+                            label = stringResource(R.string.restore_pin_placeholder)
                         )
                     }
                 }
@@ -453,19 +436,17 @@ fun SettingsV4Screen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(stringResource(R.string.nuke_confirm_message), style = AppType.body, color = Ink)
-                    OutlinedTextField(
+                    V4TextField(
                         value = nukeKeyword,
                         onValueChange = { nukeKeyword = it },
-                        label = { Text(stringResource(R.string.nuke_confirm_hint), fontSize = 13.sp) },
-                        singleLine = true
+                        label = stringResource(R.string.nuke_confirm_hint)
                     )
                     if (isPinConfigured) {
-                        OutlinedTextField(
+                        V4TextField(
                             value = nukePin,
                             onValueChange = { input -> nukePin = input.filter { it.isDigit() }.take(4) },
-                            label = { Text(stringResource(R.string.nuke_pin_prompt), fontSize = 13.sp) },
-                            isError = isNukePinWrong,
-                            singleLine = true
+                            label = stringResource(R.string.nuke_pin_prompt),
+                            isError = isNukePinWrong
                         )
                         if (isNukePinWrong) {
                             Text(stringResource(R.string.nuke_wrong_pin), style = AppType.micro, color = AlertBrown)

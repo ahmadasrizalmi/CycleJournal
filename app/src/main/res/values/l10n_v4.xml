@@ -7,7 +7,6 @@
     <string name="v4_theme_switch_to_dark">Switch to dark theme</string>
     <string name="v4_row_language">Language</string>
     <string name="v4_row_text_size">Text size</string>
-    <string name="v4_discreet_eyebrow">CYCLE</string>
     <string name="v4_home_cycle_estimate">Cycle length (estimated)</string>
     <string name="v4_an_badge_estimate">Estimated</string>
     <string name="v4_an_estimate_sub">from the current prediction · no history yet</string>
@@ -106,7 +105,7 @@
     <string name="v4_log_bbt_hint">± adjusts by 0.01 °C</string>
     <string name="v4_log_meds">Pain medication</string>
     <string name="v4_log_mucus">Cervical mucus</string>
-    <string name="v4_log_mucus_hint">egg white = most fertile</string>
+    <string name="v4_log_mucus_hint">Clear, egg-white mucus marks peak fertility</string>
     <string name="v4_log_mucus_none">None</string>
     <string name="v4_log_mucus_dry">Dry</string>
     <string name="v4_log_mucus_sticky">Sticky</string>
@@ -193,8 +192,6 @@
     <string name="v4_tile_guide_sub">How to use &amp; tips</string>
     <string name="v4_tile_faq">FAQ</string>
     <string name="v4_tile_faq_sub">Common questions</string>
-    <string name="v4_tile_discreet">Discreet mode</string>
-    <string name="v4_tile_discreet_sub">Hide sensitive content</string>
     <string name="v4_tile_reminder">Period reminder</string>
     <string name="v4_tile_reminder_sub">Remind me 2 days before</string>
     <string name="v4_guide_toast">Quick guide coming soon</string>

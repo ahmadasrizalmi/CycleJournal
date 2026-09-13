@@ -7,7 +7,6 @@
     <string name="v4_theme_switch_to_dark">Ganti ke tema gelap</string>
     <string name="v4_row_language">Bahasa</string>
     <string name="v4_row_text_size">Ukuran teks</string>
-    <string name="v4_discreet_eyebrow">SIKLUS</string>
     <string name="v4_home_cycle_estimate">Panjang siklus (perkiraan)</string>
     <string name="v4_an_badge_estimate">Perkiraan</string>
     <string name="v4_an_estimate_sub">dari prediksi berjalan · belum ada riwayat</string>
@@ -105,7 +104,7 @@
     <string name="v4_log_bbt_hint">± mengubah 0,01 °C</string>
     <string name="v4_log_meds">Obat pereda nyeri</string>
     <string name="v4_log_mucus">Lendir serviks</string>
-    <string name="v4_log_mucus_hint">telur = paling subur</string>
+    <string name="v4_log_mucus_hint">Lendir bening seperti putih telur = puncak masa subur</string>
     <string name="v4_log_mucus_none">Tidak</string>
     <string name="v4_log_mucus_dry">Kering</string>
     <string name="v4_log_mucus_sticky">Lengket</string>
@@ -192,8 +191,6 @@
     <string name="v4_tile_guide_sub">Cara pakai &amp; tips</string>
     <string name="v4_tile_faq">FAQ</string>
     <string name="v4_tile_faq_sub">Pertanyaan umum</string>
-    <string name="v4_tile_discreet">Mode samar</string>
-    <string name="v4_tile_discreet_sub">Sembunyikan isi sensitif</string>
     <string name="v4_tile_reminder">Pengingat haid</string>
     <string name="v4_tile_reminder_sub">Ingatkan H-2 sebelum haid</string>
     <string name="v4_guide_toast">Panduan cepat segera hadir</string>

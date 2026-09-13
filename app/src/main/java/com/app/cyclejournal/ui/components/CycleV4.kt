@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,16 +31,12 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Insights
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,7 +80,6 @@ fun BrandBand(
     languageCode: String,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    onDiscreetToggle: () -> Unit,
     onLanguageClick: () -> Unit,
     modifier: Modifier = Modifier,
     title: String = "CycleJournal",
@@ -147,7 +141,6 @@ fun BrandBand(
                 Spacer(Modifier.width(8.dp))
                 LanguagePill(languageCode, onLanguageClick)
                 Spacer(Modifier.width(8.dp))
-                GlassIconButton(Icons.Rounded.Visibility, "Discreet mode", onDiscreetToggle)
             }
         }
     }

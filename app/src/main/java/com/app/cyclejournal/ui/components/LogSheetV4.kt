@@ -30,7 +30,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -47,7 +46,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -64,7 +62,6 @@ import com.app.cyclejournal.data.local.entity.CervicalMucusType
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.data.local.entity.FlowIntensity
 import com.app.cyclejournal.ui.theme.AlertBrown
-import com.app.cyclejournal.ui.theme.AlertTint
 import com.app.cyclejournal.ui.theme.AppType
 import com.app.cyclejournal.ui.theme.BrandEnd
 import com.app.cyclejournal.ui.theme.BrandGradient
@@ -78,10 +75,14 @@ import com.app.cyclejournal.ui.theme.Line
 import com.app.cyclejournal.ui.theme.OkGreen
 import com.app.cyclejournal.ui.theme.OkTint
 import com.app.cyclejournal.ui.theme.OnBrand
-import com.app.cyclejournal.ui.theme.PainTrackSoft
+import com.app.cyclejournal.ui.theme.PainCriticalFill
+import com.app.cyclejournal.ui.theme.PainCriticalInk
+import com.app.cyclejournal.ui.theme.PainHighFill
+import com.app.cyclejournal.ui.theme.PainHighInk
+import com.app.cyclejournal.ui.theme.PainModerateFill
+import com.app.cyclejournal.ui.theme.PainModerateInk
 import com.app.cyclejournal.ui.theme.Paper
 import com.app.cyclejournal.ui.theme.ShadowBrandSoft
-import com.app.cyclejournal.ui.theme.Teal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -315,13 +316,23 @@ fun LogSheetV4(
                 }
 
                 // --------------------------------------------------- pain ---
-                val painLabelRes = when {
-                    vasScore.toInt() == 0 -> R.string.v4_log_pain_free
-                    vasScore <= 3f -> R.string.v4_log_pain_mild
-                    vasScore <= 6f -> R.string.v4_log_pain_moderate
-                    else -> R.string.v4_log_pain_severe
+                // 1.1.3 tinted the whole card by severity; the first v4 pass only coloured the
+                // badge, so the card looked inert while the slider moved.
+                val painNum = vasScore.toInt()
+                val (painFill, painColor) = when {
+                    painNum == 0 -> OkTint to OkGreen
+                    painNum <= 3 -> CanvasSoft to Ink2
+                    painNum <= 6 -> PainModerateFill to PainModerateInk
+                    painNum <= 8 -> PainHighFill to PainHighInk
+                    else -> PainCriticalFill to PainCriticalInk
                 }
-                val painColor = if (vasScore.toInt() == 0) OkGreen else AlertBrown
+                val painLabelRes = when {
+                    painNum == 0 -> R.string.app_pain_free
+                    painNum <= 3 -> R.string.dash_vas_mild
+                    painNum <= 6 -> R.string.daily_pain_badge_monitor
+                    painNum <= 8 -> R.string.daily_pain_badge_attention
+                    else -> R.string.daily_pain_badge_consult
+                }
                 val painImpactRes = when {
                     vasScore.toInt() == 0 -> R.string.daily_pain_impact_none
                     vasScore <= 3f -> R.string.daily_pain_impact_mild
@@ -333,7 +344,8 @@ fun LogSheetV4(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(OkTint)
+                        .background(painFill)
+                        .border(1.dp, painColor.copy(alpha = 0.25f), RoundedCornerShape(20.dp))
                         .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -374,8 +386,8 @@ fun LogSheetV4(
                         steps = 9,
                         colors = SliderDefaults.colors(
                             thumbColor = Paper,
-                            activeTrackColor = OkGreen,
-                            inactiveTrackColor = PainTrackSoft
+                            activeTrackColor = painColor,
+                            inactiveTrackColor = painColor.copy(alpha = 0.18f)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -543,16 +555,12 @@ fun LogSheetV4(
                                 style = AppType.cardTitle.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp),
                                 color = Ink
                             )
-                            OutlinedTextField(
+                            V4TextField(
                                 value = notesInput,
                                 onValueChange = { notesInput = it },
-                                placeholder = { Text(stringResource(R.string.v4_log_notes_hint), fontSize = 13.sp, color = Ink3) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag("log_notes"),
-                                shape = RoundedCornerShape(12.dp),
-                                minLines = 2,
-                                textStyle = AppType.body.copy(fontSize = 14.sp)
+                                placeholder = stringResource(R.string.v4_log_notes_hint),
+                                modifier = Modifier.testTag("log_notes"),
+                                minLines = 2
                             )
                         }
                     }
@@ -653,12 +661,10 @@ fun LogSheetV4(
                     Column {
                         Text(stringResource(R.string.daily_custom_symptom_prompt), fontSize = 14.sp, color = Ink2)
                         Spacer(Modifier.height(8.dp))
-                        OutlinedTextField(
+                        V4TextField(
                             value = newSymptomInput,
                             onValueChange = { newSymptomInput = it },
-                            placeholder = { Text(stringResource(R.string.daily_custom_symptom_hint), fontSize = 13.sp) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
+                            placeholder = stringResource(R.string.daily_custom_symptom_hint)
                         )
                     }
                 },

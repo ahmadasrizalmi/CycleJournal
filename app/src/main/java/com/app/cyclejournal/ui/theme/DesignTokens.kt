@@ -92,8 +92,16 @@ val TrackSoft: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.curr
 /** Ring track behind the cycle-progress ring and the flip-clock border. */
 val HeroTrackSoft: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.heroTrackSoft
 
-/** Track behind the pain slider. */
-val PainTrackSoft: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painTrackSoft
+// Severity fills for the pain card: 0 = ok, 1-3 = mild, 4-6 = moderate, 7-8 = high, 9-10 = critical.
+val PainModerateFill: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painModerateFill
+val PainModerateInk: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painModerateInk
+val PainHighFill: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painHighFill
+val PainHighInk: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painHighInk
+val PainCriticalFill: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painCriticalFill
+val PainCriticalInk: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.painCriticalInk
+
+/** Outline for text inputs. [Line] is too faint to read as a field on the tinted dialogs. */
+val FieldLine: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.fieldLine
 
 /** Warm hairline the summary and quick-log cards use instead of [Line]. */
 val CardBorder: Color @Composable @ReadOnlyComposable get() = LocalV4Palette.current.cardBorder

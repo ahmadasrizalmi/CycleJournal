@@ -425,11 +425,10 @@ class MainActivity : FragmentActivity() {
                                 androidx.compose.foundation.layout.Column {
                                     androidx.compose.material3.Text(stringResource(R.string.restore_pin_dialog_message))
                                     androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
-                                    androidx.compose.material3.OutlinedTextField(
+                                    com.app.cyclejournal.ui.components.V4TextField(
                                         value = restorePinInput,
                                         onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) restorePinInput = it },
-                                        placeholder = { androidx.compose.material3.Text(stringResource(R.string.restore_pin_placeholder)) },
-                                        singleLine = true
+                                        placeholder = stringResource(R.string.restore_pin_placeholder)
                                     )
                                 }
                             },

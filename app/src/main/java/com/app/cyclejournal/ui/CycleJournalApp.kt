@@ -49,6 +49,7 @@ import com.app.cyclejournal.ui.screens.AnalysisV4Screen
 import com.app.cyclejournal.ui.screens.CalendarV4Screen
 import com.app.cyclejournal.ui.screens.HomeV4Screen
 import com.app.cyclejournal.ui.screens.SettingsV4Screen
+import com.app.cyclejournal.ui.theme.OkGreen
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -115,7 +116,6 @@ fun CycleJournalApp(
     val resources = LocalContext.current.resources
     var currentScreen by remember { mutableStateOf(AppScreen.DASHBOARD) }
     var isDarkMode by remember(isDarkModeInitial) { mutableStateOf(isDarkModeInitial) }
-    var isDiscreetMode by remember { mutableStateOf(false) }
     var isPinModalOpen by remember { mutableStateOf(false) }
     var isLogModalOpen by remember { mutableStateOf(false) }
     var detailCycle by remember { mutableStateOf<CycleEntity?>(null) }
@@ -161,10 +161,6 @@ fun CycleJournalApp(
                         onDarkModeChanged(isDarkMode)
                         showToast(if (isDarkMode) resources.getString(R.string.app_mode_dark_active) else resources.getString(R.string.app_mode_light_active))
                     },
-                    onDiscreetToggle = {
-                        isDiscreetMode = !isDiscreetMode
-                        showToast(if (isDiscreetMode) resources.getString(R.string.app_mode_discreet_active) else resources.getString(R.string.app_mode_standard_active))
-                    },
                     onLanguageClick = {
                         val next = if (activeLanguageCode(appLanguage) == "ID") "en" else "id"
                         onLanguageChanged(next)
@@ -196,7 +192,6 @@ fun CycleJournalApp(
             ) {
                 when (currentScreen) {
                     AppScreen.DASHBOARD -> HomeV4Screen(
-                        isDiscreet = isDiscreetMode,
                         isPromilMode = isPromilMode,
                         periodDates = periodDates,
                         latestCycle = latestCycle,
@@ -221,7 +216,6 @@ fun CycleJournalApp(
                         onOpenCalendar = { currentScreen = AppScreen.CALENDAR }
                     )
                     AppScreen.CALENDAR -> CalendarV4Screen(
-                        isDiscreet = isDiscreetMode,
                         periodDates = periodDates,
                         fertilePrediction = fertilePrediction,
                         allLogs = allLogs,
@@ -268,7 +262,6 @@ fun CycleJournalApp(
                     )
                     AppScreen.SETTINGS -> SettingsV4Screen(
                         isDarkMode = isDarkMode,
-                        isDiscreet = isDiscreetMode,
                         isPro = isProLicenseActive,
                         isPromilMode = isPromilMode,
                         onTogglePromilMode = {
@@ -281,7 +274,6 @@ fun CycleJournalApp(
                         onTextScaleChanged = onTextScaleChanged,
                         isPinConfigured = isPinConfigured,
                         anonymousRecoveryKey = anonymousRecoveryKey,
-                        onToggleDiscreet = { isDiscreetMode = !isDiscreetMode },
                         onToggleDark = {
                             isDarkMode = !isDarkMode
                             onDarkModeChanged(isDarkMode)
@@ -396,7 +388,7 @@ fun CycleJournalApp(
                 onDismissRequest = onDismissDownloadDialog,
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(22.dp))
+                        Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = OkGreen, modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = stringResource(

@@ -59,7 +59,6 @@ import com.app.cyclejournal.ui.components.SoftCard
 import com.app.cyclejournal.ui.theme.AppType
 import com.app.cyclejournal.ui.theme.BrandEnd
 import com.app.cyclejournal.ui.theme.BrandGradient
-import com.app.cyclejournal.ui.theme.BrandTint
 import com.app.cyclejournal.ui.theme.CardBorder
 import com.app.cyclejournal.ui.theme.Dimens
 import com.app.cyclejournal.ui.theme.HeroBottom
@@ -110,7 +109,6 @@ private fun LocalDate.shortDay(): String =
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeV4Screen(
-    isDiscreet: Boolean,
     isPromilMode: Boolean,
     periodDates: Set<LocalDate>,
     latestCycle: CycleEntity?,
@@ -171,7 +169,6 @@ fun HomeV4Screen(
                 ) { page ->
                     val periodCard: @Composable () -> Unit = {
                         PeriodHeroCard(
-                            isDiscreet = isDiscreet,
                             isBleeding = isBleedingToday,
                             hasPeriodHistory = hasPeriodHistory,
                             dayInPeriod = dayInPeriod(today, latestCycle, periodLength),
@@ -193,13 +190,11 @@ fun HomeV4Screen(
                         page == HERO_PERIOD -> periodCard()
                         page == HERO_FERTILE && isPromilMode -> periodCard()
                         page == HERO_FERTILE -> FertileHeroCard(
-                            isDiscreet = isDiscreet,
                             fertilePrediction = fertilePrediction,
                             today = today,
                             onAction = onOpenCalendar
                         )
                         else -> OvulationHeroCard(
-                            isDiscreet = isDiscreet,
                             isPromilMode = isPromilMode,
                             fertilePrediction = fertilePrediction,
                             today = today,
@@ -358,7 +353,6 @@ fun HomeV4Screen(
 
 @Composable
 private fun PeriodHeroCard(
-    isDiscreet: Boolean,
     isBleeding: Boolean,
     hasPeriodHistory: Boolean,
     dayInPeriod: Int,
@@ -370,11 +364,7 @@ private fun PeriodHeroCard(
     val countdown = daysUntil(today, nextPeriodDate)
     val hasPrediction = nextPeriodDate != null
     HeroShell(
-        eyebrow = if (isDiscreet) {
-            stringResource(R.string.v4_discreet_eyebrow)
-        } else {
-            stringResource(if (isBleeding) R.string.v4_home_eyebrow_period else R.string.v4_home_eyebrow_next)
-        },
+        eyebrow = stringResource(if (isBleeding) R.string.v4_home_eyebrow_period else R.string.v4_home_eyebrow_next),
         digits = if (!isBleeding && !hasPrediction) "--" else paddedDigits(if (isBleeding) dayInPeriod else countdown),
         big = if (isBleeding) stringResource(R.string.v4_home_of_days, periodLength)
         else if (hasPrediction) stringResource(R.string.v4_home_days_to_go, countdown)
@@ -400,7 +390,6 @@ private fun PeriodHeroCard(
  */
 @Composable
 private fun OvulationHeroCard(
-    isDiscreet: Boolean,
     isPromilMode: Boolean,
     fertilePrediction: FertilePrediction?,
     today: LocalDate,
@@ -412,11 +401,7 @@ private fun OvulationHeroCard(
     val isPast = ovulationDate != null && ovulationDate.isBefore(today)
     val days = daysUntil(today, ovulationDate)
     HeroShell(
-        eyebrow = if (isDiscreet) {
-            stringResource(R.string.v4_discreet_eyebrow)
-        } else {
-            stringResource(R.string.v4_home_eyebrow_ovulation)
-        },
+        eyebrow = stringResource(R.string.v4_home_eyebrow_ovulation),
         digits = paddedDigits(days),
         big = when {
             isToday -> stringResource(R.string.v4_home_ovulation_today)
@@ -511,7 +496,6 @@ private fun PromilHeroCard(
 
 @Composable
 private fun FertileHeroCard(
-    isDiscreet: Boolean,
     fertilePrediction: FertilePrediction?,
     today: LocalDate,
     onAction: () -> Unit
@@ -523,11 +507,7 @@ private fun FertileHeroCard(
         else -> ChronoUnit.DAYS.between(today, fertilePrediction.fertileWindowEnd).toInt().coerceAtLeast(0)
     }
     HeroShell(
-        eyebrow = if (isDiscreet) {
-            stringResource(R.string.v4_discreet_eyebrow)
-        } else {
-            stringResource(R.string.v4_home_eyebrow_fertile)
-        },
+        eyebrow = stringResource(R.string.v4_home_eyebrow_fertile),
         digits = paddedDigits(days),
         big = stringResource(R.string.v4_home_fertile_big, days),
         sub = fertilePrediction?.let {

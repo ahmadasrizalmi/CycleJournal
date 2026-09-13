@@ -64,6 +64,7 @@ import com.app.cyclejournal.ui.theme.AlertBrown
 import com.app.cyclejournal.ui.theme.AlertBrownSoft
 import com.app.cyclejournal.ui.theme.AlertTint
 import com.app.cyclejournal.ui.theme.AppType
+import com.app.cyclejournal.ui.theme.HeroTrackSoft
 import com.app.cyclejournal.ui.theme.BrandEnd
 import com.app.cyclejournal.ui.theme.BrandGradient
 import com.app.cyclejournal.ui.theme.BrandTint
@@ -372,7 +373,7 @@ private fun AverageCycleCard(
             RingProgress(
                 progress = progress,
                 size = 68.dp,
-                trackColor = Color(0xFFFFE1E5),
+                trackColor = HeroTrackSoft,
                 label = "${(progress * 100).roundToInt()}%"
             )
         }
