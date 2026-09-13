@@ -3,6 +3,9 @@ package com.app.cyclejournal
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
+import android.app.LocaleManager
+import android.os.LocaleList
+import androidx.annotation.RequiresApi
 import android.os.Bundle
 import android.os.Process
 import androidx.activity.compose.setContent
@@ -93,6 +96,40 @@ class MainActivity : FragmentActivity() {
         super.attachBaseContext(AppDensity.wrap(AppLocale.wrap(newBase)))
     }
 
+    /**
+     * Android 13+ owns the app language through [LocaleManager] once the app declares a
+     * `localeConfig` (this app does, so the language is also settable from system settings).
+     * The platform applies that locale to the app's resources on top of whatever
+     * `attachBaseContext` wrapped, which is why the in-app switch did nothing on Android 13 and
+     * newer: the stored preference changed, the platform's per-app locale did not.
+     *
+     * This keeps the two in step - the platform wins if the user changed it in system settings,
+     * the stored preference wins otherwise - and lets the platform recreate the activity.
+     */
+    private fun syncPlatformLocale() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val localeManager = getSystemService(LocaleManager::class.java) ?: return
+        val platform = localeManager.applicationLocales
+        val stored = prefs.getAppLanguage()
+        if (platform.size() == 0) {
+            if (stored != "system") setPlatformLocale(stored)
+        } else {
+            val tag = platform.toLanguageTags().substringBefore(',').substringBefore('-')
+            if (tag.isNotEmpty() && tag != stored) prefs.setAppLanguage(tag)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun setPlatformLocale(language: String) {
+        val localeManager = getSystemService(LocaleManager::class.java) ?: return
+        val wanted = when (language) {
+            "id" -> LocaleList.forLanguageTags("id")
+            "en" -> LocaleList.forLanguageTags("en")
+            else -> LocaleList.getEmptyLocaleList()
+        }
+        if (localeManager.applicationLocales != wanted) localeManager.applicationLocales = wanted
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -104,6 +141,9 @@ class MainActivity : FragmentActivity() {
         adMobManager.loadRewardedVideo()
 
         biometricAuthHelper = BiometricAuthHelper(this)
+
+        // Keep the platform's per-app locale and the stored preference in step (Android 13+).
+        syncPlatformLocale()
 
         // If PIN is not set yet (first-time install), start unlocked
         if (!pinManager.isPinSet()) {
@@ -405,7 +445,13 @@ class MainActivity : FragmentActivity() {
                         onLanguageChanged = { newLang ->
                             prefs.setAppLanguage(newLang)
                             NotificationChannelManager.createChannels(AppLocale.wrap(this@MainActivity, newLang))
-                            recreate()
+                            // Android 13+ applies the per-app locale itself (and recreates the
+                            // activity); older releases need the manual recreate.
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                setPlatformLocale(newLang)
+                            } else {
+                                recreate()
+                            }
                         }
                     )
                     }
