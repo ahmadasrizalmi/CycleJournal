@@ -35,6 +35,7 @@ import com.app.cyclejournal.domain.manager.BackupFileInspection
 import com.app.cyclejournal.domain.manager.LocalRestoreOutcome
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.app.cyclejournal.BuildConfig
 import com.app.cyclejournal.billing.AdMobManager
 import com.app.cyclejournal.billing.BillingManager
 import com.app.cyclejournal.data.preferences.AppLocale
@@ -132,6 +133,7 @@ class MainActivity : FragmentActivity() {
             var textScale by remember { mutableFloatStateOf(prefs.getAppTextScale()) }
             var isDarkMode by remember { mutableStateOf(prefs.isDarkMode()) }
             var isPeriodReminderEnabled by remember { mutableStateOf(prefs.isPeriodReminderEnabled()) }
+            var isBbtReminderEnabled by remember { mutableStateOf(prefs.isBbtReminderEnabled()) }
             val systemDensity = LocalDensity.current
 
             val localizedContext = remember(currentLang) {
@@ -217,6 +219,15 @@ class MainActivity : FragmentActivity() {
                     val anomalies by cycleViewModel.anomaliesFlow.collectAsState()
                     val downloadedReport by cycleViewModel.downloadedReport.collectAsState()
 
+                    // The daily basal-temperature alarm follows its own switch (05:30, matching the copy).
+                    LaunchedEffect(isBbtReminderEnabled) {
+                        if (isBbtReminderEnabled) {
+                            cycleAlarmScheduler.scheduleDailyBbtReminder(BBT_HOUR, BBT_MINUTE)
+                        } else {
+                            cycleAlarmScheduler.cancelBbtReminder()
+                        }
+                    }
+
                     // Keep the H-2 alert in step with the newest prediction, and honour the toggle.
                     LaunchedEffect(isPeriodReminderEnabled, fertilePrediction?.predictedNextPeriodDate) {
                         val prediction = fertilePrediction
@@ -299,6 +310,14 @@ class MainActivity : FragmentActivity() {
                             prefs.setDarkMode(it)
                             isDarkMode = it
                         },
+                        isBbtReminderEnabled = isBbtReminderEnabled,
+                        onBbtReminderChanged = { enabled ->
+                            prefs.setBbtReminderEnabled(enabled)
+                            isBbtReminderEnabled = enabled
+                            if (enabled) cycleAlarmScheduler.scheduleDailyBbtReminder(BBT_HOUR, BBT_MINUTE)
+                            else cycleAlarmScheduler.cancelBbtReminder()
+                        },
+                        appVersionName = BuildConfig.VERSION_NAME,
                         isPeriodReminderEnabled = isPeriodReminderEnabled,
                         onPeriodReminderChanged = { enabled ->
                             prefs.setPeriodReminderEnabled(enabled)
@@ -387,6 +406,10 @@ class MainActivity : FragmentActivity() {
         }
     }
 }
+
+/** Morning slot the basal-temperature reminder fires at; the Settings copy says 05:30. */
+private const val BBT_HOUR = 5
+private const val BBT_MINUTE = 30
 
 /**
  * Locale-overridden context that keeps Compose owner lookups (activity result registry, lifecycle,

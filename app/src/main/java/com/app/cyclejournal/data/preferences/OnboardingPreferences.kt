@@ -18,6 +18,7 @@ class OnboardingPreferences(context: Context) {
         private const val KEY_BIOMETRIC_UNLOCK = "biometric_unlock_enabled"
         private const val KEY_DARK_MODE = "dark_mode"
         private const val KEY_PERIOD_REMINDER = "period_reminder_enabled"
+        private const val KEY_BBT_REMINDER = "bbt_reminder_enabled"
 
         /** Bounds for the user text-size multiplier, so a corrupted value cannot wreck the UI. */
         const val TEXT_SCALE_MIN = 0.85f
@@ -56,6 +57,13 @@ class OnboardingPreferences(context: Context) {
 
     fun setPeriodReminderEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_PERIOD_REMINDER, enabled).apply()
+    }
+
+    /** Daily 05:30 basal-temperature alarm; on by default like the period reminder. */
+    fun isBbtReminderEnabled(): Boolean = prefs.getBoolean(KEY_BBT_REMINDER, true)
+
+    fun setBbtReminderEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_BBT_REMINDER, enabled).apply()
     }
 
     /** Appearance chosen in Settings; survives process death and app restarts. */

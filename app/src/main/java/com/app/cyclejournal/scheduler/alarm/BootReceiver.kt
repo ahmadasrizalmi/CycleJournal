@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.app.cyclejournal.data.local.AppDatabase
+import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.domain.engine.ClinicalCycleEngine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,8 +21,13 @@ class BootReceiver : BroadcastReceiver() {
             intent.action == "android.intent.action.QUICKBOOT_POWERON"
         ) {
             val scheduler = CycleAlarmScheduler(context)
-            // 1. Reschedule daily morning BBT reminder
-            scheduler.scheduleDailyBbtReminder(6, 0)
+            val prefs = OnboardingPreferences(context)
+            // 1. Reschedule the daily morning BBT reminder only while its switch is on
+            if (prefs.isBbtReminderEnabled()) {
+                scheduler.scheduleDailyBbtReminder(5, 30)
+            } else {
+                scheduler.cancelBbtReminder()
+            }
 
             // 2. Query latest cycle and reschedule H-2 period alert
             val pendingResult = goAsync()
@@ -31,12 +37,14 @@ class BootReceiver : BroadcastReceiver() {
                     val latestCycle = db.cycleDao().getLatestCycle()
                     val completed = db.cycleDao().getCompletedCycles()
 
-                    if (latestCycle != null) {
+                    if (latestCycle != null && prefs.isPeriodReminderEnabled()) {
                         val engine = ClinicalCycleEngine()
                         val stats = engine.calculateCycleStats(completed)
                         val avgLength = stats?.averageLength ?: 28.0
                         val prediction = engine.predictFertileWindow(latestCycle.startDate, avgLength)
                         scheduler.schedulePeriodAlert(prediction.predictedNextPeriodDate)
+                    } else if (!prefs.isPeriodReminderEnabled()) {
+                        scheduler.cancelPeriodAlert()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

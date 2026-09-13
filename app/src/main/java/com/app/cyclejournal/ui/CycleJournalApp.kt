@@ -104,6 +104,9 @@ fun CycleJournalApp(
     onFingerprintUnlockChanged: (Boolean) -> Unit = {},
     isPeriodReminderEnabled: Boolean = true,
     onPeriodReminderChanged: (Boolean) -> Unit = {},
+    isBbtReminderEnabled: Boolean = true,
+    onBbtReminderChanged: (Boolean) -> Unit = {},
+    appVersionName: String = "",
     isDarkModeInitial: Boolean = false,
     onDarkModeChanged: (Boolean) -> Unit = {}
 ) {
@@ -283,6 +286,9 @@ fun CycleJournalApp(
                         onFingerprintUnlockChanged = onFingerprintUnlockChanged,
                         isPeriodReminderEnabled = isPeriodReminderEnabled,
                         onPeriodReminderChanged = onPeriodReminderChanged,
+                        isBbtReminderEnabled = isBbtReminderEnabled,
+                        onBbtReminderChanged = onBbtReminderChanged,
+                        appVersionName = appVersionName,
                         onOpenPin = { isPinModalOpen = true },
                         onBuyPro = {
                             onBuyPro?.invoke() ?: run {

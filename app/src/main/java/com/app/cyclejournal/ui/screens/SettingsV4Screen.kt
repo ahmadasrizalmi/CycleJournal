@@ -29,10 +29,12 @@ import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockClock
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.Spa
+import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -56,6 +58,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.cyclejournal.R
@@ -121,6 +124,9 @@ fun SettingsV4Screen(
     onFingerprintUnlockChanged: (Boolean) -> Unit = {},
     isPeriodReminderEnabled: Boolean = true,
     onPeriodReminderChanged: (Boolean) -> Unit = {},
+    isBbtReminderEnabled: Boolean = true,
+    onBbtReminderChanged: (Boolean) -> Unit = {},
+    appVersionName: String = "",
     onOpenPin: () -> Unit,
     onBuyPro: () -> Unit,
     onCopyRecoveryKey: (() -> Unit)? = null,
@@ -150,6 +156,8 @@ fun SettingsV4Screen(
     val reminderOffToast = stringResource(R.string.v4_reminder_off_toast)
     val fingerprintOnToast = stringResource(R.string.settings_biometric_enabled)
     val fingerprintOffToast = stringResource(R.string.settings_biometric_disabled)
+    val bbtReminderOnToast = stringResource(R.string.settings_bbt_reminder) + " · " + stringResource(R.string.v4_promil_active)
+    val bbtReminderOffToast = stringResource(R.string.settings_bbt_reminder) + " · " + stringResource(R.string.settings_cancel)
     val backupToast = stringResource(R.string.v4_backup_toast)
     val restoreToast = stringResource(R.string.v4_restore_toast)
     val wipeToast = stringResource(R.string.nuke_wiping_title)
@@ -344,11 +352,38 @@ fun SettingsV4Screen(
                         icon = Icons.Rounded.DarkMode,
                         trailing = { AppSwitch(checked = isDarkMode, onCheckedChange = { onToggleDark() }) }
                     )
+                    HairLine()
+                    SettingsListRow(
+                        title = stringResource(R.string.settings_bbt_reminder),
+                        icon = Icons.Rounded.Thermostat,
+                        trailing = {
+                            AppSwitch(checked = isBbtReminderEnabled, onCheckedChange = {
+                                onBbtReminderChanged(it)
+                                onToast(if (it) bbtReminderOnToast else bbtReminderOffToast)
+                            })
+                        }
+                    )
+                    HairLine()
+                    // The 30 second guard is enforced in MainActivity; 1.1.3 showed it as information.
+                    SettingsListRow(
+                        title = stringResource(R.string.settings_auto_lock),
+                        icon = Icons.Rounded.LockClock,
+                        value = stringResource(R.string.settings_auto_lock_30_seconds)
+                    )
                 }
             }
         }
 
         item { PrivacyFooter() }
+        item {
+            Text(
+                text = stringResource(R.string.app_version_footer, appVersionName),
+                style = AppType.caption,
+                color = Ink3,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 
     if (isLanguageDialogOpen) {

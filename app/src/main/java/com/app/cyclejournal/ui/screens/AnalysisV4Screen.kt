@@ -254,6 +254,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.summaryItems(
                     } ?: 0
                 )
                 SeverePainAlert(anomalies = anomalies, allLogs = allLogs)
+                AnomalyList(anomalies = anomalies)
             } else {
                 EmptySummaryCard()
             }
@@ -530,6 +531,69 @@ private fun SeverePainAlert(anomalies: List<AnomalyAlert>, allLogs: List<DailyLo
                 color = AlertBrown
             )
             Text(text = detail, style = AppType.caption, color = AlertBrownSoft)
+        }
+    }
+}
+
+/** 1.1.3 listed every flagged anomaly; the design kept only the top warning, so the rest live here. */
+@Composable
+private fun AnomalyList(anomalies: List<AnomalyAlert>) {
+    if (anomalies.size <= 1) return
+    val resources = androidx.compose.ui.platform.LocalContext.current.resources
+    var isExpanded by remember { mutableStateOf(false) }
+    val others = anomalies.drop(1)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .border(1.dp, Line, RoundedCornerShape(16.dp))
+            .background(Paper)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isExpanded = !isExpanded }
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.v4_an_attention_header),
+                style = AppType.caption.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                color = Ink2,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = stringResource(
+                    if (isExpanded) R.string.v4_an_attention_hide else R.string.v4_an_attention_show,
+                    others.size
+                ),
+                style = AppType.caption.copy(fontWeight = FontWeight.Bold),
+                color = BrandEnd
+            )
+        }
+        if (isExpanded) {
+            HairLine()
+            Column(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                others.forEach { alert ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 5.dp)
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(AlertBrown)
+                        )
+                        Text(
+                            text = alert.localizedDetail(resources),
+                            style = AppType.caption,
+                            color = Ink2
+                        )
+                    }
+                }
+            }
         }
     }
 }

@@ -322,6 +322,13 @@ fun LogSheetV4(
                     else -> R.string.v4_log_pain_severe
                 }
                 val painColor = if (vasScore.toInt() == 0) OkGreen else AlertBrown
+                val painImpactRes = when {
+                    vasScore.toInt() == 0 -> R.string.daily_pain_impact_none
+                    vasScore <= 3f -> R.string.daily_pain_impact_mild
+                    vasScore <= 6f -> R.string.daily_pain_impact_moderate
+                    vasScore <= 9f -> R.string.daily_pain_impact_severe
+                    else -> R.string.daily_pain_impact_critical
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -353,6 +360,13 @@ fun LogSheetV4(
                             Text(text = stringResource(painLabelRes), style = AppType.caption.copy(fontSize = 14.sp, fontWeight = FontWeight.SemiBold), color = painColor)
                         }
                     }
+                    // 1.1.3 explained what the score means clinically; the badge alone does not.
+                    Text(
+                        text = stringResource(painImpactRes),
+                        style = AppType.caption,
+                        color = painColor,
+                        modifier = Modifier.testTag("log_pain_impact")
+                    )
                     Slider(
                         value = vasScore,
                         onValueChange = { vasScore = it },
@@ -421,6 +435,16 @@ fun LogSheetV4(
                                     )
                                     StepperButton(Icons.Rounded.Add, enabled = true, filled = true) {
                                         bbtValue = (((bbtValue ?: BBT_DEFAULT) + 0.01).coerceIn(BBT_MIN, BBT_MAX))
+                                    }
+                                    if (bbtValue != null) {
+                                        Text(
+                                            text = stringResource(R.string.daily_basal_temp_remove),
+                                            style = AppType.caption.copy(fontWeight = FontWeight.SemiBold),
+                                            color = AlertBrown,
+                                            modifier = Modifier
+                                                .testTag("log_bbt_clear")
+                                                .clickable { bbtValue = null }
+                                        )
                                     }
                                 }
                             }

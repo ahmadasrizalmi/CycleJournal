@@ -11,6 +11,11 @@
     <string name="v4_home_cycle_estimate">Panjang siklus (perkiraan)</string>
     <string name="v4_an_badge_estimate">Perkiraan</string>
     <string name="v4_an_estimate_sub">dari prediksi berjalan · belum ada riwayat</string>
+    <string name="v4_an_attention_header">Pola lain yang terdeteksi</string>
+    <string name="v4_an_attention_show">Lihat %1$d</string>
+    <string name="v4_an_attention_hide">Sembunyikan</string>
+    <string name="v4_bbt_reminder_on_toast">Pengingat suhu basal aktif</string>
+    <string name="v4_bbt_reminder_off_toast">Pengingat suhu basal nonaktif</string>
     <string name="v4_nav_home">Beranda</string>
     <string name="v4_nav_calendar">Kalender</string>
     <string name="v4_nav_analysis">Analisis</string>

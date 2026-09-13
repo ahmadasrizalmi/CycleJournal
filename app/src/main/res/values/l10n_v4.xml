@@ -11,6 +11,11 @@
     <string name="v4_home_cycle_estimate">Cycle length (estimated)</string>
     <string name="v4_an_badge_estimate">Estimated</string>
     <string name="v4_an_estimate_sub">from the current prediction · no history yet</string>
+    <string name="v4_an_attention_header">Other flagged patterns</string>
+    <string name="v4_an_attention_show">Show %1$d</string>
+    <string name="v4_an_attention_hide">Hide</string>
+    <string name="v4_bbt_reminder_on_toast">Basal temperature reminder enabled</string>
+    <string name="v4_bbt_reminder_off_toast">Basal temperature reminder disabled</string>
     <string name="v4_nav_home">Home</string>
     <string name="v4_nav_calendar">Calendar</string>
     <string name="v4_nav_analysis">Analysis</string>
