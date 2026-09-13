@@ -1,16 +1,16 @@
 @echo off
 REM ============================================================
 REM  CycleJournal - Build Release APK saja
-REM  Output: release\CycleJournal_v1.1.2.apk
+REM  Output: release\CycleJournal_v1.1.11.apk
 REM ============================================================
 echo.
 echo Building Release APK...
 call gradlew.bat assembleRelease
 if errorlevel 1 goto :err
 echo.
-copy /Y "app\build\outputs\apk\release\app-release.apk" "release\CycleJournal_v1.1.2.apk" >nul
+copy /Y "app\build\outputs\apk\release\app-release.apk" "release\CycleJournal_v1.1.11.apk" >nul
 echo.
-echo DONE! APK ready in release\CycleJournal_v1.1.2.apk
+echo DONE! APK ready in release\CycleJournal_v1.1.11.apk
 pause
 exit /b 0
 :err

@@ -14,16 +14,7 @@
     <string name="security_fingerprint_content_desc">Sidik Jari</string>
 
     <!-- Backup &amp; Restore -->
-    <string name="security_backup_invalid_pin">PIN yang dimasukkan salah.</string>
-    <string name="security_backup_upload_success">Cadangan terenkripsi berhasil disinkronkan ke Cloudflare D1.</string>
-    <string name="security_backup_upload_failed">Gagal mengunggah ke Cloudflare Worker. Periksa jaringan internet.</string>
-    <string name="security_backup_error_generic">Terjadi kesalahan saat mencadangkan.</string>
     <string name="security_restore_file_read_failed">Gagal membaca berkas: %1$s</string>
-    <string name="security_restore_success">Berhasil memulihkan %1$d catatan harian &amp; %2$d siklus.</string>
-    <string name="security_restore_invalid_passphrase">PIN/Passphrase salah. Gagal mendekripsi ciphertext.</string>
-    <string name="security_restore_backup_not_found">Tidak ada berkas cadangan di Cloudflare D1 untuk ID ini.</string>
-    <string name="security_restore_integrity_failed">Integritas data rusak (SHA-256 Checksum mismatch).</string>
-    <string name="security_restore_network_error">Kesalahan jaringan: %1$s</string>
 
     <!-- Destructive "delete all data" guard -->
     <string name="nuke_confirm_hint">Ketik HAPUS untuk mengonfirmasi</string>

@@ -33,15 +33,17 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun CycleJournalTheme(content: @Composable () -> Unit) {
     val view = LocalView.current
+    val palette = LocalV4Palette.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as? Activity)?.window
             if (window != null) {
-                window.statusBarColor = Color.White.toArgb()
-                window.navigationBarColor = Color.White.toArgb()
+                window.statusBarColor = palette.brandStart.toArgb()
+                window.navigationBarColor = palette.paper.toArgb()
                 val controller = WindowCompat.getInsetsController(window, view)
-                controller.isAppearanceLightStatusBars = true
-                controller.isAppearanceLightNavigationBars = true
+                // The v4 header band is a brand gradient, so the status bar runs light-on-dark.
+                controller.isAppearanceLightStatusBars = false
+                controller.isAppearanceLightNavigationBars = !palette.isDark
             }
         }
     }

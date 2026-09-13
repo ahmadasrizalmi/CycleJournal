@@ -10,16 +10,7 @@
     <string name="security_fingerprint_content_desc">Fingerprint</string>
 
     <!-- Backup &amp; Restore -->
-    <string name="security_backup_invalid_pin">The PIN entered is incorrect.</string>
-    <string name="security_backup_upload_success">Encrypted backup successfully synced to Cloudflare D1.</string>
-    <string name="security_backup_upload_failed">Failed to upload to Cloudflare Worker. Check your internet connection.</string>
-    <string name="security_backup_error_generic">An error occurred while creating the backup.</string>
     <string name="security_restore_file_read_failed">Failed to read file: %1$s</string>
-    <string name="security_restore_success">Successfully restored %1$d daily records &amp; %2$d cycles.</string>
-    <string name="security_restore_invalid_passphrase">Incorrect PIN/Passphrase. Failed to decrypt ciphertext.</string>
-    <string name="security_restore_backup_not_found">No backup file found in Cloudflare D1 for this ID.</string>
-    <string name="security_restore_integrity_failed">Data integrity corrupted (SHA-256 checksum mismatch).</string>
-    <string name="security_restore_network_error">Network error: %1$s</string>
 
     <!-- Destructive "delete all data" guard -->
     <string name="nuke_confirm_hint">Type DELETE to confirm</string>

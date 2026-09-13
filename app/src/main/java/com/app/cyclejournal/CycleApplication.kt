@@ -6,7 +6,7 @@ import com.app.cyclejournal.data.local.DemoDataSeeder
 import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.scheduler.alarm.CycleAlarmScheduler
 import com.app.cyclejournal.scheduler.notification.NotificationChannelManager
-import com.app.cyclejournal.scheduler.worker.BackupScheduler
+import com.app.cyclejournal.scheduler.worker.LegacyCloudBackupCleanup
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +21,9 @@ class CycleApplication : Application() {
         // 1. Create high-importance notification channels in the user's chosen app language
         NotificationChannelManager.createChannels(AppLocale.wrap(this))
 
-        // 2. Schedule 30-day periodic encrypted cloud backup worker
-        BackupScheduler.scheduleMonthlyBackup(this)
+        // 2. Drop any monthly cloud-backup work an older release left behind: backups are
+        //    fully offline now, so nothing may keep reaching for the network.
+        LegacyCloudBackupCleanup.cancel(this)
 
         // 3. Initialize daily morning waking BBT reminder
         val alarmScheduler = CycleAlarmScheduler(this)

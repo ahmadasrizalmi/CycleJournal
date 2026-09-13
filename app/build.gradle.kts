@@ -13,8 +13,8 @@ android {
         applicationId = "com.app.cyclejournal"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.1.3"
+        versionCode = 13
+        versionName = "1.1.11"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Marketing screenshots run the release build with -PdemoSeed=true so the store shots
         // show a populated app. Off by default, so the shipped build never seeds content.

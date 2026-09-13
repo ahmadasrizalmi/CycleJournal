@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CycleJournal v4 design system strings (Bahasa Indonesia) -->
+<resources>
+    <!-- Navigation -->
+    <string name="v4_language_change">Ganti bahasa</string>
+    <string name="v4_theme_switch_to_light">Ganti ke tema terang</string>
+    <string name="v4_theme_switch_to_dark">Ganti ke tema gelap</string>
+    <string name="v4_row_language">Bahasa</string>
+    <string name="v4_row_text_size">Ukuran teks</string>
+    <string name="v4_discreet_eyebrow">SIKLUS</string>
+    <string name="v4_home_cycle_estimate">Panjang siklus (perkiraan)</string>
+    <string name="v4_an_badge_estimate">Perkiraan</string>
+    <string name="v4_an_estimate_sub">dari prediksi berjalan · belum ada riwayat</string>
+    <string name="v4_nav_home">Beranda</string>
+    <string name="v4_nav_calendar">Kalender</string>
+    <string name="v4_nav_analysis">Analisis</string>
+    <string name="v4_nav_settings">Setelan</string>
+
+    <!-- Home -->
+    <string name="v4_home_eyebrow_period">HARI HAID</string>
+    <string name="v4_home_eyebrow_next">PREDIKSI HAID</string>
+    <string name="v4_home_eyebrow_fertile">MASA SUBUR</string>
+    <string name="v4_home_eyebrow_ovulation">PUNCAK OVULASI</string>
+    <string name="v4_home_ovulation_today">Hari ini</string>
+    <string name="v4_home_ovulation_passed">Sudah lewat</string>
+    <string name="v4_home_ovulation_sub">perkiraan %1$s · peluang tinggi</string>
+    <string name="v4_home_promil_badge">MODE PROMIL</string>
+    <string name="v4_home_of_days">dari %1$d hari</string>
+    <string name="v4_home_period_pattern">pola haidmu %1$d hari</string>
+    <string name="v4_home_period_estimate">estimasi %1$d hari</string>
+    <string name="v4_home_period_length_estimate">Lama haid (perkiraan)</string>
+    <string name="v4_home_mark_ended">Tandai haid selesai</string>
+    <string name="v4_home_days_to_go">%1$d hari lagi</string>
+    <string name="v4_home_next_period_sub">perkiraan %1$s</string>
+    <string name="v4_home_log_period">Catat haid</string>
+    <string name="v4_home_fertile_big">%1$d hari</string>
+    <string name="v4_home_fertile_sub">jendela %1$s – %2$s</string>
+    <string name="v4_home_open_calendar">Lihat kalender</string>
+    <string name="v4_home_cycle_length">Panjang siklus</string>
+    <string name="v4_home_period_length">Lama haid</string>
+    <string name="v4_home_days_format">%1$d hari</string>
+    <string name="v4_home_quick_log">Catatan cepat</string>
+    <string name="v4_home_edit">Ubah</string>
+    <string name="v4_home_card_period">Haid</string>
+    <string name="v4_home_card_pain">Nyeri</string>
+    <string name="v4_home_card_water">Air</string>
+    <string name="v4_home_card_mucus">Lendir</string>
+    <string name="v4_home_card_notes">Catatan</string>
+    <string name="v4_home_basal_temp">Suhu basal</string>
+    <string name="v4_home_temp_optional">%1$s · opsional</string>
+    <string name="v4_home_temp_not_measured">Belum diukur</string>
+    <string name="v4_home_not_logged">Belum dicatat</string>
+    <string name="v4_home_vas_format">VAS %1$d</string>
+
+    <!-- Calendar -->
+    <string name="v4_cal_today">Hari ini</string>
+    <string name="v4_cal_legend_period">Haid</string>
+    <string name="v4_cal_legend_pms">PMS</string>
+    <string name="v4_cal_legend_fertile">Subur</string>
+    <string name="v4_cal_legend_ovulation">Ovulasi</string>
+    <string name="v4_cal_timeline">Timeline siklus</string>
+    <string name="v4_cal_see_all">Lihat semua</string>
+    <string name="v4_cal_period_started">Haid mulai</string>
+    <string name="v4_cal_expected_today">Perkiraan hari ini</string>
+    <string name="v4_cal_fertile_window">Masa subur</string>
+    <string name="v4_cal_high_chance">Peluang kehamilan tinggi</string>
+    <string name="v4_cal_expected_ovulation">Perkiraan ovulasi</string>
+    <string name="v4_cal_peak_fertility">Puncak kesuburan</string>
+    <string name="v4_cal_log_bbt">Catat suhu basal</string>
+    <string name="v4_cal_morning_reminder">Pengingat pagi</string>
+    <string name="v4_cal_no_entries">Belum ada entri timeline</string>
+
+    <!-- Daily log sheet -->
+    <string name="v4_log_title">Catatan hari ini</string>
+    <string name="v4_log_flow">Darah haid</string>
+    <string name="v4_log_flow_hint_none">bukan hari haid</string>
+    <string name="v4_log_flow_hint_active">hari haid aktif</string>
+    <string name="v4_log_flow_none">Tidak</string>
+    <string name="v4_log_flow_spotting">Bercak</string>
+    <string name="v4_log_flow_light">Ringan</string>
+    <string name="v4_log_flow_medium">Sedang</string>
+    <string name="v4_log_flow_heavy">Berat</string>
+    <string name="v4_log_pain">Tingkat nyeri</string>
+    <string name="v4_log_pain_score">%1$d / 10</string>
+    <string name="v4_log_pain_free">Tanpa nyeri</string>
+    <string name="v4_log_pain_mild">Ringan</string>
+    <string name="v4_log_pain_moderate">Sedang</string>
+    <string name="v4_log_pain_severe">Berat</string>
+    <string name="v4_log_clinical">Detail klinis</string>
+    <string name="v4_log_clinical_hide">Sembunyikan detail klinis</string>
+    <string name="v4_log_clinical_sub">Suhu basal · lendir · obat</string>
+    <string name="v4_log_bbt">Suhu basal</string>
+    <string name="v4_log_bbt_hint">± mengubah 0,01 °C</string>
+    <string name="v4_log_meds">Obat pereda nyeri</string>
+    <string name="v4_log_mucus">Lendir serviks</string>
+    <string name="v4_log_mucus_hint">telur = paling subur</string>
+    <string name="v4_log_mucus_none">Tidak</string>
+    <string name="v4_log_mucus_dry">Kering</string>
+    <string name="v4_log_mucus_sticky">Lengket</string>
+    <string name="v4_log_mucus_creamy">Krem</string>
+    <string name="v4_log_mucus_watery">Cair</string>
+    <string name="v4_log_mucus_egg">Telur</string>
+    <string name="v4_log_symptoms">Gejala tubuh</string>
+    <string name="v4_log_add_symptom">+ Tambah gejala</string>
+    <string name="v4_log_symptom_cramps">Kram</string>
+    <string name="v4_log_symptom_back">Punggung</string>
+    <string name="v4_log_symptom_breasts">Payudara</string>
+    <string name="v4_log_notes">Catatan</string>
+    <string name="v4_log_notes_hint">Hal yang ingin kamu ingat hari ini</string>
+    <string name="v4_log_save">Simpan catatan hari ini</string>
+
+    <!-- Analysis -->
+    <string name="v4_an_title_summary">Analisis Siklus</string>
+    <string name="v4_an_pill_summary">Ringkasan Data</string>
+    <string name="v4_an_title_timeline">Timeline Siklus</string>
+    <string name="v4_an_last_cycles">%1$d siklus terakhir</string>
+    <string name="v4_an_summary_header">RINGKASAN SIKLUS KLINIS</string>
+    <string name="v4_an_avg_eyebrow">SIKLUS RATA-RATA</string>
+    <string name="v4_an_badge_regular">Teratur</string>
+    <string name="v4_an_badge_irregular">Tidak teratur</string>
+    <string name="v4_an_day_of">hari ke-%1$d dari %2$d · stabil</string>
+    <string name="v4_an_day_of_estimate">hari ke-%1$d dari ~%2$d</string>
+    <string name="v4_an_chart_title">Panjang siklus</string>
+    <string name="v4_an_chart_sub">6 bulan terakhir</string>
+    <string name="v4_an_phase_period">Haid</string>
+    <string name="v4_an_phase_fertile">Masa subur</string>
+    <string name="v4_an_phase_luteal">Fase luteal</string>
+    <string name="v4_an_days_count">%1$d hari</string>
+    <string name="v4_an_no_data">Data siklus belum cukup</string>
+    <string name="v4_an_no_data_sub">Catat minimal dua periode haid agar ringkasan klinis bisa dihitung.</string>
+    <string name="v4_an_warning_title">Perhatian: nyeri haid tergolong berat</string>
+    <string name="v4_an_warning_body">Skor nyeri VAS %1$d/10 terdeteksi pada %2$s.</string>
+    <string name="v4_an_report_header">LAPORAN</string>
+    <string name="v4_an_report_sub">Unduh ringkasan siklus &amp; gejala</string>
+    <string name="v4_an_filter_all">Semua</string>
+    <string name="v4_an_filter_period">Haid</string>
+    <string name="v4_an_filter_ovulation">Ovulasi</string>
+    <string name="v4_an_filter_fertile">Masa subur</string>
+    <string name="v4_an_logs_header">CATATAN HARIAN TERBARU</string>
+    <string name="v4_an_col_date">Tanggal</string>
+    <string name="v4_an_col_flow">Darah</string>
+    <string name="v4_an_col_temp">Suhu</string>
+    <string name="v4_an_col_pain">Nyeri</string>
+    <string name="v4_an_ongoing">Berlangsung</string>
+    <string name="v4_an_day_n_ongoing">Hari ke-%1$d · berlangsung</string>
+    <string name="v4_an_see_all">Lihat semua</string>
+    <string name="v4_an_tip">Tips: ukur suhu di jam yang sama tiap pagi supaya pola bifasik terbaca.</string>
+    <string name="v4_an_temp_format">%1$s</string>
+    <string name="v4_an_pain_format">%1$d/10</string>
+    <string name="v4_an_cycle_range">%1$s – %2$s</string>
+
+    <!-- Splash / onboarding -->
+    <string name="v4_splash1_title">Lacak siklusmu</string>
+    <string name="v4_splash1_body">Kelola haid yang tidak teratur dan pahami polanya dari catatanmu sendiri.</string>
+    <string name="v4_splash2_title">Rencanakan kehamilan</string>
+    <string name="v4_splash2_body">Hari subur dan puncak ovulasi jadi lebih mudah dibaca setiap bulan.</string>
+    <string name="v4_splash3_title">Wawasan kesehatan</string>
+    <string name="v4_splash3_body">Catatan gejala dan suasana hati membantumu mengenali tubuh sendiri.</string>
+    <string name="v4_splash_new_user">Pengguna baru</string>
+    <string name="v4_splash_restore">Pulihkan data</string>
+
+    <!-- Profile / license -->
+    <string name="v4_profile_anonymous">Pengguna anonim</string>
+    <string name="v4_profile_license_free">Lisensi Gratis</string>
+    <string name="v4_profile_license_pro">Lisensi Pro</string>
+    <string name="v4_profile_go_pro">Jadi Pro</string>
+    <string name="v4_profile_pro_active">Pro aktif</string>
+
+    <!-- Trying to conceive -->
+    <string name="v4_promil_title">Mode Promil</string>
+    <string name="v4_promil_subtitle">Panduan kesuburan &amp; masa subur</string>
+    <string name="v4_promil_enable">Aktifkan</string>
+    <string name="v4_promil_active">Aktif</string>
+    <string name="v4_promil_on_toast">Mode promil diaktifkan</string>
+    <string name="v4_promil_off_toast">Mode promil dimatikan</string>
+
+    <!-- Guide &amp; preferences -->
+    <string name="v4_section_guide">PANDUAN &amp; PENGATURAN</string>
+    <string name="v4_tile_guide">Panduan cepat</string>
+    <string name="v4_tile_guide_sub">Cara pakai &amp; tips</string>
+    <string name="v4_tile_faq">FAQ</string>
+    <string name="v4_tile_faq_sub">Pertanyaan umum</string>
+    <string name="v4_tile_discreet">Mode samar</string>
+    <string name="v4_tile_discreet_sub">Sembunyikan isi sensitif</string>
+    <string name="v4_tile_reminder">Pengingat haid</string>
+    <string name="v4_tile_reminder_sub">Ingatkan H-2 sebelum haid</string>
+    <string name="v4_guide_toast">Panduan cepat segera hadir</string>
+    <string name="v4_faq_toast">FAQ segera hadir</string>
+    <string name="v4_reminder_on_toast">Pengingat haid aktif</string>
+    <string name="v4_reminder_off_toast">Pengingat haid nonaktif</string>
+
+    <!-- Privacy &amp; data -->
+    <string name="v4_pin_lock">Kunci PIN</string>
+    <string name="v4_pin_set">Atur PIN</string>
+    <string name="v4_pin_change">Ubah PIN</string>
+    <string name="v4_fingerprint">Sidik jari</string>
+    <string name="v4_face_id">Face ID</string>
+    <string name="v4_backup">Backup data</string>
+    <string name="v4_restore">Pulihkan data</string>
+    <string name="v4_backup_toast">Menyiapkan backup…</string>
+    <string name="v4_restore_toast">Pilih berkas backup untuk dipulihkan</string>
+    <string name="v4_delete_all">Hapus semua data</string>
+    <string name="v4_footer_privacy">Data tersimpan hanya di perangkat ini · terenkripsi</string>
+
+    <!-- Application -->
+    <string name="v4_section_app">APLIKASI</string>
+    <string name="v4_theme_dark">Tema gelap</string>
+</resources>

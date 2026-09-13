@@ -91,8 +91,6 @@
 
     <string name="section_backup">Local Data Backup</string>
     <string name="d1_status_connected">Stored Locally on Device</string>
-    <string name="last_sync_format">Last backup: %s</string>
-    <string name="last_sync_never">Never backed up</string>
     <string name="action_backup_now">Backup Data</string>
     <string name="action_restore_backup">Restore Data</string>
 

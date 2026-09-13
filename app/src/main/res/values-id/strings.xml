@@ -95,8 +95,6 @@
 
     <string name="section_backup">Cadangan Data Mandiri</string>
     <string name="d1_status_connected">Tersimpan Lokal di Perangkat</string>
-    <string name="last_sync_format">Cadangan terakhir: %s</string>
-    <string name="last_sync_never">Belum pernah dicadangkan</string>
     <string name="action_backup_now">Cadangkan Data</string>
     <string name="action_restore_backup">Pulihkan Data</string>
 

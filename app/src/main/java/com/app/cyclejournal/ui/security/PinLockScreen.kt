@@ -24,7 +24,8 @@ import com.app.cyclejournal.ui.theme.TextPrimary
 @Composable
 fun PinLockScreen(
     onPinEntered: (String) -> Boolean,
-    onBiometricRequested: () -> Unit
+    onBiometricRequested: () -> Unit,
+    isBiometricAvailable: Boolean = true
 ) {
     var pin by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
@@ -75,8 +76,8 @@ fun PinLockScreen(
                 }
             })
 
-            // Biometric Shortcut Button
-            IconButton(
+            // Fingerprint shortcut, shown only while the user keeps it enabled in Settings.
+            if (isBiometricAvailable) IconButton(
                 onClick = onBiometricRequested,
                 modifier = Modifier
                     .size(56.dp)

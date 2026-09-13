@@ -21,6 +21,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import androidx.compose.runtime.getValue
 import com.app.cyclejournal.billing.AdMobManager
 import com.app.cyclejournal.billing.BillingManager
 import com.app.cyclejournal.data.preferences.AppLocale
+import com.app.cyclejournal.data.preferences.AppDensity
 import com.app.cyclejournal.data.preferences.OnboardingPreferences
 import com.app.cyclejournal.scheduler.notification.NotificationChannelManager
 import com.app.cyclejournal.security.BiometricAuthHelper
@@ -50,8 +52,11 @@ import java.time.LocalDate
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.height
 import com.app.cyclejournal.ui.security.PinLockScreen
+import com.app.cyclejournal.ui.screens.SplashV4Screen
 import com.app.cyclejournal.ui.settings.SettingsViewModel
 import com.app.cyclejournal.ui.theme.CycleJournalTheme
+import com.app.cyclejournal.ui.theme.CycleV4Theme
+import com.app.cyclejournal.ui.theme.LocalAppTextScale
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -70,6 +75,9 @@ class MainActivity : FragmentActivity() {
     @Inject
     lateinit var adMobManager: AdMobManager
 
+    @Inject
+    lateinit var cycleAlarmScheduler: com.app.cyclejournal.scheduler.alarm.CycleAlarmScheduler
+
     private val cycleViewModel: CycleViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
 
@@ -78,8 +86,10 @@ class MainActivity : FragmentActivity() {
     private lateinit var biometricAuthHelper: BiometricAuthHelper
 
     override fun attachBaseContext(newBase: Context) {
-        // Also normalises Locale.getDefault() so date formatting matches the chosen app language.
-        super.attachBaseContext(AppLocale.wrap(newBase))
+        // Locale is normalised so date formatting follows the chosen language; the in-app text size
+        // rides on the context density, which is the only way to also reach the separate windows
+        // Compose opens for bottom sheets and dialogs.
+        super.attachBaseContext(AppDensity.wrap(AppLocale.wrap(newBase)))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,9 +125,13 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val currentLang = prefs.getAppLanguage()
-            // User text size is a multiplier on top of the system font scale, so a user who has
-            // already enlarged text in Android settings keeps that gain and can add to it.
+            // In-app text size scales density instead of the font scale. Every v4 dimension is in
+            // dp (fixed 40/52/96dp rows), so growing the font alone would overflow its own box;
+            // scaling density keeps text and container in the same ratio - what Android's own
+            // "Display size" does - while the system font scale is preserved on top.
             var textScale by remember { mutableFloatStateOf(prefs.getAppTextScale()) }
+            var isDarkMode by remember { mutableStateOf(prefs.isDarkMode()) }
+            var isPeriodReminderEnabled by remember { mutableStateOf(prefs.isPeriodReminderEnabled()) }
             val systemDensity = LocalDensity.current
 
             val localizedContext = remember(currentLang) {
@@ -127,11 +141,14 @@ class MainActivity : FragmentActivity() {
 
             CompositionLocalProvider(
                 LocalContext provides localizedContext,
-                LocalDensity provides Density(systemDensity.density, systemDensity.fontScale * textScale)
+                LocalAppTextScale provides textScale
             ) {
+            CycleV4Theme(isDark = isDarkMode) {
             CycleJournalTheme {
                 if (!isAppUnlocked.value && pinManager.isPinSet()) {
                     PinLockScreen(
+                        isBiometricAvailable = prefs.isBiometricUnlockEnabled() &&
+                            biometricAuthHelper.canAuthenticate(),
                         onPinEntered = { enteredPin ->
                             val valid = pinManager.verifyPin(enteredPin)
                             if (valid) {
@@ -150,6 +167,8 @@ class MainActivity : FragmentActivity() {
                     )
                 } else {
                     val isProUser by billingManager.isProUser.collectAsState()
+                    // First run shows the v4 onboarding carousel before the app shell.
+                    var isOnboardingDone by remember { mutableStateOf(prefs.isOnboardingCompleted()) }
 
                     var pendingInspectedBackup by remember { mutableStateOf<BackupFileInspection?>(null) }
                     var isRestorePinInputOpen by remember { mutableStateOf(false) }
@@ -171,6 +190,8 @@ class MainActivity : FragmentActivity() {
                                     when (outcome) {
                                         is LocalRestoreOutcome.Success -> {
                                             Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_success_toast, outcome.logsRestored, outcome.cyclesRestored), Toast.LENGTH_LONG).show()
+                                            prefs.setOnboardingCompleted(true)
+                                            isOnboardingDone = true
                                         }
                                         is LocalRestoreOutcome.InvalidPin -> {
                                             Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_invalid_pin_toast), Toast.LENGTH_LONG).show()
@@ -195,6 +216,25 @@ class MainActivity : FragmentActivity() {
                     val completedCycles by cycleViewModel.completedCyclesFlow.collectAsState()
                     val anomalies by cycleViewModel.anomaliesFlow.collectAsState()
                     val downloadedReport by cycleViewModel.downloadedReport.collectAsState()
+
+                    // Keep the H-2 alert in step with the newest prediction, and honour the toggle.
+                    LaunchedEffect(isPeriodReminderEnabled, fertilePrediction?.predictedNextPeriodDate) {
+                        val prediction = fertilePrediction
+                        if (!isPeriodReminderEnabled) {
+                            cycleAlarmScheduler.cancelPeriodAlert()
+                        } else if (prediction != null) {
+                            cycleAlarmScheduler.schedulePeriodAlert(prediction.predictedNextPeriodDate)
+                        }
+                    }
+                    if (!isOnboardingDone) {
+                        SplashV4Screen(
+                            onNewUser = {
+                                prefs.setOnboardingCompleted(true)
+                                isOnboardingDone = true
+                            },
+                            onRestore = { backupFilePicker.launch(arrayOf("*/*")) }
+                        )
+                    } else {
                     CycleJournalApp(
                         onSharePdf = {
                             cycleViewModel.exportAndSharePdfReport(this@MainActivity)
@@ -252,11 +292,33 @@ class MainActivity : FragmentActivity() {
                         isPinSet = pinManager.isPinSet(),
                         isPromilModeInitial = prefs.isPromilMode(),
                         onTogglePromilMode = { prefs.setPromilMode(it) },
+                        isFingerprintUnlockEnabled = prefs.isBiometricUnlockEnabled(),
+                        onFingerprintUnlockChanged = { prefs.setBiometricUnlockEnabled(it) },
+                        isDarkModeInitial = isDarkMode,
+                        onDarkModeChanged = {
+                            prefs.setDarkMode(it)
+                            isDarkMode = it
+                        },
+                        isPeriodReminderEnabled = isPeriodReminderEnabled,
+                        onPeriodReminderChanged = { enabled ->
+                            prefs.setPeriodReminderEnabled(enabled)
+                            isPeriodReminderEnabled = enabled
+                            if (enabled) {
+                                fertilePrediction?.let {
+                                    cycleAlarmScheduler.schedulePeriodAlert(it.predictedNextPeriodDate)
+                                }
+                            } else {
+                                cycleAlarmScheduler.cancelPeriodAlert()
+                            }
+                        },
                         appLanguage = currentLang,
                         appTextScale = textScale,
                         onTextScaleChanged = { scale ->
                             prefs.setAppTextScale(scale)
                             textScale = scale
+                            // Density is baked into the activity context, so the new size only
+                            // reaches sheets and dialogs after a recreate - same as the language switch.
+                            recreate()
                         },
                         onLanguageChanged = { newLang ->
                             prefs.setAppLanguage(newLang)
@@ -264,6 +326,7 @@ class MainActivity : FragmentActivity() {
                             recreate()
                         }
                     )
+                    }
                     if (isRestorePinInputOpen && pendingInspectedBackup != null) {
                         androidx.compose.material3.AlertDialog(
                             onDismissRequest = { isRestorePinInputOpen = false },
@@ -293,6 +356,8 @@ class MainActivity : FragmentActivity() {
                                             when (outcome) {
                                                 is LocalRestoreOutcome.Success -> {
                                                     Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_success_toast, outcome.logsRestored, outcome.cyclesRestored), Toast.LENGTH_LONG).show()
+                                                    prefs.setOnboardingCompleted(true)
+                                                    isOnboardingDone = true
                                                 }
                                                 is LocalRestoreOutcome.InvalidPin -> {
                                                     Toast.makeText(this@MainActivity, localizedContext.getString(R.string.restore_invalid_pin_toast), Toast.LENGTH_LONG).show()
@@ -316,6 +381,7 @@ class MainActivity : FragmentActivity() {
                         )
                     }
                 }
+            }
             }
             }
         }

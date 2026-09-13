@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CycleJournal v4 design system strings (English source) -->
+<resources>
+    <!-- Navigation -->
+    <string name="v4_language_change">Change language</string>
+    <string name="v4_theme_switch_to_light">Switch to light theme</string>
+    <string name="v4_theme_switch_to_dark">Switch to dark theme</string>
+    <string name="v4_row_language">Language</string>
+    <string name="v4_row_text_size">Text size</string>
+    <string name="v4_discreet_eyebrow">CYCLE</string>
+    <string name="v4_home_cycle_estimate">Cycle length (estimated)</string>
+    <string name="v4_an_badge_estimate">Estimated</string>
+    <string name="v4_an_estimate_sub">from the current prediction · no history yet</string>
+    <string name="v4_nav_home">Home</string>
+    <string name="v4_nav_calendar">Calendar</string>
+    <string name="v4_nav_analysis">Analysis</string>
+    <string name="v4_nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="v4_home_eyebrow_period">PERIOD DAY</string>
+    <string name="v4_home_eyebrow_next">NEXT PERIOD</string>
+    <string name="v4_home_eyebrow_fertile">FERTILE WINDOW</string>
+    <string name="v4_home_eyebrow_ovulation">OVULATION PEAK</string>
+    <string name="v4_home_ovulation_today">Today</string>
+    <string name="v4_home_ovulation_passed">Passed</string>
+    <string name="v4_home_ovulation_sub">expected %1$s · high chance</string>
+    <string name="v4_home_promil_badge">TTC MODE</string>
+    <string name="v4_home_of_days">of %1$d days</string>
+    <string name="v4_home_period_pattern">your period lasts %1$d days</string>
+    <string name="v4_home_period_estimate">estimated at %1$d days</string>
+    <string name="v4_home_period_length_estimate">Period length (estimated)</string>
+    <string name="v4_home_mark_ended">Mark period as ended</string>
+    <string name="v4_home_days_to_go">%1$d days to go</string>
+    <string name="v4_home_next_period_sub">predicted for %1$s</string>
+    <string name="v4_home_log_period">Log period</string>
+    <string name="v4_home_fertile_big">%1$d days</string>
+    <string name="v4_home_fertile_sub">window %1$s – %2$s</string>
+    <string name="v4_home_open_calendar">Open calendar</string>
+    <string name="v4_home_cycle_length">Cycle length</string>
+    <string name="v4_home_period_length">Period length</string>
+    <string name="v4_home_days_format">%1$d days</string>
+    <string name="v4_home_quick_log">Quick log</string>
+    <string name="v4_home_edit">Edit</string>
+    <string name="v4_home_card_period">Period</string>
+    <string name="v4_home_card_pain">Pain</string>
+    <string name="v4_home_card_water">Water</string>
+    <string name="v4_home_card_mucus">Mucus</string>
+    <string name="v4_home_card_notes">Notes</string>
+    <string name="v4_home_basal_temp">Basal temperature</string>
+    <string name="v4_home_temp_optional">%1$s · optional</string>
+    <string name="v4_home_temp_not_measured">Not measured</string>
+    <string name="v4_home_not_logged">Not logged</string>
+    <string name="v4_home_vas_format">VAS %1$d</string>
+    <string name="v4_home_period_ended_toast">Period marked as ended</string>
+
+    <!-- Calendar -->
+    <string name="v4_cal_today">Today</string>
+    <string name="v4_cal_legend_period">Period</string>
+    <string name="v4_cal_legend_pms">PMS</string>
+    <string name="v4_cal_legend_fertile">Fertile</string>
+    <string name="v4_cal_legend_ovulation">Ovulation</string>
+    <string name="v4_cal_timeline">Cycle timeline</string>
+    <string name="v4_cal_see_all">See all</string>
+    <string name="v4_cal_period_started">Period started</string>
+    <string name="v4_cal_expected_today">Expected today</string>
+    <string name="v4_cal_fertile_window">Fertile window</string>
+    <string name="v4_cal_high_chance">High chance of pregnancy</string>
+    <string name="v4_cal_expected_ovulation">Expected ovulation</string>
+    <string name="v4_cal_peak_fertility">Peak fertility</string>
+    <string name="v4_cal_log_bbt">Log basal temperature</string>
+    <string name="v4_cal_morning_reminder">Morning reminder</string>
+    <string name="v4_cal_no_entries">No timeline entries yet</string>
+
+    <!-- Daily log sheet -->
+    <string name="v4_log_title">Today\'s log</string>
+    <string name="v4_log_flow">Period flow</string>
+    <string name="v4_log_flow_hint_none">not a period day</string>
+    <string name="v4_log_flow_hint_active">active period day</string>
+    <string name="v4_log_flow_none">None</string>
+    <string name="v4_log_flow_spotting">Spotting</string>
+    <string name="v4_log_flow_light">Light</string>
+    <string name="v4_log_flow_medium">Medium</string>
+    <string name="v4_log_flow_heavy">Heavy</string>
+    <string name="v4_log_pain">Pain level</string>
+    <string name="v4_log_pain_score">%1$d / 10</string>
+    <string name="v4_log_pain_free">Pain-free</string>
+    <string name="v4_log_pain_mild">Mild</string>
+    <string name="v4_log_pain_moderate">Moderate</string>
+    <string name="v4_log_pain_severe">Severe</string>
+    <string name="v4_log_clinical">Clinical detail</string>
+    <string name="v4_log_clinical_hide">Hide clinical detail</string>
+    <string name="v4_log_clinical_sub">Basal temp · mucus · meds</string>
+    <string name="v4_log_bbt">Basal temperature</string>
+    <string name="v4_log_bbt_hint">± adjusts by 0.01 °C</string>
+    <string name="v4_log_meds">Pain medication</string>
+    <string name="v4_log_mucus">Cervical mucus</string>
+    <string name="v4_log_mucus_hint">egg white = most fertile</string>
+    <string name="v4_log_mucus_none">None</string>
+    <string name="v4_log_mucus_dry">Dry</string>
+    <string name="v4_log_mucus_sticky">Sticky</string>
+    <string name="v4_log_mucus_creamy">Creamy</string>
+    <string name="v4_log_mucus_watery">Watery</string>
+    <string name="v4_log_mucus_egg">Egg white</string>
+    <string name="v4_log_symptoms">Body symptoms</string>
+    <string name="v4_log_add_symptom">+ Add symptom</string>
+    <string name="v4_log_symptom_cramps">Cramps</string>
+    <string name="v4_log_symptom_back">Back pain</string>
+    <string name="v4_log_symptom_breasts">Tender breasts</string>
+    <string name="v4_log_notes">Notes</string>
+    <string name="v4_log_notes_hint">Anything worth remembering today</string>
+    <string name="v4_log_save">Save today\'s log</string>
+
+    <!-- Analysis -->
+    <string name="v4_an_title_summary">Cycle Analysis</string>
+    <string name="v4_an_pill_summary">Data Summary</string>
+    <string name="v4_an_title_timeline">Cycle Timeline</string>
+    <string name="v4_an_last_cycles">Last %1$d cycles</string>
+    <string name="v4_an_summary_header">CLINICAL CYCLE SUMMARY</string>
+    <string name="v4_an_avg_eyebrow">AVERAGE CYCLE</string>
+    <string name="v4_an_badge_regular">Regular</string>
+    <string name="v4_an_badge_irregular">Irregular</string>
+    <string name="v4_an_day_of">day %1$d of %2$d · steady</string>
+    <string name="v4_an_day_of_estimate">day %1$d of ~%2$d</string>
+    <string name="v4_an_chart_title">Cycle length</string>
+    <string name="v4_an_chart_sub">last 6 months</string>
+    <string name="v4_an_phase_period">Period</string>
+    <string name="v4_an_phase_fertile">Fertile window</string>
+    <string name="v4_an_phase_luteal">Luteal phase</string>
+    <string name="v4_an_days_count">%1$d days</string>
+    <string name="v4_an_no_data">Not enough cycles yet</string>
+    <string name="v4_an_no_data_sub">Log at least two periods so the clinical summary can be computed.</string>
+    <string name="v4_an_warning_title">Attention: reported period pain is severe</string>
+    <string name="v4_an_warning_body">VAS pain score %1$d/10 detected on %2$s.</string>
+    <string name="v4_an_report_header">REPORT</string>
+    <string name="v4_an_report_sub">Download cycle &amp; symptom summary</string>
+    <string name="v4_an_filter_all">All</string>
+    <string name="v4_an_filter_period">Period</string>
+    <string name="v4_an_filter_ovulation">Ovulation</string>
+    <string name="v4_an_filter_fertile">Fertile</string>
+    <string name="v4_an_logs_header">RECENT DAILY LOGS</string>
+    <string name="v4_an_col_date">Date</string>
+    <string name="v4_an_col_flow">Flow</string>
+    <string name="v4_an_col_temp">Temp</string>
+    <string name="v4_an_col_pain">Pain</string>
+    <string name="v4_an_ongoing">Ongoing</string>
+    <string name="v4_an_day_n_ongoing">Day %1$d · ongoing</string>
+    <string name="v4_an_see_all">See all</string>
+    <string name="v4_an_tip">Tip: measure your temperature at the same time each morning so the biphasic pattern shows.</string>
+    <string name="v4_an_temp_format">%1$s</string>
+    <string name="v4_an_pain_format">%1$d/10</string>
+    <string name="v4_an_cycle_range">%1$s – %2$s</string>
+
+    <!-- Splash / onboarding -->
+    <string name="v4_splash1_title">Track your cycle</string>
+    <string name="v4_splash1_body">Manage irregular periods and see the pattern in your own logs.</string>
+    <string name="v4_splash2_title">Plan a pregnancy</string>
+    <string name="v4_splash2_body">Your fertile days and ovulation peak, easier to read every month.</string>
+    <string name="v4_splash3_title">Health insights</string>
+    <string name="v4_splash3_body">Log symptoms and moods to help you understand your own body.</string>
+    <string name="v4_splash_new_user">New here</string>
+    <string name="v4_splash_restore">Restore data</string>
+
+    <!-- Profile / license -->
+    <string name="v4_profile_anonymous">Anonymous user</string>
+    <string name="v4_profile_license_free">Free license</string>
+    <string name="v4_profile_license_pro">Pro license</string>
+    <string name="v4_profile_go_pro">Go Pro</string>
+    <string name="v4_profile_pro_active">Pro active</string>
+
+    <!-- Trying to conceive -->
+    <string name="v4_promil_title">Trying to Conceive</string>
+    <string name="v4_promil_subtitle">Fertility &amp; fertile window guide</string>
+    <string name="v4_promil_enable">Enable</string>
+    <string name="v4_promil_active">Active</string>
+    <string name="v4_promil_on_toast">Trying-to-conceive mode enabled</string>
+    <string name="v4_promil_off_toast">Trying-to-conceive mode turned off</string>
+
+    <!-- Guide &amp; preferences -->
+    <string name="v4_section_guide">GUIDE &amp; PREFERENCES</string>
+    <string name="v4_tile_guide">Quick guide</string>
+    <string name="v4_tile_guide_sub">How to use &amp; tips</string>
+    <string name="v4_tile_faq">FAQ</string>
+    <string name="v4_tile_faq_sub">Common questions</string>
+    <string name="v4_tile_discreet">Discreet mode</string>
+    <string name="v4_tile_discreet_sub">Hide sensitive content</string>
+    <string name="v4_tile_reminder">Period reminder</string>
+    <string name="v4_tile_reminder_sub">Remind me 2 days before</string>
+    <string name="v4_guide_toast">Quick guide coming soon</string>
+    <string name="v4_faq_toast">FAQ coming soon</string>
+    <string name="v4_reminder_on_toast">Period reminders enabled</string>
+    <string name="v4_reminder_off_toast">Period reminders disabled</string>
+
+    <!-- Privacy &amp; data -->
+    <string name="v4_pin_lock">PIN lock</string>
+    <string name="v4_pin_set">Set PIN</string>
+    <string name="v4_pin_change">Change PIN</string>
+    <string name="v4_fingerprint">Fingerprint</string>
+    <string name="v4_face_id">Face ID</string>
+    <string name="v4_backup">Back up data</string>
+    <string name="v4_restore">Restore data</string>
+    <string name="v4_backup_toast">Preparing backup…</string>
+    <string name="v4_restore_toast">Pick a backup file to restore</string>
+    <string name="v4_delete_all">Delete all data</string>
+    <string name="v4_footer_privacy">Data is stored only on this device · encrypted</string>
+
+    <!-- Application -->
+    <string name="v4_section_app">APPLICATION</string>
+    <string name="v4_theme_dark">Dark theme</string>
+</resources>
