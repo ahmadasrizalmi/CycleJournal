@@ -105,7 +105,16 @@
     <string name="v4_log_bbt_hint">± adjusts by 0.01 °C</string>
     <string name="v4_log_meds">Pain medication</string>
     <string name="v4_log_mucus">Cervical mucus</string>
-    <string name="v4_log_mucus_hint">Clear, egg-white mucus marks peak fertility</string>
+    <string name="v4_mucus_info_cta">Info</string>
+    <string name="v4_mucus_info_title">Cervical mucus</string>
+    <string name="v4_mucus_info_intro">The type of mucus helps estimate your fertile window. The most fertile is clear and stretchy, like raw egg white.</string>
+    <string name="v4_mucus_info_none">No visible mucus.</string>
+    <string name="v4_mucus_info_dry">Feels dry — usually a non-fertile phase.</string>
+    <string name="v4_mucus_info_sticky">Starting to form and tacky — fertility is still low.</string>
+    <string name="v4_mucus_info_creamy">Lotion-like — fertility is rising.</string>
+    <string name="v4_mucus_info_watery">Clear and wet — fertility is high.</string>
+    <string name="v4_mucus_info_egg">Clear, slippery and stretchy like egg white — peak fertility, ovulation is near.</string>
+    <string name="v4_mucus_info_close">Got it</string>
     <string name="v4_log_mucus_none">None</string>
     <string name="v4_log_mucus_dry">Dry</string>
     <string name="v4_log_mucus_sticky">Sticky</string>

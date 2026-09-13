@@ -38,8 +38,10 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,6 +52,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -832,3 +835,40 @@ private fun NavTab(
     }
 }
 
+
+/**
+ * The app's only dialog shell.
+ *
+ * Material's AlertDialog paints its container from the scheme's surfaceContainer role and then
+ * asks contentColorFor() for the matching ink, which does not know that role - so an untinted
+ * Text in the title inherited plain black and disappeared on the dark dialog. The colours are
+ * pinned here so every dialog follows the v4 palette instead.
+ */
+@Composable
+fun V4AlertDialog(
+    onDismissRequest: () -> Unit,
+    confirmButton: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    dismissButton: (@Composable () -> Unit)? = null,
+    icon: (@Composable () -> Unit)? = null,
+    title: (@Composable () -> Unit)? = null,
+    text: (@Composable () -> Unit)? = null,
+    shape: Shape = RoundedCornerShape(28.dp),
+    containerColor: Color = Paper,
+    titleColor: Color = Ink,
+    textColor: Color = Ink2
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = confirmButton,
+        modifier = modifier,
+        dismissButton = dismissButton,
+        icon = icon,
+        title = title?.let { slot -> { CompositionLocalProvider(LocalContentColor provides titleColor, content = slot) } },
+        text = text?.let { slot -> { CompositionLocalProvider(LocalContentColor provides textColor, content = slot) } },
+        shape = shape,
+        containerColor = containerColor,
+        titleContentColor = titleColor,
+        textContentColor = textColor
+    )
+}

@@ -34,7 +34,6 @@ import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.Thermostat
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,6 +65,7 @@ import com.app.cyclejournal.ui.components.IconTile
 import com.app.cyclejournal.ui.components.SectionLabel
 import com.app.cyclejournal.ui.components.SettingTile
 import com.app.cyclejournal.ui.components.SettingsListRow
+import com.app.cyclejournal.ui.components.V4AlertDialog
 import com.app.cyclejournal.ui.components.V4TextField
 import com.app.cyclejournal.ui.components.SoftCard
 import com.app.cyclejournal.ui.theme.AlertBrown
@@ -383,7 +383,7 @@ fun SettingsV4Screen(
     }
 
     if (isBackupDialogOpen) {
-        AlertDialog(
+        V4AlertDialog(
             onDismissRequest = { isBackupDialogOpen = false },
             title = {
                 Text(stringResource(R.string.settings_backup_data_self_managed), fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -430,7 +430,7 @@ fun SettingsV4Screen(
     if (isNukeOpen) {
         val keywordOk = NUKE_WORDS.any { it.equals(nukeKeyword.trim(), ignoreCase = true) }
         val canConfirm = keywordOk && (!isPinConfigured || nukePin.length == 4)
-        AlertDialog(
+        V4AlertDialog(
             onDismissRequest = { isNukeOpen = false },
             title = { Text(stringResource(R.string.nuke_confirm_title), fontWeight = FontWeight.Bold, color = AlertBrown) },
             text = {
@@ -725,7 +725,7 @@ private fun LanguageDialog(appLanguage: String, onPick: (String) -> Unit, onDism
         Triple("id", R.string.language_option_id, Icons.Rounded.Spa),
         Triple("en", R.string.language_option_en, Icons.Rounded.AutoAwesome)
     )
-    AlertDialog(
+    V4AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.section_language_title), fontWeight = FontWeight.Bold) },
         text = {

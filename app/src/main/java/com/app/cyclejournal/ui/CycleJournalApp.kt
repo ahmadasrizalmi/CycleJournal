@@ -2,7 +2,6 @@ package com.app.cyclejournal.ui
 import com.app.cyclejournal.export.pdf.PdfShareHelper
 
 import androidx.compose.animation.*
-import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.animation.core.*
@@ -45,6 +44,7 @@ import com.app.cyclejournal.ui.components.BottomNavBar
 import com.app.cyclejournal.ui.components.BrandBand
 import com.app.cyclejournal.ui.components.CycleDetailSheetV4
 import com.app.cyclejournal.ui.components.LogSheetV4
+import com.app.cyclejournal.ui.components.V4AlertDialog
 import com.app.cyclejournal.ui.screens.AnalysisV4Screen
 import com.app.cyclejournal.ui.screens.CalendarV4Screen
 import com.app.cyclejournal.ui.screens.HomeV4Screen
@@ -384,7 +384,7 @@ fun CycleJournalApp(
                 else -> stringResource(R.string.app_open_pdf)
             }
 
-            AlertDialog(
+            V4AlertDialog(
                 onDismissRequest = onDismissDownloadDialog,
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {

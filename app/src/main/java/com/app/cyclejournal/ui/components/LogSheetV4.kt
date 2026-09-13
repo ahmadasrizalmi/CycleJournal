@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -55,6 +53,9 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.cyclejournal.R
@@ -82,6 +83,7 @@ import com.app.cyclejournal.ui.theme.PainHighInk
 import com.app.cyclejournal.ui.theme.PainModerateFill
 import com.app.cyclejournal.ui.theme.PainModerateInk
 import com.app.cyclejournal.ui.theme.Paper
+import com.app.cyclejournal.ui.theme.Teal
 import com.app.cyclejournal.ui.theme.ShadowBrandSoft
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -118,6 +120,7 @@ fun LogSheetV4(
     var selectedFlow by remember(initialLog) { mutableStateOf(initialLog?.flow ?: FlowIntensity.NONE) }
     var vasScore by remember(initialLog) { mutableStateOf((initialLog?.painVasScore ?: 0).toFloat()) }
     var selectedMucus by remember(initialLog) { mutableStateOf(initialLog?.cervicalMucus ?: CervicalMucusType.NONE) }
+    var isMucusInfoOpen by remember { mutableStateOf(false) }
     var hasTakenAnalgesic by remember(initialLog) { mutableStateOf(initialLog?.takenAnalgesic ?: false) }
     var bbtValue by remember(initialLog) { mutableStateOf(initialLog?.basalBodyTempCelsius) }
 
@@ -515,7 +518,13 @@ fun LogSheetV4(
                                     color = Ink
                                 )
                                 Spacer(Modifier.weight(1f))
-                                Text(stringResource(R.string.v4_log_mucus_hint), style = AppType.caption.copy(fontSize = 14.sp), color = Ink3)
+                                SoftPill(
+                                    text = stringResource(R.string.v4_mucus_info_cta),
+                                    onClick = { isMucusInfoOpen = true },
+                                    height = 32.dp,
+                                    fill = BrandTint,
+                                    contentColor = BrandEnd
+                                )
                             }
                             val mucusLabels = MUCUS_ORDER.map {
                                 stringResource(
@@ -653,8 +662,67 @@ fun LogSheetV4(
         }
         }
 
+        if (isMucusInfoOpen) {
+            val mucusNames = MUCUS_ORDER.map {
+                stringResource(
+                    when (it) {
+                        CervicalMucusType.NONE -> R.string.v4_log_mucus_none
+                        CervicalMucusType.DRY -> R.string.v4_log_mucus_dry
+                        CervicalMucusType.STICKY -> R.string.v4_log_mucus_sticky
+                        CervicalMucusType.CREAMY -> R.string.v4_log_mucus_creamy
+                        CervicalMucusType.WATERY -> R.string.v4_log_mucus_watery
+                        CervicalMucusType.EGG_WHITE -> R.string.v4_log_mucus_egg
+                    }
+                )
+            }
+            val mucusNotes = MUCUS_ORDER.map {
+                stringResource(
+                    when (it) {
+                        CervicalMucusType.NONE -> R.string.v4_mucus_info_none
+                        CervicalMucusType.DRY -> R.string.v4_mucus_info_dry
+                        CervicalMucusType.STICKY -> R.string.v4_mucus_info_sticky
+                        CervicalMucusType.CREAMY -> R.string.v4_mucus_info_creamy
+                        CervicalMucusType.WATERY -> R.string.v4_mucus_info_watery
+                        CervicalMucusType.EGG_WHITE -> R.string.v4_mucus_info_egg
+                    }
+                )
+            }
+            V4AlertDialog(
+                onDismissRequest = { isMucusInfoOpen = false },
+                title = { Text(stringResource(R.string.v4_mucus_info_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(stringResource(R.string.v4_mucus_info_intro), fontSize = 13.sp, color = Ink2)
+                        // One paragraph per type ("Label - meaning"), the idiom the pain card and the
+                        // flow hint already use. A fixed label column wrapped in English.
+                        MUCUS_ORDER.forEachIndexed { index, type ->
+                            val labelColor = if (type == CervicalMucusType.EGG_WHITE) Teal else Ink
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(SpanStyle(color = labelColor, fontWeight = FontWeight.SemiBold)) {
+                                        append(mucusNames[index])
+                                    }
+                                    withStyle(SpanStyle(color = Ink2)) {
+                                        append(" \u2022 ")
+                                        append(mucusNotes[index])
+                                    }
+                                },
+                                fontSize = 13.sp,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { isMucusInfoOpen = false }) {
+                        Text(stringResource(R.string.v4_mucus_info_close), fontWeight = FontWeight.Bold, color = BrandEnd)
+                    }
+                }
+            )
+        }
+
         if (isAddSymptomOpen) {
-            AlertDialog(
+            V4AlertDialog(
                 onDismissRequest = { isAddSymptomOpen = false },
                 title = { Text(stringResource(R.string.daily_custom_symptom_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = {
@@ -691,7 +759,7 @@ fun LogSheetV4(
         }
 
         if (showDiscardDialog) {
-            AlertDialog(
+            V4AlertDialog(
                 onDismissRequest = { showDiscardDialog = false },
                 title = { Text(stringResource(R.string.daily_discard_title), fontSize = 15.sp, fontWeight = FontWeight.Bold) },
                 text = { Text(stringResource(R.string.daily_discard_message), fontSize = 14.sp, color = Ink2) },

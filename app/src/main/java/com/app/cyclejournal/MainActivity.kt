@@ -5,10 +5,8 @@ import android.content.ContextWrapper
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
-import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -49,10 +47,6 @@ import com.app.cyclejournal.security.BiometricAuthHelper
 import com.app.cyclejournal.security.SecurityPinManager
 import com.app.cyclejournal.ui.CycleJournalApp
 import com.app.cyclejournal.ui.home.CycleViewModel
-import com.app.cyclejournal.data.local.entity.CycleEntity
-import com.app.cyclejournal.domain.model.CycleStats
-import com.app.cyclejournal.domain.model.FertilePrediction
-import java.time.LocalDate
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.height
 import com.app.cyclejournal.ui.security.PinLockScreen
@@ -416,7 +410,7 @@ class MainActivity : FragmentActivity() {
                     )
                     }
                     if (isRestorePinInputOpen && pendingInspectedBackup != null) {
-                        androidx.compose.material3.AlertDialog(
+                        com.app.cyclejournal.ui.components.V4AlertDialog(
                             onDismissRequest = { isRestorePinInputOpen = false },
                             title = {
                                 androidx.compose.material3.Text(stringResource(R.string.restore_pin_dialog_title), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)

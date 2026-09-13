@@ -104,7 +104,16 @@
     <string name="v4_log_bbt_hint">± mengubah 0,01 °C</string>
     <string name="v4_log_meds">Obat pereda nyeri</string>
     <string name="v4_log_mucus">Lendir serviks</string>
-    <string name="v4_log_mucus_hint">Lendir bening seperti putih telur = puncak masa subur</string>
+    <string name="v4_mucus_info_cta">Keterangan</string>
+    <string name="v4_mucus_info_title">Lendir serviks</string>
+    <string name="v4_mucus_info_intro">Jenis lendir membantu memperkirakan masa subur. Yang paling subur: bening dan elastis seperti putih telur.</string>
+    <string name="v4_mucus_info_none">Tidak ada lendir yang terlihat.</string>
+    <string name="v4_mucus_info_dry">Terasa kering — umumnya masa tidak subur.</string>
+    <string name="v4_mucus_info_sticky">Mulai terbentuk dan lengket — kesuburan masih rendah.</string>
+    <string name="v4_mucus_info_creamy">Seperti krim — kesuburan mulai meningkat.</string>
+    <string name="v4_mucus_info_watery">Cair dan bening — kesuburan tinggi.</string>
+    <string name="v4_mucus_info_egg">Bening, licin, elastis seperti putih telur — puncak masa subur, ovulasi dekat.</string>
+    <string name="v4_mucus_info_close">Mengerti</string>
     <string name="v4_log_mucus_none">Tidak</string>
     <string name="v4_log_mucus_dry">Kering</string>
     <string name="v4_log_mucus_sticky">Lengket</string>
