@@ -11,6 +11,7 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.app.cyclejournal.R
 import com.app.cyclejournal.data.local.entity.CycleEntity
+import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.domain.model.AnomalyAlert
 import com.app.cyclejournal.domain.model.CycleStats
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +90,9 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         patientIdentifier: String,
         stats: CycleStats?,
         cycles: List<CycleEntity>,
-        anomalies: List<AnomalyAlert>
+        anomalies: List<AnomalyAlert>,
+        logs: List<DailyLogEntity> = emptyList(),
+        ongoingCycle: CycleEntity? = null
     ): File = withContext(Dispatchers.IO) {
         val document = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create()
@@ -101,19 +104,30 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         // 1. Header with Official Logo Emblem & Patient Identifier
         currentY = drawHeader(canvas, currentY, patientIdentifier)
 
-        // 2. FIGO Cycle Metrics Summary Grid Box
-        currentY = drawMetricsSummary(canvas, currentY, stats)
+        // 2. FIGO Cycle Metrics Summary Grid Box + LMP / current cycle day
+        currentY = drawMetricsSummary(canvas, currentY, stats, ongoingCycle)
 
         // 3. Clinical Red Flags & Anomalies Section
         currentY = drawAnomaliesSection(canvas, currentY, anomalies)
 
-        // 4. Historical Cycle Log Table (Up to 6 completed cycles)
-        currentY = drawCycleHistoryTable(canvas, currentY, cycles.take(6))
+        // 4. Basal temperature curve: the chart a gynaecologist actually reads
+        currentY = drawBbtChart(canvas, currentY, logs)
 
-        // 5. Doctor's Clinical Verification & Stamp Section
+        // 5. Historical Cycle Log Table (Up to 6 completed cycles + the running one)
+        currentY = drawCycleHistoryTable(canvas, currentY, cycles.take(6), ongoingCycle)
+
+        // 6. Doctor's Clinical Verification & Stamp Section
         drawDoctorNotesSection(canvas, currentY)
 
         document.finishPage(page)
+
+        // 7. Appendix page: the daily logs every number above is derived from
+        if (logs.isNotEmpty()) {
+            val appendixInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 2).create()
+            val appendix = document.startPage(appendixInfo)
+            drawDailyLogAppendix(appendix.canvas, logs)
+            document.finishPage(appendix)
+        }
 
         // Ensure parent directories exist
         outputFile.parentFile?.mkdirs()
@@ -168,7 +182,12 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         return y + 18f
     }
 
-    private fun drawMetricsSummary(canvas: Canvas, startY: Float, stats: CycleStats?): Float {
+    private fun drawMetricsSummary(
+        canvas: Canvas,
+        startY: Float,
+        stats: CycleStats?,
+        ongoingCycle: CycleEntity?
+    ): Float {
         var y = startY
         canvas.drawText(context.getString(R.string.pdf_section_metrics), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 8f
@@ -205,7 +224,35 @@ class ClinicalPdfReportGenerator(private val context: Context) {
             canvas.drawText(pair.second, colX, subTextY, boldTextPaint)
         }
 
-        return y + boxHeight + 16f
+        y += boxHeight + 6f
+
+        // LMP and the current cycle day: the two facts a clinician asks for first.
+        val cycleDay = ongoingCycle?.let {
+            java.time.temporal.ChronoUnit.DAYS.between(it.startDate, LocalDate.now()).toInt() + 1
+        }
+        val secondRect = RectF(MARGIN_HORIZONTAL, y, MARGIN_HORIZONTAL + CONTENT_WIDTH, y + 30f)
+        fillPaint.color = COLOR_BG_LIGHT
+        canvas.drawRoundRect(secondRect, 4f, 4f, fillPaint)
+        canvas.drawRoundRect(secondRect, 4f, 4f, strokePaint)
+
+        val secondLabels = listOf(
+            context.getString(R.string.pdf_metric_lmp) to
+                (ongoingCycle?.startDate?.format(dateFormatter) ?: context.getString(R.string.report_value_not_recorded)),
+            context.getString(R.string.pdf_metric_current_day) to
+                (cycleDay?.let { context.getString(R.string.pdf_value_day_n, it) }
+                    ?: context.getString(R.string.report_value_not_recorded))
+        )
+        secondLabels.forEachIndexed { i, pair ->
+            val colX = MARGIN_HORIZONTAL + (i * (CONTENT_WIDTH / 2f)) + 10f
+            textPaint.color = COLOR_TEXT_MUTED
+            textPaint.textSize = 7.5f
+            canvas.drawText(pair.first, colX, y + 12f, textPaint)
+            boldTextPaint.textSize = 10f
+            boldTextPaint.color = COLOR_TEXT_PRIMARY
+            canvas.drawText(pair.second, colX, y + 25f, boldTextPaint)
+        }
+
+        return y + 30f + 16f
     }
 
     private fun drawAnomaliesSection(canvas: Canvas, startY: Float, anomalies: List<AnomalyAlert>): Float {
@@ -247,7 +294,12 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         return y + 6f
     }
 
-    private fun drawCycleHistoryTable(canvas: Canvas, startY: Float, cycles: List<CycleEntity>): Float {
+    private fun drawCycleHistoryTable(
+        canvas: Canvas,
+        startY: Float,
+        cycles: List<CycleEntity>,
+        ongoingCycle: CycleEntity?
+    ): Float {
         var y = startY
         canvas.drawText(context.getString(R.string.pdf_section_history), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
         y += 10f
@@ -279,7 +331,7 @@ class ClinicalPdfReportGenerator(private val context: Context) {
         textPaint.textSize = 8f
         textPaint.color = COLOR_TEXT_PRIMARY
 
-        cycles.forEach { cycle ->
+        (listOfNotNull(ongoingCycle) + cycles).distinctBy { it.startDate }.forEach { cycle ->
             val rowRect = RectF(MARGIN_HORIZONTAL, y, MARGIN_HORIZONTAL + CONTENT_WIDTH, y + rowHeight)
             canvas.drawRect(rowRect, strokePaint)
 
@@ -294,6 +346,155 @@ class ClinicalPdfReportGenerator(private val context: Context) {
 
         return y + 16f
     }
+
+    /**
+     * Line chart of the recent basal temperatures with the follicular coverline, so the biphasic
+     * shift is visible at a glance instead of having to be read out of a table.
+     */
+    private fun drawBbtChart(canvas: Canvas, startY: Float, logs: List<DailyLogEntity>): Float {
+        val readings = logs.filter { it.basalBodyTempCelsius != null }.takeLast(28)
+        if (readings.size < 3) return startY
+
+        var y = startY
+        canvas.drawText(context.getString(R.string.pdf_section_bbt_chart), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        y += 8f
+
+        val chartHeight = 84f
+        val rect = RectF(MARGIN_HORIZONTAL, y, MARGIN_HORIZONTAL + CONTENT_WIDTH, y + chartHeight)
+        fillPaint.color = COLOR_BG_LIGHT
+        canvas.drawRoundRect(rect, 4f, 4f, fillPaint)
+        canvas.drawRoundRect(rect, 4f, 4f, strokePaint)
+
+        val values = readings.mapNotNull { it.basalBodyTempCelsius }
+        val min = (values.minOrNull() ?: 36.0) - 0.05
+        val max = (values.maxOrNull() ?: 37.0) + 0.05
+        val span = (max - min).coerceAtLeast(0.1)
+        val innerLeft = rect.left + 8f
+        val innerWidth = rect.width() - 16f
+        val innerTop = rect.top + 8f
+        val innerHeight = chartHeight - 20f
+
+        fun xOf(index: Int): Float =
+            innerLeft + if (readings.size <= 1) 0f else innerWidth * index / (readings.size - 1)
+        fun yOf(value: Double): Float = innerTop + (innerHeight * ((max - value) / span)).toFloat()
+
+        // coverline = mean of the follicular (cooler) half of the window
+        val coverline = values.sorted().take((values.size / 2).coerceAtLeast(1)).average()
+        val dash = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = COLOR_ALERT_BORDER
+            strokeWidth = 1f
+            style = Paint.Style.STROKE
+            pathEffect = android.graphics.DashPathEffect(floatArrayOf(4f, 3f), 0f)
+        }
+        canvas.drawLine(innerLeft, yOf(coverline), innerLeft + innerWidth, yOf(coverline), dash)
+
+        val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = COLOR_TEXT_PRIMARY
+            strokeWidth = 1.4f
+            style = Paint.Style.STROKE
+        }
+        fillPaint.color = COLOR_TEXT_PRIMARY
+        readings.forEachIndexed { index, log ->
+            val value = log.basalBodyTempCelsius ?: return@forEachIndexed
+            val x = xOf(index)
+            val pointY = yOf(value)
+            if (index > 0) {
+                val previous = readings.take(index).lastOrNull { it.basalBodyTempCelsius != null }?.basalBodyTempCelsius
+                if (previous != null) {
+                    canvas.drawLine(xOf(index - 1), yOf(previous), x, pointY, line)
+                }
+            }
+            canvas.drawCircle(x, pointY, 1.6f, fillPaint)
+        }
+
+        textPaint.color = COLOR_TEXT_MUTED
+        textPaint.textSize = 7f
+        canvas.drawText(
+            context.getString(R.string.pdf_btb_caption, String.format(Locale.US, "%.2f", coverline), readings.size),
+            innerLeft,
+            rect.bottom - 5f,
+            textPaint
+        )
+        textPaint.color = COLOR_TEXT_PRIMARY
+
+        return y + chartHeight + 16f
+    }
+
+    /** Second page: the daily logs behind every number above (most recent 30 days). */
+    private fun drawDailyLogAppendix(canvas: Canvas, logs: List<DailyLogEntity>) {
+        var y = 40f
+        canvas.drawText(context.getString(R.string.pdf_title), MARGIN_HORIZONTAL, y, titlePaint)
+        y += 16f
+        canvas.drawText(context.getString(R.string.pdf_section_daily_logs), MARGIN_HORIZONTAL, y, sectionHeadingPaint)
+        y += 6f
+        textPaint.color = COLOR_TEXT_MUTED
+        textPaint.textSize = 7.5f
+        canvas.drawText(context.getString(R.string.pdf_daily_logs_note), MARGIN_HORIZONTAL, y + 6f, textPaint)
+        textPaint.color = COLOR_TEXT_PRIMARY
+        y += 14f
+
+        val columns = floatArrayOf(
+            MARGIN_HORIZONTAL + 8f,
+            MARGIN_HORIZONTAL + 110f,
+            MARGIN_HORIZONTAL + 210f,
+            MARGIN_HORIZONTAL + 320f,
+            MARGIN_HORIZONTAL + 420f
+        )
+        val rowHeight = 16f
+
+        fillPaint.color = COLOR_BG_LIGHT
+        val header = RectF(MARGIN_HORIZONTAL, y, MARGIN_HORIZONTAL + CONTENT_WIDTH, y + rowHeight)
+        canvas.drawRect(header, fillPaint)
+        canvas.drawRect(header, strokePaint)
+        boldTextPaint.textSize = 7.5f
+        boldTextPaint.color = COLOR_TEXT_PRIMARY
+        canvas.drawText(context.getString(R.string.pdf_col_date), columns[0], y + 11f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_flow), columns[1], y + 11f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_temp), columns[2], y + 11f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_col_pain), columns[3], y + 11f, boldTextPaint)
+        canvas.drawText(context.getString(R.string.pdf_column_mucus), columns[4], y + 11f, boldTextPaint)
+        y += rowHeight
+
+        textPaint.textSize = 8f
+        textPaint.color = COLOR_TEXT_PRIMARY
+        logs.takeLast(30).reversed().forEach { log ->
+            val row = RectF(MARGIN_HORIZONTAL, y, MARGIN_HORIZONTAL + CONTENT_WIDTH, y + rowHeight)
+            canvas.drawRect(row, strokePaint)
+            canvas.drawText(log.date.format(dateFormatter), columns[0], y + 11f, textPaint)
+            canvas.drawText(flowLabel(log.flow), columns[1], y + 11f, textPaint)
+            canvas.drawText(
+                log.basalBodyTempCelsius?.let { String.format(Locale.US, "%.2f", it) }
+                    ?: "-",
+                columns[2], y + 11f, textPaint
+            )
+            canvas.drawText("${log.painVasScore}/10", columns[3], y + 11f, textPaint)
+            canvas.drawText(mucusLabel(log.cervicalMucus), columns[4], y + 11f, textPaint)
+            y += rowHeight
+        }
+    }
+
+    private fun flowLabel(flow: com.app.cyclejournal.data.local.entity.FlowIntensity): String =
+        context.getString(
+            when (flow) {
+                com.app.cyclejournal.data.local.entity.FlowIntensity.NONE -> R.string.v4_log_flow_none
+                com.app.cyclejournal.data.local.entity.FlowIntensity.SPOTTING -> R.string.v4_log_flow_spotting
+                com.app.cyclejournal.data.local.entity.FlowIntensity.LIGHT -> R.string.v4_log_flow_light
+                com.app.cyclejournal.data.local.entity.FlowIntensity.MEDIUM -> R.string.v4_log_flow_medium
+                com.app.cyclejournal.data.local.entity.FlowIntensity.HEAVY -> R.string.v4_log_flow_heavy
+            }
+        )
+
+    private fun mucusLabel(mucus: com.app.cyclejournal.data.local.entity.CervicalMucusType): String =
+        context.getString(
+            when (mucus) {
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.NONE -> R.string.v4_log_mucus_none
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.DRY -> R.string.v4_log_mucus_dry
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.STICKY -> R.string.v4_log_mucus_sticky
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.CREAMY -> R.string.v4_log_mucus_creamy
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.WATERY -> R.string.v4_log_mucus_watery
+                com.app.cyclejournal.data.local.entity.CervicalMucusType.EGG_WHITE -> R.string.v4_log_mucus_egg
+            }
+        )
 
     private fun drawDoctorNotesSection(canvas: Canvas, startY: Float) {
         var y = startY

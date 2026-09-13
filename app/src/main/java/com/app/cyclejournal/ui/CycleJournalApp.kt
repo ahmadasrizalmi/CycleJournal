@@ -97,6 +97,7 @@ fun CycleJournalApp(
     onTogglePromilMode: (Boolean) -> Unit = {},
     downloadedReport: PdfShareHelper.SaveResult? = null,
     onDismissDownloadDialog: () -> Unit = {},
+    onSaveReportAs: ((PdfShareHelper.SaveResult) -> Unit)? = null,
     appLanguage: String = "system",
     onLanguageChanged: (String) -> Unit = {},
     appTextScale: Float = 1f,
@@ -397,13 +398,23 @@ fun CycleJournalApp(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.app_toast_download_complete), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = stringResource(
+                                if (res.savedToPublicDownload) R.string.app_toast_download_complete else R.string.v4_download_ready
+                            ),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = stringResource(R.string.app_download_saved_message, fileTypeTitle),
+                            text = if (res.savedToPublicDownload) {
+                                stringResource(R.string.app_download_saved_message, fileTypeTitle)
+                            } else {
+                                stringResource(R.string.v4_download_saved_local, fileTypeTitle)
+                            },
                             fontSize = 14.sp,
                             color = if (isDarkMode) Slate400 else Slate600
                         )
@@ -412,14 +423,28 @@ fun CycleJournalApp(
                             color = if (isDarkMode) DarkBackground else Slate100,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "Download/CycleJournal/${res.fileName}",
-                                fontSize = 13.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Coral600,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                            // Only claim the public Downloads path when the file really landed there;
+                            // otherwise show where it is and offer the system picker below.
+                            Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = if (res.savedToPublicDownload) {
+                                        "Download/CycleJournal/${res.fileName}"
+                                    } else {
+                                        res.localFile.absolutePath
+                                    },
+                                    fontSize = 13.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Coral600
+                                )
+                                if (!res.savedToPublicDownload) {
+                                    Text(
+                                        text = stringResource(R.string.v4_saved_in_app_folder),
+                                        fontSize = 12.sp,
+                                        color = if (isDarkMode) Slate400 else Slate600
+                                    )
+                                }
+                            }
                         }
                     }
                 },
@@ -444,7 +469,16 @@ fun CycleJournalApp(
                     }
                 },
                 dismissButton = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Compact single row: a short "Save to" label, an icon-only share action and Close.
+                    // Longer labels wrapped "Bagikan" onto two lines and a stacked column overflowed
+                    // the dialog, so the row stays narrow instead.
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(onClick = { onSaveReportAs?.invoke(res) }) {
+                            Text(stringResource(R.string.v4_save_to_device_short), fontWeight = FontWeight.Bold, color = Coral600, maxLines = 1)
+                        }
                         OutlinedButton(
                             onClick = {
                                 if (isCsv) {
@@ -456,9 +490,7 @@ fun CycleJournalApp(
                             },
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.app_share))
+                            Icon(Icons.Default.Share, contentDescription = stringResource(R.string.app_share), modifier = Modifier.size(16.dp))
                         }
                         TextButton(onClick = onDismissDownloadDialog) {
                             Text(stringResource(R.string.app_close))

@@ -24,6 +24,9 @@ class CycleAggregatorTest {
             fakeDailyLogs.removeAll { it.date == log.date }
             fakeDailyLogs.add(log)
         }
+        override suspend fun upsertDailyLogs(logs: List<DailyLogEntity>) {
+            logs.forEach { upsertDailyLog(it) }
+        }
         override suspend fun getLogByDate(date: LocalDate): DailyLogEntity? = fakeDailyLogs.find { it.date == date }
         override fun getLogByDateFlow(date: LocalDate): Flow<DailyLogEntity?> = flowOf(fakeDailyLogs.find { it.date == date })
         override suspend fun getLogsBetween(startDate: LocalDate, endDate: LocalDate): List<DailyLogEntity> =

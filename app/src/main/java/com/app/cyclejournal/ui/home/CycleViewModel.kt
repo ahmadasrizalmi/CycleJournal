@@ -143,7 +143,9 @@ class CycleViewModel @Inject constructor(
                 patientIdentifier = patientId,
                 stats = stats,
                 cycles = cycles,
-                anomalies = anomalies
+                anomalies = anomalies,
+                logs = dailyLogDao.getAllLogsAsc(),
+                ongoingCycle = latestCycleFlow.value
             )
 
             // Save to public Downloads directory

@@ -4,6 +4,18 @@
 -->
 <resources>
     <string name="pdf_title">LAPORAN KLINIS SIKLUS MENSTRUASI &amp; BIOMARKER</string>
+    <string name="pdf_metric_lmp">Hari Pertama Haid Terakhir (HPHT)</string>
+    <string name="pdf_metric_current_day">Hari Siklus Saat Ini</string>
+    <string name="pdf_value_day_n">Hari ke-%1$d</string>
+    <string name="pdf_section_bbt_chart">SUHU BASAL (BBT)</string>
+    <string name="pdf_btb_caption">Garis dasar %1$s °C · %2$d pengukuran</string>
+    <string name="pdf_section_daily_logs">LAMPIRAN: CATATAN HARIAN (30 HARI TERAKHIR)</string>
+    <string name="pdf_daily_logs_note">Semua angka di atas dihitung dari catatan yang diisi pengguna.</string>
+    <string name="pdf_column_mucus">Lendir</string>
+    <string name="pdf_col_date">Tanggal</string>
+    <string name="pdf_col_flow">Darah</string>
+    <string name="pdf_col_temp">Suhu</string>
+    <string name="pdf_col_pain">Nyeri</string>
     <string name="pdf_subtitle">Dokumen rekam mandiri untuk evaluasi ginekologi &amp; rujukan SpOG (FIGO Standard)</string>
     <string name="pdf_patient_id">ID Pasien / Anonim: %1$s</string>
     <string name="pdf_export_date">Tanggal Ekspor: %1$s</string>

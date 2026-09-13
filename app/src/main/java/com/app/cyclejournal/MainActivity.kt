@@ -13,6 +13,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -37,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.app.cyclejournal.BuildConfig
 import com.app.cyclejournal.billing.AdMobManager
+import com.app.cyclejournal.export.pdf.PdfShareHelper
 import com.app.cyclejournal.billing.BillingManager
 import com.app.cyclejournal.data.preferences.AppLocale
 import com.app.cyclejournal.data.preferences.AppDensity
@@ -60,6 +62,9 @@ import com.app.cyclejournal.ui.theme.CycleV4Theme
 import com.app.cyclejournal.ui.theme.LocalAppTextScale
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -140,6 +145,38 @@ class MainActivity : FragmentActivity() {
                 val wrapped = AppLocale.wrap(this, currentLang)
                 if (wrapped === this) this else LocaleAwareContext(wrapped, this)
             }
+
+            // A report the MediaStore refused still has to be reachable: the system picker writes it
+            // wherever the user chooses (Downloads, Drive, a USB stick).
+            var pendingSaveAs by remember { mutableStateOf<PdfShareHelper.SaveResult?>(null) }
+            val saveReportAsLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+            ) { uri ->
+                val pending = pendingSaveAs
+                pendingSaveAs = null
+                if (uri != null && pending != null) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val saved = runCatching {
+                            contentResolver.openOutputStream(uri)?.use { out ->
+                                pending.localFile.inputStream().use { input -> input.copyTo(out) }
+                            }
+                            true
+                        }.getOrDefault(false)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                if (saved) {
+                                    localizedContext.getString(R.string.v4_saved_to_device_toast, pending.fileName)
+                                } else {
+                                    localizedContext.getString(R.string.v4_save_failed_toast)
+                                },
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+
 
             CompositionLocalProvider(
                 LocalContext provides localizedContext,
@@ -311,6 +348,10 @@ class MainActivity : FragmentActivity() {
                             isDarkMode = it
                         },
                         isBbtReminderEnabled = isBbtReminderEnabled,
+                        onSaveReportAs = { result ->
+                            pendingSaveAs = result
+                            saveReportAsLauncher.launch(result.fileName)
+                        },
                         onBbtReminderChanged = { enabled ->
                             prefs.setBbtReminderEnabled(enabled)
                             isBbtReminderEnabled = enabled

@@ -16,6 +16,13 @@
     <string name="v4_an_attention_hide">Hide</string>
     <string name="v4_bbt_reminder_on_toast">Basal temperature reminder enabled</string>
     <string name="v4_bbt_reminder_off_toast">Basal temperature reminder disabled</string>
+    <string name="v4_save_to_device">Save to device…</string>
+    <string name="v4_saved_in_app_folder">Saved in the app folder — use Save to device to put it in Downloads.</string>
+    <string name="v4_saved_to_device_toast">Saved: %1$s</string>
+    <string name="v4_save_failed_toast">Could not save the file</string>
+    <string name="v4_download_saved_local">%1$s saved on this device:</string>
+    <string name="v4_download_ready">File ready</string>
+    <string name="v4_save_to_device_short">Save to…</string>
     <string name="v4_nav_home">Home</string>
     <string name="v4_nav_calendar">Calendar</string>
     <string name="v4_nav_analysis">Analysis</string>

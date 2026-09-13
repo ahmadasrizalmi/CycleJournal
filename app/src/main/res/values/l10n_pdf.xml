@@ -1,5 +1,17 @@
 <resources>
     <string name="pdf_title">CLINICAL MENSTRUAL CYCLE &amp; BIOMARKER REPORT</string>
+    <string name="pdf_metric_lmp">Last menstrual period (LMP)</string>
+    <string name="pdf_metric_current_day">Current cycle day</string>
+    <string name="pdf_value_day_n">Day %1$d</string>
+    <string name="pdf_section_bbt_chart">BASAL BODY TEMPERATURE (BBT)</string>
+    <string name="pdf_btb_caption">Coverline %1$s °C · %2$d readings</string>
+    <string name="pdf_section_daily_logs">APPENDIX: DAILY LOGS (LAST 30 DAYS)</string>
+    <string name="pdf_daily_logs_note">Every value above is derived from these user-entered records.</string>
+    <string name="pdf_column_mucus">Mucus</string>
+    <string name="pdf_col_date">Date</string>
+    <string name="pdf_col_flow">Flow</string>
+    <string name="pdf_col_temp">Temp</string>
+    <string name="pdf_col_pain">Pain</string>
     <string name="pdf_subtitle">Self-tracked record for gynecological evaluation &amp; obstetric referral (FIGO Standard)</string>
     <string name="pdf_patient_id">Patient / Anonymous ID: %1$s</string>
     <string name="pdf_export_date">Export Date: %1$s</string>

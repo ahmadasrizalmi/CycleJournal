@@ -16,6 +16,13 @@
     <string name="v4_an_attention_hide">Sembunyikan</string>
     <string name="v4_bbt_reminder_on_toast">Pengingat suhu basal aktif</string>
     <string name="v4_bbt_reminder_off_toast">Pengingat suhu basal nonaktif</string>
+    <string name="v4_save_to_device">Simpan ke perangkat…</string>
+    <string name="v4_saved_in_app_folder">Tersimpan di folder aplikasi — pakai Simpan ke perangkat untuk menaruhnya di Download.</string>
+    <string name="v4_saved_to_device_toast">Tersimpan: %1$s</string>
+    <string name="v4_save_failed_toast">Gagal menyimpan berkas</string>
+    <string name="v4_download_saved_local">%1$s tersimpan di perangkat ini:</string>
+    <string name="v4_download_ready">Berkas siap</string>
+    <string name="v4_save_to_device_short">Simpan ke…</string>
     <string name="v4_nav_home">Beranda</string>
     <string name="v4_nav_calendar">Kalender</string>
     <string name="v4_nav_analysis">Analisis</string>

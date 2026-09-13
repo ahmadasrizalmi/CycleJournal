@@ -9,8 +9,8 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import com.app.cyclejournal.R
+import com.app.cyclejournal.export.ReportUris
 import java.io.File
 
 /**
@@ -66,7 +66,7 @@ object PdfShareHelper {
                     val destFile = File(fallbackDir, displayName)
                     sourcePdfFile.copyTo(destFile, overwrite = true)
                     publicUri = Uri.fromFile(destFile)
-                    savedPublic = true
+                    savedPublic = false // app-private folder, not the public Downloads
                 }
             }
         } catch (e: Exception) {
@@ -89,8 +89,11 @@ object PdfShareHelper {
             if (saveResult.publicUri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 setDataAndType(saveResult.publicUri, "application/pdf")
             } else {
-                val authority = "${context.packageName}.fileprovider"
-                val contentUri = FileProvider.getUriForFile(context, authority, saveResult.localFile)
+                val contentUri = ReportUris.contentUri(context, saveResult.localFile)
+                if (contentUri == null) {
+                    Toast.makeText(context, context.getString(R.string.export_pdf_empty_reader_toast), Toast.LENGTH_SHORT).show()
+                    return
+                }
                 setDataAndType(contentUri, "application/pdf")
             }
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -111,8 +114,7 @@ object PdfShareHelper {
         if (!pdfFile.exists()) return
 
         val shareTitle = title ?: context.getString(R.string.export_pdf_share_title)
-        val authority = "${context.packageName}.fileprovider"
-        val contentUri = FileProvider.getUriForFile(context, authority, pdfFile)
+        val contentUri = ReportUris.contentUri(context, pdfFile) ?: return
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
@@ -134,8 +136,7 @@ object PdfShareHelper {
     fun viewPdfDirectly(context: Context, pdfFile: File) {
         if (!pdfFile.exists()) return
 
-        val authority = "${context.packageName}.fileprovider"
-        val contentUri = FileProvider.getUriForFile(context, authority, pdfFile)
+        val contentUri = ReportUris.contentUri(context, pdfFile) ?: return
 
         val viewIntent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(contentUri, "application/pdf")

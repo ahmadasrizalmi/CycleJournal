@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Roots the FileProvider may hand out. `cache/backups` was missing, so sharing a backup file threw
+  IllegalArgumentException ("Failed to find configured root") and killed the app.
+-->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <cache-path name="pdf_reports" path="reports/" />
     <files-path name="permanent_reports" path="reports/" />
+    <cache-path name="backups" path="backups/" />
+    <external-files-path name="external_downloads" path="Download/" />
+    <cache-path name="cache_root" path="." />
+    <files-path name="files_root" path="." />
 </paths>

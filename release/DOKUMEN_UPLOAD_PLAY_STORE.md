@@ -2,7 +2,7 @@
 **Aplikasi:** CycleJournal — Kalender Haid, Kesuburan & Laporan Dokter SpOG  
 **Pengembang:** Asri Digital (Ahmad Asrizalmi)  
 **Status File Rilis:** Siap Upload (Production Track / Closed Testing)  
-**Versi Rilis Saat Ini:** `1.1.13` (Version Code: `15`)
+**Versi Rilis Saat Ini:** `1.1.14` (Version Code: `16`)
 
 ---
 
@@ -11,14 +11,14 @@
 | Parameter | Nilai / Value | Keterangan |
 |---|---|---|
 | **Application ID / Package Name** | `com.app.cyclejournal` | Pengenal unik aplikasi di Google Play Console |
-| **Version Name** | `1.1.13` | Nomor versi yang tampil kepada pengguna di toko |
-| **Version Code** | `15` | Nomor integer inkremental untuk Play Console |
+| **Version Name** | `1.1.14` | Nomor versi yang tampil kepada pengguna di toko |
+| **Version Code** | `16` | Nomor integer inkremental untuk Play Console |
 | **Target SDK** | `36` (Android 16) | Wajib sesuai kepatuhan Google Play terbaru |
 | **Compile SDK** | `36` (Android 16) | Mendukung API Android 16 |
 | **Minimum SDK** | `26` (Android 8.0) | Mendukung 95%+ perangkat Android aktif |
 | **Google Play Billing** | `8.0.0` | Wajib sesuai kepatuhan Play Billing terbaru Google |
-| **Format File Upload** | **Android App Bundle (`.aab`)** | File: `release/CycleJournal_v1.1.13.aab` |
-| **Format File Testing Fisik** | **Release APK (`.apk`)** | File: `release/CycleJournal_v1.1.13.apk` |
+| **Format File Upload** | **Android App Bundle (`.aab`)** | File: `release/CycleJournal_v1.1.14.aab` |
+| **Format File Testing Fisik** | **Release APK (`.apk`)** | File: `release/CycleJournal_v1.1.14.apk` |
 | **Keystore Signing** | `cyclejournal-release.jks` | Alias: `cyclejournal`, Signed & ZipAligned |
 
 ---
@@ -262,8 +262,8 @@ Masuk ke menu: **Monetize > Products > In-app products**:
 
 | Aset | Keterangan & Lokasi di Repositori |
 |---|---|
-| **File Rilis AAB (Wajib Upload)** | 📁 `release/CycleJournal_v1.1.13.aab` (Version Code: 15) |
-| **File Rilis APK (Install Uji Coba)** | 📁 `release/CycleJournal_v1.1.13.apk` |
+| **File Rilis AAB (Wajib Upload)** | 📁 `release/CycleJournal_v1.1.14.aab` (Version Code: 16) |
+| **File Rilis APK (Install Uji Coba)** | 📁 `release/CycleJournal_v1.1.14.apk` |
 | **Ikon Aplikasi Resolusi Tinggi** | 📁 `store_assets/play_store_icon_512.png` (512 × 512 px, 32-bit PNG transparan) |
 | **Gambar Fitur Utama (Feature Graphic)** | 📁 `store_assets/feature_graphic_1024x500.png` (1024 × 500 px, Coral-to-Pink gradient) |
 | **5 Screenshot Play Store (Bahasa Indonesia)** | 📁 `out/screenshots/pixel-10-pro/id-ID/*.png` (1080 × 1920 px, 5 berkas) |

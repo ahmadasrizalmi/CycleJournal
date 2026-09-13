@@ -116,7 +116,7 @@ class LocalBackupManager(
                     val destFile = File(fallbackDir, displayName)
                     sourceFile.copyTo(destFile, overwrite = true)
                     publicUri = Uri.fromFile(destFile)
-                    savedPublic = true
+                    savedPublic = false // app-private folder, not the public Downloads
                 }
             }
         } catch (e: Exception) {
