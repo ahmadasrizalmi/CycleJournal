@@ -226,7 +226,8 @@ fun SettingsV4Screen(
                         icon = Icons.Rounded.Lock,
                         onClick = onOpenPin,
                         value = stringResource(if (isPinConfigured) R.string.v4_pin_change else R.string.v4_pin_set),
-                        valueColor = BrandEnd
+                        valueColor = BrandEnd,
+                        modifier = Modifier.testTag("settings_pin")
                     )
                     HairLine()
                     SettingsListRow(
@@ -250,7 +251,7 @@ fun SettingsV4Screen(
                             label = stringResource(R.string.v4_backup),
                             icon = Icons.Rounded.SaveAlt,
                             tint = BrandEnd,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f).testTag("settings_backup")
                         ) {
                             if (onBackupLocal != null) {
                                 isBackupEncrypted = false
@@ -264,7 +265,7 @@ fun SettingsV4Screen(
                             label = stringResource(R.string.v4_restore),
                             icon = Icons.Rounded.Restore,
                             tint = Teal,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f).testTag("settings_restore")
                         ) {
                             if (onRestoreLocal != null) onRestoreLocal.invoke() else onToast(restoreToast)
                         }

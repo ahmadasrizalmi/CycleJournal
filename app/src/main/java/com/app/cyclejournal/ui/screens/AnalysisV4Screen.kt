@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -630,13 +631,15 @@ private fun ReportCard(
                 label = "PDF",
                 brush = BrandGradient,
                 shadowColor = ShadowBrandSoft,
-                onClick = { onSharePdf?.invoke() ?: onToast(pdfUnavailable) }
+                onClick = { onSharePdf?.invoke() ?: onToast(pdfUnavailable) },
+                modifier = Modifier.testTag("analysis_export_pdf")
             )
             ReportPill(
                 label = "CSV",
                 brush = TealGradient,
                 shadowColor = Color(0x3D0E7C7B),
-                onClick = { onExportCsv?.invoke() ?: onToast(csvUnavailable) }
+                onClick = { onExportCsv?.invoke() ?: onToast(csvUnavailable) },
+                modifier = Modifier.testTag("analysis_export_csv")
             )
         }
         if (!isPro) {
@@ -655,10 +658,11 @@ private fun ReportPill(
     label: String,
     brush: Brush,
     shadowColor: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(42.dp)
             .shadow(14.dp, CircleShape, ambientColor = shadowColor, spotColor = shadowColor)
             .clip(CircleShape)

@@ -1,0 +1,15 @@
+steps:
+  - echo: 'Calendar day sheet: taps the today cell (row 3 of the September grid) to open the cycle day detail.'
+  - launch: com.app.cyclejournal
+  - wait: 10000
+  - await:
+      idle: true
+  - tap:
+      id: nav_calendar
+  - wait: 2500
+  - tap:
+      x: 0.5
+      y: 0.56
+  - wait: 2500
+  - await:
+      idle: true

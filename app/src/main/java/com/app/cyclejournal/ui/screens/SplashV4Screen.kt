@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,12 +47,17 @@ import com.app.cyclejournal.ui.theme.OnBrand
 import com.app.cyclejournal.ui.theme.Paper
 import com.app.cyclejournal.ui.theme.ShadowBrandSoft
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.snapshotFlow
 
 private val SplashTitleStyle = TextStyle(fontFamily = AppType.Display, fontSize = 25.sp, fontWeight = FontWeight.SemiBold)
 private val SplashBodyStyle = TextStyle(fontFamily = AppType.Ui, fontSize = 15.sp, lineHeight = 23.sp)
 private val SplashButtonStyle = TextStyle(fontFamily = AppType.Ui, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
 
 private data class SplashSlide(val imageRes: Int, val titleRes: Int, val bodyRes: Int)
+
+/** Ratio the three onboarding illustrations were cropped to (736x768 in the sources). */
+private const val SplashArtRatio = 736f / 768f
 
 /** How long each onboarding slide stays on screen before the carousel advances itself. */
 private const val SPLASH_AUTO_ADVANCE_MS = 4_000L
@@ -78,9 +84,16 @@ fun SplashV4Screen(
 
     // The carousel plays on its own, and every manual swipe simply resets the timer for the page
     // the user landed on - an onboarding nobody has to drag to read.
-    LaunchedEffect(pagerState.currentPage) {
-        delay(SPLASH_AUTO_ADVANCE_MS)
-        pagerState.animateScrollToPage((pagerState.currentPage + 1) % slides.size)
+    //
+    // Keyed on settledPage, not currentPage: currentPage flips as soon as a scroll passes the
+    // halfway point, which cancelled the running animation and started a new one, leaving the
+    // pager oscillating between two slides instead of resting on one. settledPage only changes
+    // once the scroll has finished, so each slide gets its full pause and always lands centred.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collectLatest { page ->
+            delay(SPLASH_AUTO_ADVANCE_MS)
+            pagerState.animateScrollToPage((page + 1) % slides.size)
+        }
     }
 
     Column(
@@ -105,10 +118,14 @@ fun SplashV4Screen(
                 Image(
                     painter = painterResource(slide.imageRes),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    // Fit, not Crop: the artwork ships already centred in this exact ratio, so
+                    // nothing is trimmed off the sides on a narrow screen and every slide sits
+                    // in the same frame. Crop used to cut ~48% of the width, which pushed slides
+                    // 2 and 3 visibly off centre.
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(410.dp)
+                        .aspectRatio(SplashArtRatio)
                 )
                 Spacer(Modifier.height(40.dp))
                 Text(

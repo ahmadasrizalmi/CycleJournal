@@ -34,8 +34,10 @@ class CycleApplication : Application() {
             alarmScheduler.cancelBbtReminder()
         }
 
-        // 4. Marketing screenshot builds (-PdemoSeed=true) start from a populated history
+        // 4. Marketing screenshot builds (-PdemoSeed=true) start from a populated history, past
+        //    the intro, so the capture flows land on the tabs instead of the welcome pager.
         if (BuildConfig.DEMO_SEED) {
+            OnboardingPreferences(this).setOnboardingCompleted()
             CoroutineScope(Dispatchers.IO).launch {
                 DemoDataSeeder.seedIfEmpty(AppDatabase.getInstance(this@CycleApplication))
             }

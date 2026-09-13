@@ -1,9 +1,13 @@
 /**
  * Goldie configuration for CycleJournal Play Store screenshots.
  *
- * Eight scenes cover every page (dashboard, calendar, analysis, settings) and the features the
- * store listing leads with: two-tap logging, clinical biomarkers, the BBT curve, the doctor-ready
- * report, bilingual UI with adjustable text size, and the privacy controls.
+ * Fourteen scenes cover every page the app has: the four tabs (home, calendar, analysis,
+ * settings), the sheets they open (daily log, clinical detail, calendar day detail) and the
+ * dialogs behind them (mucus explainer, language, PIN, backup).
+ *
+ * The copy on the scenes and in the store listing is written in plain language: no FIGO, no
+ * "symptothermal", no "zero-knowledge". Anyone should understand a screenshot without a medical
+ * or technical background.
  *
  * The captures come from the demo-seeded release build, so the screens show a populated app.
  * Build it with: gradlew :app:assembleRelease -PdemoSeed=true
@@ -35,8 +39,8 @@ export default {
     name: "CycleJournal",
     icon: "store_assets/play_store_icon_512.png",
     subtitle: {
-      "en-US": "Private Cycle & Symptom Tracker",
-      "id-ID": "Kalender Haid & Laporan SpOG",
+      "en-US": "Period calendar and daily journal",
+      "id-ID": "Kalender haid dan catatan harian",
     },
     developer: "CycleJournal Health",
     category: "Health & Fitness",
@@ -46,9 +50,9 @@ export default {
     price: "Free",
     description: {
       "en-US":
-        "CycleJournal is an offline-first, medical-grade menstrual cycle and fertility journal. It features FIGO-compliant anomaly detection, SpOG-ready A4 PDF reports, and zero-knowledge client-side encryption.",
+        "CycleJournal is a period calendar and daily journal that works without internet. Write down your period, morning temperature, mucus and symptoms; the app estimates your next period and fertile days, points out anything worth a closer look, and can build a PDF report to bring to your doctor. Everything stays on your phone and can be locked with a PIN.",
       "id-ID":
-        "CycleJournal adalah kalender haid dan jurnal kesuburan berstandar medis klinis. Dilengkapi deteksi anomali FIGO, ekspor PDF siap dokter SpOG, dan privasi mutlak zero-knowledge.",
+        "CycleJournal adalah kalender haid dan catatan harian yang bisa dipakai tanpa internet. Catat haid, suhu pagi, lendir, dan gejalamu; aplikasi memperkirakan haid dan masa subur berikutnya, menandai hal yang perlu diperhatikan, dan bisa membuat laporan PDF untuk dibawa ke dokter. Semua data tersimpan di HP-mu dan bisa dikunci dengan PIN.",
     },
   },
   scenes: [
@@ -56,80 +60,140 @@ export default {
       kind: "screenshot",
       id: "dashboard",
       flow: "store-01-dashboard",
-      headline: { "en-US": "Your cycle, clinically tracked", "id-ID": "Siklus Anda, terpantau klinis" },
+      headline: { "en-US": "Everything about your cycle, in one place", "id-ID": "Semua soal haidmu, di satu layar" },
       subhead: {
-        "en-US": "Period, ovulation and fertile window predicted from FIGO guidance.",
-        "id-ID": "Haid, ovulasi, dan masa subur diprediksi berdasar panduan FIGO.",
+        "en-US": "Your next period, fertile days and daily notes, all on the home screen.",
+        "id-ID": "Perkiraan haid, masa subur, dan catatan harian dalam satu layar.",
       },
     },
     {
       kind: "screenshot",
       id: "calendar",
       flow: "store-02-calendar",
-      headline: { "en-US": "See the whole cycle at once", "id-ID": "Lihat seluruh siklus sekilas" },
+      headline: { "en-US": "See your whole month at a glance", "id-ID": "Lihat sebulan penuh sekilas" },
       subhead: {
-        "en-US": "Every logged day, phase and fertile window on one month map.",
-        "id-ID": "Semua catatan harian, fase, dan masa subur dalam satu peta bulan.",
+        "en-US": "Every day you logged, plus period and fertile days, on one calendar.",
+        "id-ID": "Semua hari yang kamu catat, plus hari haid dan masa subur, dalam satu kalender.",
       },
     },
     {
       kind: "screenshot",
       id: "daily-log",
       flow: "store-03-daily-log",
-      headline: { "en-US": "Log a day in two taps", "id-ID": "Catat harian dalam dua ketukan" },
+      headline: { "en-US": "Log your day in two taps", "id-ID": "Catat harian cuma dua ketukan" },
       subhead: {
-        "en-US": "Bleeding and pain first; everything else stays out of the way until you need it.",
-        "id-ID": "Darah haid dan nyeri lebih dulu; sisanya menunggu sampai Anda butuh.",
+        "en-US": "Bleeding and pain first; the rest waits until you need it.",
+        "id-ID": "Darah haid dan nyeri dulu; sisanya menunggu sampai kamu butuh.",
       },
     },
     {
       kind: "screenshot",
       id: "clinical-detail",
       flow: "store-04-clinical-detail",
-      headline: { "en-US": "Basal temp, mucus, symptoms", "id-ID": "Suhu basal, lendir, gejala" },
+      headline: { "en-US": "Morning temperature, mucus and symptoms", "id-ID": "Suhu pagi, lendir, dan gejala" },
       subhead: {
-        "en-US": "Symptothermal detail in one panel, counted so you know what is still missing.",
-        "id-ID": "Detail simptotermal dalam satu panel, lengkap dengan hitungan yang belum diisi.",
+        "en-US": "Every detail in one panel, with a marker for what is still empty.",
+        "id-ID": "Semua detail dalam satu panel, lengkap dengan penanda yang belum diisi.",
       },
     },
     {
       kind: "screenshot",
       id: "bbt-chart",
       flow: "store-05-bbt",
-      headline: { "en-US": "Watch the thermal shift", "id-ID": "Pantau pergeseran suhu" },
+      headline: { "en-US": "See your morning temperature pattern", "id-ID": "Lihat pola suhu pagimu" },
       subhead: {
-        "en-US": "A three-over-six curve confirms ovulation from your own morning readings.",
-        "id-ID": "Kurva three-over-six memastikan ovulasi dari catatan suhu pagi Anda.",
+        "en-US": "The curve helps estimate when your body releases an egg.",
+        "id-ID": "Grafiknya membantu memperkirakan kapan sel telur dilepas.",
       },
     },
     {
       kind: "screenshot",
       id: "medical-report",
       flow: "store-06-medical-report",
-      headline: { "en-US": "A report your doctor can read", "id-ID": "Laporan siap dibaca dokter" },
+      headline: { "en-US": "A report your doctor can read", "id-ID": "Laporan yang bisa dibaca dokter" },
       subhead: {
-        "en-US": "One-page A4 PDF with FIGO metrics, anomalies and a printable summary.",
-        "id-ID": "PDF A4 satu halaman berisi metrik FIGO, anomali, dan ringkasan siap cetak.",
+        "en-US": "One PDF page: cycle summary, temperature and anything worth a closer look.",
+        "id-ID": "PDF satu halaman: ringkasan siklus, suhu, dan hal yang perlu diperhatikan.",
       },
     },
     {
       kind: "screenshot",
       id: "bilingual-text-size",
       flow: "store-07-settings",
-      headline: { "en-US": "Bilingual, and sized for you", "id-ID": "Dua bahasa, ukuran sesuai Anda" },
+      headline: { "en-US": "Your language, your text size", "id-ID": "Bahasa dan ukuran teks sesuai kamu" },
       subhead: {
-        "en-US": "Indonesian or English, with four text sizes on top of your system setting.",
-        "id-ID": "Indonesia atau Inggris, dengan empat ukuran teks di atas setelan sistem.",
+        "en-US": "Indonesian or English, with four text sizes on top of your phone setting.",
+        "id-ID": "Indonesia atau Inggris, dengan empat ukuran huruf di atas setelan HP-mu.",
       },
     },
     {
       kind: "screenshot",
       id: "privacy-security",
       flow: "store-08-security",
-      headline: { "en-US": "Private by design", "id-ID": "Privat sejak dirancang" },
+      headline: { "en-US": "Your data stays yours", "id-ID": "Datamu milikmu sendiri" },
       subhead: {
-        "en-US": "PIN lock, biometrics, discreet mode and encrypted backups you own.",
-        "id-ID": "Kunci PIN, biometrik, mode samaran, dan cadangan terenkripsi milik Anda.",
+        "en-US": "PIN lock, fingerprint, and encrypted backups you keep yourself.",
+        "id-ID": "Kunci PIN, sidik jari, dan cadangan terenkripsi yang kamu simpan sendiri.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "day-detail",
+      flow: "store-09-day-detail",
+      headline: { "en-US": "Tap a date to see that day", "id-ID": "Ketuk satu tanggal, lihat catatannya" },
+      subhead: {
+        "en-US": "One day in detail: bleeding, temperature, pain and mucus.",
+        "id-ID": "Rincian satu hari: haid, suhu, nyeri, dan lendir.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "report-export",
+      flow: "store-10-report-export",
+      headline: { "en-US": "Share it, or keep the file", "id-ID": "Bagikan, atau simpan filenya" },
+      subhead: {
+        "en-US": "Download a print-ready PDF, or a CSV for your own spreadsheet.",
+        "id-ID": "Unduh PDF siap cetak, atau CSV untuk diolah sendiri.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "mucus-info",
+      flow: "store-11-mucus-info",
+      headline: { "en-US": "Not sure what your mucus means?", "id-ID": "Bingung arti lendirmu?" },
+      subhead: {
+        "en-US": "Tap Keterangan and read what each type means for your fertile days.",
+        "id-ID": "Ketuk Keterangan dan baca arti tiap jenis lendir untuk masa suburmu.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "language",
+      flow: "store-12-language",
+      headline: { "en-US": "Switch language any time", "id-ID": "Ganti bahasa kapan saja" },
+      subhead: {
+        "en-US": "Follow your phone, or pick Indonesian or English yourself.",
+        "id-ID": "Ikuti bahasa HP, atau pilih Indonesia atau Inggris sendiri.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "pin-lock",
+      flow: "store-13-pin",
+      headline: { "en-US": "Lock the app with a PIN", "id-ID": "Kunci aplikasi dengan PIN" },
+      subhead: {
+        "en-US": "Four digits, plus fingerprint if your phone supports it.",
+        "id-ID": "Empat angka, ditambah sidik jari kalau HP-mu mendukung.",
+      },
+    },
+    {
+      kind: "screenshot",
+      id: "backup",
+      flow: "store-14-backup",
+      headline: { "en-US": "Make a backup you control", "id-ID": "Buat cadangan yang aman" },
+      subhead: {
+        "en-US": "Choose a plain backup, or one locked with a PIN.",
+        "id-ID": "Pilih cadangan biasa, atau yang dikunci dengan PIN.",
       },
     },
   ],

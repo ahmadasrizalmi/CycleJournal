@@ -9,7 +9,7 @@
     <string name="mode_discreet_active">Mode Samaran</string>
     <string name="app_version_footer">CycleJournal v%s • Pemantau Siklus Pribadi</string>
 
-    <!-- Navigation & Titles -->
+    <!-- Navigation &amp; Titles -->
     <string name="title_home">CycleJournal</string>
     <string name="title_daily_log">Log Harian Biomarker</string>
     <string name="title_medical_report">Analisis Siklus</string>
@@ -22,13 +22,13 @@
     <string name="nav_report">Analisis</string>
     <string name="nav_settings">Pengaturan</string>
 
-    <!-- Hero Card & Cycle Status -->
+    <!-- Hero Card &amp; Cycle Status -->
     <string name="cycle_day_format">Hari ke-%d Siklus</string>
     <string name="phase_menstruation">Fase Menstruasi</string>
     <string name="phase_follicular">Fase Folikuler</string>
-    <string name="phase_fertile_window">Jendela Subur</string>
+    <string name="phase_fertile_window">Masa subur</string>
     <string name="phase_ovulation">Puncak Ovulasi</string>
-    <string name="phase_luteal">Fase Luteal</string>
+    <string name="phase_luteal">Setelah ovulasi</string>
     <string name="ovulation_countdown_format">Ovulasi dalam %d hari</string>
     <string name="ovulation_today">Ovulasi berlangsung hari ini</string>
     <string name="next_period_countdown_format">Haid berikutnya dalam %d hari</string>
@@ -39,14 +39,14 @@
     <string name="hero_next_period_header">HAID BERIKUTNYA</string>
     <string name="hero_cycle_avg_header">RATA-RATA SIKLUS</string>
     <string name="hero_fertile_ovulation_header">MASA SUBUR &amp; OVULASI</string>
-    <string name="hero_fertile_window_header">JENDELA MASA SUBUR</string>
+    <string name="hero_fertile_window_header">MASA SUBUR</string>
     <string name="hero_ovulation_today_header">PUNCAK OVULASI HARI INI</string>
     <string name="hero_fertile_ended_header">MASA SUBUR SELESAI</string>
 
     <!-- Calendar Legend -->
     <string name="legend_period">Menstruasi</string>
     <string name="legend_predicted_period">Prediksi Haid</string>
-    <string name="legend_fertile">Masa Subur</string>
+    <string name="legend_fertile">Masa subur</string>
     <string name="legend_ovulation">Puncak Ovulasi</string>
     <string name="legend_today">Hari Ini</string>
 
@@ -66,11 +66,11 @@
     <string name="vas_desc_severe">7–10: Nyeri hebat, membatasi gerak atau butuh pereda nyeri.</string>
     <string name="alert_severe_pain">Nyeri level tinggi tercatat. Pertimbangkan konsultasi dengan dokter jika ini terjadi berulang.</string>
 
-    <string name="header_bbt">Suhu Basal Tubuh (°C)</string>
+    <string name="header_bbt">Suhu Pagi (°C)</string>
     <string name="bbt_placeholder">36.50</string>
     <string name="analgesic_checkbox">Minum Obat Pereda Nyeri</string>
 
-    <string name="header_cervical_mucus">Lendir Serviks (Sintotermal)</string>
+    <string name="header_cervical_mucus">Lendir</string>
     <string name="mucus_dry">Kering</string>
     <string name="mucus_sticky">Lengket</string>
     <string name="mucus_creamy">Krim</string>
@@ -88,7 +88,7 @@
     <string name="pdf_generating">Menyiapkan PDF…</string>
     <string name="pdf_ready">Laporan siap dibagikan</string>
 
-    <!-- Settings & Danger Zone -->
+    <!-- Settings &amp; Danger Zone -->
     <string name="section_identity">Identitas &amp; Pemulihan</string>
     <string name="anonymous_id_label">ID Anonim</string>
     <string name="copied_to_clipboard">Disalin ke papan klip</string>
@@ -111,7 +111,7 @@
     <string name="cancel">Batal</string>
 
     <!-- Language Preference -->
-    <string name="section_language_title">PILIHAN BAHASA (LANGUAGE)</string>
+    <string name="section_language_title">BAHASA</string>
     <string name="section_text_size_title">UKURAN TEKS</string>
     <string name="settings_text_size_hint">Diterapkan di atas ukuran teks pada setelan Android Anda.</string>
     <string name="settings_text_size_small">Kecil</string>
@@ -161,7 +161,7 @@
     <string name="app_option_no">Tidak</string>
     <string name="app_option_none">Bebas</string>
     <string name="app_pain_free">Bebas Nyeri</string>
-    <string name="app_phase_fertile_window">Jendela Subur</string>
+    <string name="app_phase_fertile_window">Masa subur</string>
     <string name="app_phase_follicular">Fase Folikuler</string>
     <string name="app_phase_menstrual">Fase Haid</string>
     <string name="app_phase_ovulation_peak">Puncak Ovulasi</string>
@@ -185,20 +185,20 @@
     <string name="cal_cycle_day_format">Hari ke-%1$d Siklus</string>
     <string name="cal_eyebrow_cycle_ovulation_map">PETA SIKLUS &amp; OVULASI</string>
     <string name="cal_header_title">Kalender Siklus</string>
-    <string name="cal_legend_fertile_window">Masa Subur</string>
-    <string name="cal_legend_menstruation">Menstruasi</string>
+    <string name="cal_legend_fertile_window">Masa subur</string>
+    <string name="cal_legend_menstruation">Haid</string>
     <string name="cal_legend_predicted_period">Prediksi Haid</string>
     <string name="cal_next_month">Bulan Depan</string>
     <string name="cal_no_active_cycle_hint">Belum ada siklus aktif. Silakan isi jurnal pada hari haid pertama.</string>
     <string name="cal_ovulation_peak_format">Puncak ovulasi: %1$s (H-%2$d)</string>
-    <string name="cal_param_basal_temp">Suhu Basal</string>
+    <string name="cal_param_basal_temp">Suhu Pagi</string>
     <string name="cal_param_pain_scale">Skala Nyeri</string>
     <string name="cal_period_ovulation_format">Haid: %1$d %2$s • Ovulasi: %3$d %4$s</string>
     <string name="cal_prediction_hint">Catat hari haid untuk memunculkan prediksi</string>
     <string name="cal_prev_month">Bulan Lalu</string>
     <string name="cal_selected_day_hint">Dipilih: %1$d %2$s (Ketuk lagi untuk isi jurnal)</string>
     <string name="cal_status_active_menstrual_bleeding">Pendarahan Menstruasi Aktif</string>
-    <string name="cal_status_fertile_window">Jendela Subur Siklus</string>
+    <string name="cal_status_fertile_window">Masa subur</string>
     <string name="cal_status_outside_active_cycle">Tanggal di luar siklus aktif</string>
     <string name="cal_status_peak_conception_chance">Peluang Konsepsi Tertinggi Siklus Ini</string>
     <string name="cal_status_predicted_period_start">Estimasi Mulai Haid Berikutnya</string>
@@ -209,12 +209,12 @@
     <string name="daily_add_symptom">Tambah Gejala</string>
     <string name="daily_analgesic_label">Analgesik</string>
     <string name="daily_basal_temp_dialog_hint">Ketik suhu tubuh pagi hari (misal: 36.65):</string>
-    <string name="daily_basal_temp_dialog_title">Masukkan Suhu Basal</string>
+    <string name="daily_basal_temp_dialog_title">Isi Suhu Pagi</string>
     <string name="daily_basal_temp_record">+ Catat</string>
     <string name="daily_basal_temp_remove">Hapus</string>
-    <string name="daily_basal_temp_title">Suhu Basal (°C)</string>
+    <string name="daily_basal_temp_title">Suhu Pagi (°C)</string>
     <string name="daily_body_symptoms_title">Gejala Tubuh Hari Ini</string>
-    <string name="daily_cervical_mucus_title">Lendir Serviks (Sintotermal)</string>
+    <string name="daily_cervical_mucus_title">Lendir</string>
     <string name="daily_custom_symptom_hint">Misal: Migrain, Nyeri Sendi, Insomnia...</string>
     <string name="daily_custom_symptom_prompt">Ketikkan nama gejala tubuh yang Anda rasakan:</string>
     <string name="daily_custom_symptom_title">Tambah Gejala Kustom</string>
@@ -240,9 +240,9 @@ Catatan: "</string>
     <string name="daily_pain_scale_title">Tingkat Nyeri (Skala 0–10)</string>
     <string name="daily_save">Simpan</string>
     <string name="daily_save_log">Simpan Catatan Hari Ini</string>
-    <string name="daily_detail_show">Tambah detail klinis</string>
-    <string name="daily_detail_hide">Sembunyikan detail klinis</string>
-    <string name="daily_detail_subtitle_empty">Suhu basal · lendir serviks · gejala · catatan</string>
+    <string name="daily_detail_show">Tambah detail</string>
+    <string name="daily_detail_hide">Sembunyikan detail</string>
+    <string name="daily_detail_subtitle_empty">Suhu pagi · lendir · gejala · catatan</string>
     <string name="daily_detail_subtitle_filled">%1$d dari 5 detail terisi</string>
     <string name="daily_save_hint">Menyimpan aliran, tingkat nyeri, dan detail yang kamu isi</string>
     <string name="daily_discard_title">Buang perubahan?</string>
@@ -266,12 +266,12 @@ Catatan: "</string>
     <string name="dash_avg_cycle_no_data">-- Hari</string>
     <string name="dash_avg_cycle_no_history">Belum ada riwayat</string>
     <string name="dash_avg_cycle_variation_format">Variasi ±%.1f hari</string>
-    <string name="dash_bbt_chart_subtitle">Pantauan Pergeseran Biphasik (3-over-6)</string>
-    <string name="dash_bbt_chart_title">Tren Kurva Suhu Basal (BBT)</string>
-    <string name="dash_bbt_coverline">Coverline 36.40°C</string>
-    <string name="dash_bbt_empty_hint">Ukur suhu basal pagi hari sebelum beranjak dari tempat tidur untuk memantau pergeseran ovulasi.</string>
+    <string name="dash_bbt_chart_subtitle">Pola yang menunjukkan ovulasi</string>
+    <string name="dash_bbt_chart_title">Grafik Suhu Pagi</string>
+    <string name="dash_bbt_coverline">Garis dasar 36.40°C</string>
+    <string name="dash_bbt_empty_hint">Ukur suhu pagi sebelum turun dari kasur untuk melihat pola ovulasi.</string>
     <string name="dash_bbt_phase_follicular_low">Folikuler (Rendah)</string>
-    <string name="dash_bbt_phase_luteal_high">Luteal (Tinggi)</string>
+    <string name="dash_bbt_phase_luteal_high">Setelah Ovulasi (Lebih Tinggi)</string>
     <string name="dash_bbt_rise">Kenaikan BBT (+0.28°C)</string>
     <string name="dash_bbt_status_no_data">Belum Ada Data</string>
     <string name="dash_bbt_status_normal">Normal</string>
@@ -286,15 +286,15 @@ Catatan: "</string>
     <string name="dash_hero_best_conceive_time">Waktu Terbaik Promil</string>
     <string name="dash_hero_fertile_ovulation_header">MASA SUBUR &amp; OVULASI</string>
     <string name="dash_hero_fertile_window_closed">MASA SUBUR SELESAI</string>
-    <string name="dash_hero_fertile_window_header">JENDELA MASA SUBUR</string>
+    <string name="dash_hero_fertile_window_header">MASA SUBUR</string>
     <string name="dash_hero_high_chance">Peluang Tinggi</string>
     <string name="dash_hero_log_for_prediction">Catat haid untuk prediksi</string>
     <string name="dash_hero_low_chance">Peluang Rendah</string>
     <string name="dash_hero_max_pregnancy_chance">Peluang Hamil Maksimal</string>
     <string name="dash_hero_next_period_header">HAID BERIKUTNYA</string>
     <string name="dash_hero_ovulation_peak_today">PUNCAK OVULASI HARI INI</string>
-    <string name="dash_log_basal_temp">Suhu Basal (BBT)</string>
-    <string name="dash_log_cervical_mucus">Lendir Serviks</string>
+    <string name="dash_log_basal_temp">Suhu Pagi</string>
+    <string name="dash_log_cervical_mucus">Lendir</string>
     <string name="dash_next_period_log_first">Catat haid pertama</string>
     <string name="dash_next_period_no_prediction">Belum ada prediksi</string>
     <string name="dash_open_full_calendar">Buka Kalender Penuh &gt;</string>
@@ -312,14 +312,14 @@ Catatan: "</string>
     <string name="dash_vas_mild">Ringan</string>
     <string name="dash_vas_mild_pain_format">%1$s / 10 • Nyeri Ringan</string>
     <string name="dash_vas_pelvic_pain_format">%1$s / 10 • Nyeri Pelvis &amp; Pinggang</string>
-    <string name="dash_vas_scale_title">Skala Nyeri (VAS)</string>
+    <string name="dash_vas_scale_title">Skala Nyeri (0-10)</string>
     <string name="dash_vas_severe">Nyeri Tinggi</string>
     <string name="dash_vas_zero_pain_free">0 / 10 • Bebas Nyeri</string>
     <string name="dash_week_of_format">Minggu Ini • %1$s %2$d</string>
     <string name="detail_cycle_length_format">%1$d Hari</string>
     <string name="detail_date_range_format">%1$d – %2$d %3$s</string>
     <string name="detail_metric_average_temperature">Rata-rata Suhu (BBT)</string>
-    <string name="detail_metric_fertile_window">Jendela Masa Subur</string>
+    <string name="detail_metric_fertile_window">Masa subur</string>
     <string name="detail_metric_menstrual_bleeding">Masa Perdarahan Haid</string>
     <string name="detail_metric_ovulation_peak_estimate">Estimasi Puncak Ovulasi</string>
     <string name="detail_metric_peak_pain_scale">Skala Nyeri Puncak</string>
@@ -343,32 +343,32 @@ Catatan: "</string>
     <string name="mucus_none">Tidak ada</string>
     <string name="nav_log_daily">Catat Harian</string>
     <string name="pin_setup_save">Simpan Kunci Keamanan</string>
-    <string name="pin_setup_subtitle">Lindungi privasi saat ponsel Anda dipinjam</string>
-    <string name="pin_setup_title">Setup Kunci PIN 4-Digit</string>
+    <string name="pin_setup_subtitle">Agar catatanmu tidak terbaca saat HP dipinjam orang</string>
+    <string name="pin_setup_title">Buat PIN 4 Angka</string>
     <string name="report_action_download_summary_pdf">Unduh Rekap Siklus (PDF)</string>
     <string name="report_anonymous_id_label">ID Anonim: %1$s</string>
     <string name="report_attention_prefix">"Perhatian: "</string>
-    <string name="report_bbt_basal_pattern">Pola Temperatur Basal (BBT)</string>
-    <string name="report_bbt_biphasic_pattern">Pola Temperatur Biphasik (Ovulasi Terkonfirmasi)</string>
-    <string name="report_bbt_empty_hint">Belum ada rekaman suhu BBT. Catat suhu basal harian di menu catatan harian untuk menyertakan grafik suhu pada rekap.</string>
-    <string name="report_coverline_value">Coverline: 36.40°C</string>
+    <string name="report_bbt_basal_pattern">Pola Suhu Pagi</string>
+    <string name="report_bbt_biphasic_pattern">Pola Suhu (Ovulasi Terkonfirmasi)</string>
+    <string name="report_bbt_empty_hint">Belum ada catatan suhu pagi. Catat di catatan harian supaya muncul di sini.</string>
+    <string name="report_coverline_value">Garis dasar: 36.40°C</string>
     <string name="report_empty_daily_logs">Belum ada catatan harian yang diinput.</string>
     <string name="report_empty_history_message">Belum ada riwayat siklus yang tercatat.
 Catat hari pertama haid untuk memulai.</string>
     <string name="report_export_ads_hint">"Ingin ekspor langsung tanpa iklan? "</string>
     <string name="report_export_preparing_summary">Menyiapkan Berkas Rekap Siklus...</string>
-    <string name="report_luteal_assumption_note">Estimasi berdasarkan asumsi fase luteal 14 hari dengan rata-rata siklus %1$s hari.</string>
+    <string name="report_luteal_assumption_note">Diperkirakan dari siklus rata-rata %1$s hari, dengan ovulasi sekitar dua minggu sebelum haid berikutnya.</string>
     <string name="report_metric_average">Rata-rata</string>
-    <string name="report_metric_biphasic_shift">Pergeseran Biphasik</string>
+    <string name="report_metric_biphasic_shift">Kenaikan suhu</string>
     <string name="report_metric_current_cycle">Siklus Berjalan</string>
     <string name="report_metric_cycle_variation">Variasi Siklus</string>
     <string name="report_metric_estimate_placeholder">28.0 Hari*</string>
     <string name="report_metric_initial_estimate">Estimasi Awal</string>
-    <string name="report_metric_luteal_phase">Fase Luteal</string>
+    <string name="report_metric_luteal_phase">Setelah ovulasi</string>
     <string name="report_metric_period_length">Lama Haid</string>
     <string name="report_metric_variation_format">±%.1f Hari</string>
-    <string name="report_section_clinical_summary">REKAPITULASI SIKLUS KLINIS</string>
-    <string name="report_section_data_summary">Ringkasan Data</string>
+    <string name="report_section_clinical_summary">RINGKASAN SIKLUSMU</string>
+    <string name="report_section_data_summary">Ringkasan</string>
     <string name="report_section_recent_daily_logs">LOG HARIAN TERAKHIR</string>
     <string name="report_section_timeline_visualization">VISUALISASI TIMELINE SIKLUS</string>
     <string name="report_status_monitoring">Pemantauan aktif: catatan akan dianalisis setiap kali kamu mencatat haid baru</string>
@@ -379,16 +379,16 @@ Catat hari pertama haid untuk memulai.</string>
     <string name="settings_auto_lock_30_seconds">30 Detik</string>
     <string name="settings_auto_lock_subtitle">Saat aplikasi di latar belakang</string>
     <string name="settings_backup_data">Cadangkan Data</string>
-    <string name="settings_backup_data_self_managed">Cadangkan Data Mandiri</string>
-    <string name="settings_backup_lock_encrypted">Terenkripsi dengan PIN</string>
-    <string name="settings_backup_lock_encrypted_description">Diberi kunci enkripsi AES-256. Wajib memasukkan PIN yang sama saat memulihkan berkas.</string>
-    <string name="settings_backup_lock_method_prompt">Pilih metode penguncian berkas cadangan Anda:</string>
-    <string name="settings_backup_lock_standard">Standar (Bebas PIN)</string>
-    <string name="settings_backup_lock_standard_description">Langsung pulih tanpa password. Cocok jika Anda sering lupa PIN dan menyimpan file di Google Drive pribadi.</string>
+    <string name="settings_backup_data_self_managed">Cadangkan data</string>
+    <string name="settings_backup_lock_encrypted">Dikunci dengan PIN</string>
+    <string name="settings_backup_lock_encrypted_description">Perlu PIN 4 angka yang sama untuk membukanya. Lebih aman kalau file disimpan di folder bersama atau cloud.</string>
+    <string name="settings_backup_lock_method_prompt">Apakah file cadangan perlu dikunci?</string>
+    <string name="settings_backup_lock_standard">Tanpa PIN</string>
+    <string name="settings_backup_lock_standard_description">Bisa dibuka tanpa sandi. Lebih praktis kalau kamu sering lupa PIN, tapi siapa pun yang punya filenya bisa membacanya.</string>
     <string name="settings_backup_privacy_note">Tersimpan Lokal • Privasi Terjaga 100%</string>
     <string name="settings_backup_recovery_key">Kunci Pemulihan Cadangan</string>
     <string name="settings_backup_recovery_key_hint">Gunakan kode rahasia ini jika Anda berganti perangkat baru.</string>
-    <string name="settings_bbt_reminder">Pengingat Suhu Basal (BBT)</string>
+    <string name="settings_bbt_reminder">Pengingat Suhu Pagi</string>
     <string name="settings_bbt_reminder_subtitle">Alarm lembut pukul 05:30 pagi</string>
     <string name="settings_biometric_disabled">Kunci Sidik Jari Dinonaktifkan</string>
     <string name="settings_biometric_enabled">Kunci Sidik Jari / Biometrik Aktif</string>
@@ -440,14 +440,14 @@ Pastikan Anda sudah mencadangkan data jika ingin menyimpannya.</string>
     <string name="settings_pro_features_unlimited">Semua fitur ekspor dan sinkronisasi aktif tanpa batas.</string>
     <string name="settings_pro_lifetime_active">LISENSI PRO SEUMUR HIDUP AKTIF</string>
     <string name="settings_pro_purchase_description">Beli putus sekali seumur hidup: 100% bebas iklan, ekspor PDF tanpa batas &amp; sinkronisasi cloud terenkripsi.</string>
-    <string name="settings_promil_mode">Mode Program Hamil (Promil)</string>
+    <string name="settings_promil_mode">Mode Program Hamil</string>
     <string name="settings_promil_mode_enabled">Mode Promil Diaktifkan</string>
     <string name="settings_promil_off_description">Nonaktif: Beranda bersih &amp; fokus jadwal haid berikutnya (ramah remaja/lajang).</string>
     <string name="settings_promil_on_description">Aktif: Beranda menampilkan masa subur, ovulasi &amp; peluang konsepsi.</string>
     <string name="settings_quick_guide_faq">Panduan Singkat &amp; FAQ</string>
     <string name="settings_quick_guide_subtitle">Cara input haid, prediksi siklus &amp; arti warna</string>
     <string name="settings_restore_data">Pulihkan Data</string>
-    <string name="settings_section_backup">CADANGAN DATA MANDIRI</string>
+    <string name="settings_section_backup">CADANGAN DATA</string>
     <string name="settings_section_delete_all_data">HAPUS SEMUA DATA</string>
     <string name="settings_section_display">TAMPILAN &amp; NOTIFIKASI</string>
     <string name="settings_section_preferences">PREFERENSI &amp; KONTROL</string>

@@ -13,8 +13,8 @@
     <string name="v4_an_attention_header">Pola lain yang terdeteksi</string>
     <string name="v4_an_attention_show">Lihat %1$d</string>
     <string name="v4_an_attention_hide">Sembunyikan</string>
-    <string name="v4_bbt_reminder_on_toast">Pengingat suhu basal aktif</string>
-    <string name="v4_bbt_reminder_off_toast">Pengingat suhu basal nonaktif</string>
+    <string name="v4_bbt_reminder_on_toast">Pengingat suhu pagi aktif</string>
+    <string name="v4_bbt_reminder_off_toast">Pengingat suhu pagi mati</string>
     <string name="v4_save_to_device">Simpan ke perangkat…</string>
     <string name="v4_saved_in_app_folder">Tersimpan di folder aplikasi — pakai Simpan ke perangkat untuk menaruhnya di Download.</string>
     <string name="v4_saved_to_device_toast">Tersimpan: %1$s</string>
@@ -57,11 +57,11 @@
     <string name="v4_home_card_water">Air</string>
     <string name="v4_home_card_mucus">Lendir</string>
     <string name="v4_home_card_notes">Catatan</string>
-    <string name="v4_home_basal_temp">Suhu basal</string>
+    <string name="v4_home_basal_temp">Suhu pagi</string>
     <string name="v4_home_temp_optional">%1$s · opsional</string>
     <string name="v4_home_temp_not_measured">Belum diukur</string>
     <string name="v4_home_not_logged">Belum dicatat</string>
-    <string name="v4_home_vas_format">VAS %1$d</string>
+    <string name="v4_home_vas_format">Nyeri %1$d</string>
 
     <!-- Calendar -->
     <string name="v4_cal_today">Hari ini</string>
@@ -77,7 +77,7 @@
     <string name="v4_cal_high_chance">Peluang kehamilan tinggi</string>
     <string name="v4_cal_expected_ovulation">Perkiraan ovulasi</string>
     <string name="v4_cal_peak_fertility">Puncak kesuburan</string>
-    <string name="v4_cal_log_bbt">Catat suhu basal</string>
+    <string name="v4_cal_log_bbt">Catat suhu pagi</string>
     <string name="v4_cal_morning_reminder">Pengingat pagi</string>
     <string name="v4_cal_no_entries">Belum ada entri timeline</string>
 
@@ -93,19 +93,19 @@
     <string name="v4_log_flow_heavy">Berat</string>
     <string name="v4_log_pain">Tingkat nyeri</string>
     <string name="v4_log_pain_score">%1$d / 10</string>
-    <string name="v4_log_pain_free">Tanpa nyeri</string>
+    <string name="v4_log_pain_free">Tidak nyeri</string>
     <string name="v4_log_pain_mild">Ringan</string>
     <string name="v4_log_pain_moderate">Sedang</string>
     <string name="v4_log_pain_severe">Berat</string>
-    <string name="v4_log_clinical">Detail klinis</string>
-    <string name="v4_log_clinical_hide">Sembunyikan detail klinis</string>
-    <string name="v4_log_clinical_sub">Suhu basal · lendir · obat</string>
-    <string name="v4_log_bbt">Suhu basal</string>
+    <string name="v4_log_clinical">Detail tambahan</string>
+    <string name="v4_log_clinical_hide">Sembunyikan detail tambahan</string>
+    <string name="v4_log_clinical_sub">Suhu pagi · lendir · obat</string>
+    <string name="v4_log_bbt">Suhu pagi</string>
     <string name="v4_log_bbt_hint">± mengubah 0,01 °C</string>
     <string name="v4_log_meds">Obat pereda nyeri</string>
-    <string name="v4_log_mucus">Lendir serviks</string>
+    <string name="v4_log_mucus">Lendir</string>
     <string name="v4_mucus_info_cta">Keterangan</string>
-    <string name="v4_mucus_info_title">Lendir serviks</string>
+    <string name="v4_mucus_info_title">Lendir</string>
     <string name="v4_mucus_info_intro">Jenis lendir membantu memperkirakan masa subur. Yang paling subur: bening dan elastis seperti putih telur.</string>
     <string name="v4_mucus_info_none">Tidak ada lendir yang terlihat.</string>
     <string name="v4_mucus_info_dry">Terasa kering — umumnya masa tidak subur.</string>
@@ -126,15 +126,15 @@
     <string name="v4_log_symptom_back">Punggung</string>
     <string name="v4_log_symptom_breasts">Payudara</string>
     <string name="v4_log_notes">Catatan</string>
-    <string name="v4_log_notes_hint">Hal yang ingin kamu ingat hari ini</string>
+    <string name="v4_log_notes_hint">Apa pun yang ingin kamu ingat</string>
     <string name="v4_log_save">Simpan catatan hari ini</string>
 
     <!-- Analysis -->
     <string name="v4_an_title_summary">Analisis Siklus</string>
-    <string name="v4_an_pill_summary">Ringkasan Data</string>
+    <string name="v4_an_pill_summary">Ringkasan</string>
     <string name="v4_an_title_timeline">Timeline Siklus</string>
     <string name="v4_an_last_cycles">%1$d siklus terakhir</string>
-    <string name="v4_an_summary_header">RINGKASAN SIKLUS KLINIS</string>
+    <string name="v4_an_summary_header">RINGKASAN SIKLUSMU</string>
     <string name="v4_an_avg_eyebrow">SIKLUS RATA-RATA</string>
     <string name="v4_an_badge_regular">Teratur</string>
     <string name="v4_an_badge_irregular">Tidak teratur</string>
@@ -144,12 +144,12 @@
     <string name="v4_an_chart_sub">6 bulan terakhir</string>
     <string name="v4_an_phase_period">Haid</string>
     <string name="v4_an_phase_fertile">Masa subur</string>
-    <string name="v4_an_phase_luteal">Fase luteal</string>
+    <string name="v4_an_phase_luteal">Setelah ovulasi</string>
     <string name="v4_an_days_count">%1$d hari</string>
     <string name="v4_an_no_data">Data siklus belum cukup</string>
-    <string name="v4_an_no_data_sub">Catat minimal dua periode haid agar ringkasan klinis bisa dihitung.</string>
+    <string name="v4_an_no_data_sub">Catat minimal dua kali haid supaya ringkasan ini bisa terisi.</string>
     <string name="v4_an_warning_title">Perhatian: nyeri haid tergolong berat</string>
-    <string name="v4_an_warning_body">Skor nyeri VAS %1$d/10 terdeteksi pada %2$s.</string>
+    <string name="v4_an_warning_body">Kamu mencatat nyeri %1$d dari 10 pada %2$s.</string>
     <string name="v4_an_report_header">LAPORAN</string>
     <string name="v4_an_report_sub">Unduh ringkasan siklus &amp; gejala</string>
     <string name="v4_an_filter_all">Semua</string>
@@ -164,7 +164,7 @@
     <string name="v4_an_ongoing">Berlangsung</string>
     <string name="v4_an_day_n_ongoing">Hari ke-%1$d · berlangsung</string>
     <string name="v4_an_see_all">Lihat semua</string>
-    <string name="v4_an_tip">Tips: ukur suhu di jam yang sama tiap pagi supaya pola bifasik terbaca.</string>
+    <string name="v4_an_tip">Tips: ukur suhu di jam yang sama tiap pagi supaya polanya terlihat.</string>
     <string name="v4_an_temp_format">%1$s</string>
     <string name="v4_an_pain_format">%1$d/10</string>
     <string name="v4_an_cycle_range">%1$s – %2$s</string>
@@ -181,14 +181,14 @@
 
     <!-- Profile / license -->
     <string name="v4_profile_anonymous">Pengguna anonim</string>
-    <string name="v4_profile_license_free">Lisensi Gratis</string>
+    <string name="v4_profile_license_free">Versi gratis</string>
     <string name="v4_profile_license_pro">Lisensi Pro</string>
     <string name="v4_profile_go_pro">Jadi Pro</string>
     <string name="v4_profile_pro_active">Pro aktif</string>
 
     <!-- Trying to conceive -->
-    <string name="v4_promil_title">Mode Promil</string>
-    <string name="v4_promil_subtitle">Panduan kesuburan &amp; masa subur</string>
+    <string name="v4_promil_title">Program hamil</string>
+    <string name="v4_promil_subtitle">Panduan masa subur</string>
     <string name="v4_promil_enable">Aktifkan</string>
     <string name="v4_promil_active">Aktif</string>
     <string name="v4_promil_on_toast">Mode promil diaktifkan</string>

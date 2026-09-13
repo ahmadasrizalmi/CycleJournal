@@ -5,7 +5,7 @@
     <string name="mode_discreet_active">Discreet Mode</string>
     <string name="app_version_footer">CycleJournal v%s • Private Cycle Tracker</string>
 
-    <!-- Navigation & Titles -->
+    <!-- Navigation &amp; Titles -->
     <string name="title_home">CycleJournal</string>
     <string name="title_daily_log">Daily Biomarker Log</string>
     <string name="title_medical_report">Cycle Analysis</string>
@@ -18,13 +18,13 @@
     <string name="nav_report">Analysis</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Hero Card & Cycle Status -->
+    <!-- Hero Card &amp; Cycle Status -->
     <string name="cycle_day_format">Cycle Day %d</string>
     <string name="phase_menstruation">Menstrual Phase</string>
     <string name="phase_follicular">Follicular Phase</string>
-    <string name="phase_fertile_window">Fertile Window</string>
+    <string name="phase_fertile_window">Fertile days</string>
     <string name="phase_ovulation">Ovulation Peak</string>
-    <string name="phase_luteal">Luteal Phase</string>
+    <string name="phase_luteal">After ovulation</string>
     <string name="ovulation_countdown_format">Ovulation in %d days</string>
     <string name="ovulation_today">Ovulation expected today</string>
     <string name="next_period_countdown_format">Next period in %d days</string>
@@ -35,14 +35,14 @@
     <string name="hero_next_period_header">NEXT PERIOD</string>
     <string name="hero_cycle_avg_header">CYCLE AVERAGE</string>
     <string name="hero_fertile_ovulation_header">FERTILITY &amp; OVULATION</string>
-    <string name="hero_fertile_window_header">FERTILE WINDOW</string>
+    <string name="hero_fertile_window_header">FERTILE DAYS</string>
     <string name="hero_ovulation_today_header">OVULATION PEAK TODAY</string>
-    <string name="hero_fertile_ended_header">FERTILE WINDOW ENDED</string>
+    <string name="hero_fertile_ended_header">FERTILE DAYS ENDED</string>
 
     <!-- Calendar Legend -->
     <string name="legend_period">Period</string>
     <string name="legend_predicted_period">Predicted Period</string>
-    <string name="legend_fertile">Fertile Window</string>
+    <string name="legend_fertile">Fertile days</string>
     <string name="legend_ovulation">Ovulation Peak</string>
     <string name="legend_today">Today</string>
 
@@ -62,11 +62,11 @@
     <string name="vas_desc_severe">7–10: Severe pain, limits mobility or requires bed rest.</string>
     <string name="alert_severe_pain">High pain level recorded. Consider consulting a doctor if this reoccurs.</string>
 
-    <string name="header_bbt">Basal Body Temp (°C)</string>
+    <string name="header_bbt">Morning Temperature (°C)</string>
     <string name="bbt_placeholder">36.50</string>
     <string name="analgesic_checkbox">Took Medication</string>
 
-    <string name="header_cervical_mucus">Cervical Mucus (Symptothermal)</string>
+    <string name="header_cervical_mucus">Discharge</string>
     <string name="mucus_dry">Dry</string>
     <string name="mucus_sticky">Sticky</string>
     <string name="mucus_creamy">Creamy</string>
@@ -84,7 +84,7 @@
     <string name="pdf_generating">Generating PDF…</string>
     <string name="pdf_ready">Report ready to share</string>
 
-    <!-- Settings & Danger Zone -->
+    <!-- Settings &amp; Danger Zone -->
     <string name="section_identity">Identity &amp; Recovery</string>
     <string name="anonymous_id_label">Anonymous User ID</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -107,7 +107,7 @@
     <string name="cancel">Cancel</string>
 
     <!-- Language Preference -->
-    <string name="section_language_title">LANGUAGE PREFERENCE</string>
+    <string name="section_language_title">LANGUAGE</string>
     <string name="section_text_size_title">TEXT SIZE</string>
     <string name="settings_text_size_hint">Applied on top of the text size set in Android settings.</string>
     <string name="settings_text_size_small">Small</string>
@@ -157,13 +157,13 @@
     <string name="app_option_no">No</string>
     <string name="app_option_none">None</string>
     <string name="app_pain_free">Pain-Free</string>
-    <string name="app_phase_fertile_window">Fertile Window</string>
+    <string name="app_phase_fertile_window">Fertile days</string>
     <string name="app_phase_follicular">Follicular Phase</string>
     <string name="app_phase_menstrual">Menstrual Phase</string>
     <string name="app_phase_ovulation_peak">Ovulation Peak</string>
     <string name="app_share">Share</string>
     <string name="app_share_to_drive_chat">Share to Drive / Chat</string>
-    <string name="app_timeline_menstruation">Menstruation</string>
+    <string name="app_timeline_menstruation">Period</string>
     <string name="app_timeline_ovulation">Ovulation</string>
     <string name="app_toast_daily_log_saved">Daily Log Saved (Not a Menstrual Day)</string>
     <string name="app_toast_download_complete">Download Complete</string>
@@ -181,20 +181,20 @@
     <string name="cal_cycle_day_format">Cycle Day %1$d</string>
     <string name="cal_eyebrow_cycle_ovulation_map">CYCLE &amp; OVULATION MAP</string>
     <string name="cal_header_title">Cycle Calendar</string>
-    <string name="cal_legend_fertile_window">Fertile Window</string>
-    <string name="cal_legend_menstruation">Menstruation</string>
+    <string name="cal_legend_fertile_window">Fertile days</string>
+    <string name="cal_legend_menstruation">Period</string>
     <string name="cal_legend_predicted_period">Predicted Period</string>
     <string name="cal_next_month">Next Month</string>
     <string name="cal_no_active_cycle_hint">No active cycle yet. Please log your journal on the first day of your period.</string>
     <string name="cal_ovulation_peak_format">Ovulation peak: %1$s (in %2$d days)</string>
-    <string name="cal_param_basal_temp">Basal Temperature</string>
+    <string name="cal_param_basal_temp">Morning Temperature</string>
     <string name="cal_param_pain_scale">Pain Scale</string>
     <string name="cal_period_ovulation_format">Period: %1$d %2$s • Ovulation: %3$d %4$s</string>
     <string name="cal_prediction_hint">Log period days to generate predictions</string>
     <string name="cal_prev_month">Previous Month</string>
     <string name="cal_selected_day_hint">Selected: %1$d %2$s (tap again to log)</string>
     <string name="cal_status_active_menstrual_bleeding">Active Menstrual Bleeding</string>
-    <string name="cal_status_fertile_window">Cycle Fertile Window</string>
+    <string name="cal_status_fertile_window">Fertile days</string>
     <string name="cal_status_outside_active_cycle">Date outside active cycle</string>
     <string name="cal_status_peak_conception_chance">Highest Conception Chance This Cycle</string>
     <string name="cal_status_predicted_period_start">Estimated Start of Next Period</string>
@@ -205,12 +205,12 @@
     <string name="daily_add_symptom">Add Symptom</string>
     <string name="daily_analgesic_label">Analgesic</string>
     <string name="daily_basal_temp_dialog_hint">Enter your morning body temperature (e.g., 36.65):</string>
-    <string name="daily_basal_temp_dialog_title">Enter Basal Temperature</string>
+    <string name="daily_basal_temp_dialog_title">Enter Morning Temperature</string>
     <string name="daily_basal_temp_record">+ Log</string>
     <string name="daily_basal_temp_remove">Remove</string>
-    <string name="daily_basal_temp_title">Basal Temperature (°C)</string>
+    <string name="daily_basal_temp_title">Morning Temperature (°C)</string>
     <string name="daily_body_symptoms_title">Today\'s Body Symptoms</string>
-    <string name="daily_cervical_mucus_title">Cervical Mucus (Symptothermal)</string>
+    <string name="daily_cervical_mucus_title">Discharge</string>
     <string name="daily_custom_symptom_hint">e.g., Migraine, Joint Pain, Insomnia...</string>
     <string name="daily_custom_symptom_prompt">Enter the name of the body symptom you are feeling:</string>
     <string name="daily_custom_symptom_title">Add Custom Symptom</string>
@@ -236,9 +236,9 @@ Notes: "</string>
     <string name="daily_pain_scale_title">Pain Level (Scale 0–10)</string>
     <string name="daily_save">Save</string>
     <string name="daily_save_log">Save Today\'s Log</string>
-    <string name="daily_detail_show">Add clinical detail</string>
-    <string name="daily_detail_hide">Hide clinical detail</string>
-    <string name="daily_detail_subtitle_empty">Basal temp · cervical mucus · symptoms · notes</string>
+    <string name="daily_detail_show">Add more details</string>
+    <string name="daily_detail_hide">Hide more details</string>
+    <string name="daily_detail_subtitle_empty">Morning temp · discharge · symptoms · notes</string>
     <string name="daily_detail_subtitle_filled">%1$d of 5 details filled</string>
     <string name="daily_save_hint">Saves bleeding, pain level and any detail you filled in</string>
     <string name="daily_discard_title">Discard changes?</string>
@@ -262,12 +262,12 @@ Notes: "</string>
     <string name="dash_avg_cycle_no_data">-- Days</string>
     <string name="dash_avg_cycle_no_history">No history yet</string>
     <string name="dash_avg_cycle_variation_format">Variation ±%.1f days</string>
-    <string name="dash_bbt_chart_subtitle">Biphasic Shift Monitoring (3-over-6)</string>
-    <string name="dash_bbt_chart_title">Basal Temperature Curve Trend (BBT)</string>
-    <string name="dash_bbt_coverline">Coverline 36.40°C</string>
-    <string name="dash_bbt_empty_hint">Measure your basal temperature in the morning before getting out of bed to monitor ovulation shifts.</string>
+    <string name="dash_bbt_chart_subtitle">Pattern that shows ovulation</string>
+    <string name="dash_bbt_chart_title">Morning Temperature Curve</string>
+    <string name="dash_bbt_coverline">Baseline 36.40°C</string>
+    <string name="dash_bbt_empty_hint">Measure your temperature in the morning before getting out of bed to see the ovulation pattern.</string>
     <string name="dash_bbt_phase_follicular_low">Follicular (Low)</string>
-    <string name="dash_bbt_phase_luteal_high">Luteal (High)</string>
+    <string name="dash_bbt_phase_luteal_high">After Ovulation (Higher)</string>
     <string name="dash_bbt_rise">BBT Rise (+0.28°C)</string>
     <string name="dash_bbt_status_no_data">No Data Yet</string>
     <string name="dash_bbt_status_normal">Normal</string>
@@ -280,17 +280,17 @@ Notes: "</string>
     <string name="dash_hero_average_cycle_header">AVERAGE CYCLE</string>
     <string name="dash_hero_awaiting_new_cycle">Awaiting new cycle</string>
     <string name="dash_hero_best_conceive_time">Best Time to Conceive</string>
-    <string name="dash_hero_fertile_ovulation_header">FERTILE WINDOW &amp; OVULATION</string>
-    <string name="dash_hero_fertile_window_closed">FERTILE WINDOW CLOSED</string>
-    <string name="dash_hero_fertile_window_header">FERTILE WINDOW</string>
+    <string name="dash_hero_fertile_ovulation_header">FERTILE DAYS &amp; OVULATION</string>
+    <string name="dash_hero_fertile_window_closed">FERTILE DAYS ENDED</string>
+    <string name="dash_hero_fertile_window_header">FERTILE DAYS</string>
     <string name="dash_hero_high_chance">High Chance</string>
     <string name="dash_hero_log_for_prediction">Log period for prediction</string>
     <string name="dash_hero_low_chance">Low Chance</string>
     <string name="dash_hero_max_pregnancy_chance">Maximum Pregnancy Chance</string>
     <string name="dash_hero_next_period_header">NEXT PERIOD</string>
     <string name="dash_hero_ovulation_peak_today">OVULATION PEAK TODAY</string>
-    <string name="dash_log_basal_temp">Basal Temperature (BBT)</string>
-    <string name="dash_log_cervical_mucus">Cervical Mucus</string>
+    <string name="dash_log_basal_temp">Morning Temperature</string>
+    <string name="dash_log_cervical_mucus">Discharge</string>
     <string name="dash_next_period_log_first">Log first period</string>
     <string name="dash_next_period_no_prediction">No prediction yet</string>
     <string name="dash_open_full_calendar">Open Full Calendar &gt;</string>
@@ -308,14 +308,14 @@ Notes: "</string>
     <string name="dash_vas_mild">Mild</string>
     <string name="dash_vas_mild_pain_format">%1$s / 10 • Mild Pain</string>
     <string name="dash_vas_pelvic_pain_format">%1$s / 10 • Pelvic &amp; Lower Back Pain</string>
-    <string name="dash_vas_scale_title">Pain Scale (VAS)</string>
+    <string name="dash_vas_scale_title">Pain Scale (0-10)</string>
     <string name="dash_vas_severe">Severe Pain</string>
     <string name="dash_vas_zero_pain_free">0 / 10 • Pain-Free</string>
     <string name="dash_week_of_format">This Week • %1$s %2$d</string>
     <string name="detail_cycle_length_format">%1$d Days</string>
     <string name="detail_date_range_format">%1$d – %2$d %3$s</string>
     <string name="detail_metric_average_temperature">Average Temperature (BBT)</string>
-    <string name="detail_metric_fertile_window">Fertile Window</string>
+    <string name="detail_metric_fertile_window">Fertile days</string>
     <string name="detail_metric_menstrual_bleeding">Menstrual Bleeding Duration</string>
     <string name="detail_metric_ovulation_peak_estimate">Estimated Ovulation Peak</string>
     <string name="detail_metric_peak_pain_scale">Peak Pain Scale</string>
@@ -339,32 +339,32 @@ Notes: "</string>
     <string name="mucus_none">None</string>
     <string name="nav_log_daily">Daily Log</string>
     <string name="pin_setup_save">Save Security PIN</string>
-    <string name="pin_setup_subtitle">Protect your privacy when your phone is borrowed</string>
-    <string name="pin_setup_title">Set Up 4-Digit PIN</string>
+    <string name="pin_setup_subtitle">So nobody can open your journal when they borrow your phone</string>
+    <string name="pin_setup_title">Create a 4-Digit PIN</string>
     <string name="report_action_download_summary_pdf">Download Cycle Summary (PDF)</string>
     <string name="report_anonymous_id_label">Anonymous ID: %1$s</string>
     <string name="report_attention_prefix">"Attention: "</string>
-    <string name="report_bbt_basal_pattern">Basal Temperature Pattern (BBT)</string>
-    <string name="report_bbt_biphasic_pattern">Biphasic Temperature Pattern (Ovulation Confirmed)</string>
-    <string name="report_bbt_empty_hint">No BBT temperature records yet. Log your daily basal temperature in the Daily Log menu to include the temperature chart in the summary.</string>
-    <string name="report_coverline_value">Coverline: 36.40°C</string>
+    <string name="report_bbt_basal_pattern">Morning Temperature Pattern</string>
+    <string name="report_bbt_biphasic_pattern">Temperature Pattern (Ovulation Confirmed)</string>
+    <string name="report_bbt_empty_hint">No morning temperature records yet. Log your temperature in the daily log to include it here.</string>
+    <string name="report_coverline_value">Baseline: 36.40°C</string>
     <string name="report_empty_daily_logs">No daily entries have been logged yet.</string>
     <string name="report_empty_history_message">No cycle history recorded yet.
 Log your first period day to get started.</string>
     <string name="report_export_ads_hint">"Want ad-free exports? "</string>
     <string name="report_export_preparing_summary">Preparing Cycle Summary File...</string>
-    <string name="report_luteal_assumption_note">Estimated using a 14-day luteal phase assumption with an average cycle of %1$s days.</string>
+    <string name="report_luteal_assumption_note">Estimated from an average cycle of %1$s days, with ovulation about two weeks before your next period.</string>
     <string name="report_metric_average">Average</string>
-    <string name="report_metric_biphasic_shift">Biphasic Shift</string>
+    <string name="report_metric_biphasic_shift">Temperature rise</string>
     <string name="report_metric_current_cycle">Current Cycle</string>
     <string name="report_metric_cycle_variation">Cycle Variation</string>
     <string name="report_metric_estimate_placeholder">28.0 Days*</string>
     <string name="report_metric_initial_estimate">Initial Estimate</string>
-    <string name="report_metric_luteal_phase">Luteal Phase</string>
+    <string name="report_metric_luteal_phase">After ovulation</string>
     <string name="report_metric_period_length">Period Length</string>
     <string name="report_metric_variation_format">±%.1f Days</string>
-    <string name="report_section_clinical_summary">CLINICAL CYCLE SUMMARY</string>
-    <string name="report_section_data_summary">Data Summary</string>
+    <string name="report_section_clinical_summary">YOUR CYCLE AT A GLANCE</string>
+    <string name="report_section_data_summary">Summary</string>
     <string name="report_section_recent_daily_logs">RECENT DAILY LOGS</string>
     <string name="report_section_timeline_visualization">CYCLE TIMELINE VISUALIZATION</string>
     <string name="report_status_monitoring">Active monitoring: entries will be analyzed each time you log a new period</string>
@@ -375,16 +375,16 @@ Log your first period day to get started.</string>
     <string name="settings_auto_lock_30_seconds">30 Seconds</string>
     <string name="settings_auto_lock_subtitle">When the app is in the background</string>
     <string name="settings_backup_data">Back Up Data</string>
-    <string name="settings_backup_data_self_managed">Self-Managed Data Backup</string>
-    <string name="settings_backup_lock_encrypted">Encrypted with PIN</string>
-    <string name="settings_backup_lock_encrypted_description">Protected with AES-256 encryption. You must enter the same PIN when restoring the file.</string>
-    <string name="settings_backup_lock_method_prompt">Choose the lock method for your backup file:</string>
-    <string name="settings_backup_lock_standard">Standard (PIN-Free)</string>
-    <string name="settings_backup_lock_standard_description">Restores instantly without a password. Ideal if you often forget your PIN and keep the file in your personal Google Drive.</string>
+    <string name="settings_backup_data_self_managed">Back up your data</string>
+    <string name="settings_backup_lock_encrypted">Locked with a PIN</string>
+    <string name="settings_backup_lock_encrypted_description">Needs the same 4-digit PIN to open. Safer if the file sits in a shared folder or cloud drive.</string>
+    <string name="settings_backup_lock_method_prompt">Should the backup file be locked?</string>
+    <string name="settings_backup_lock_standard">No PIN</string>
+    <string name="settings_backup_lock_standard_description">Opens without a password. Easier if you often forget PINs, but anyone holding the file can read it.</string>
     <string name="settings_backup_privacy_note">Stored Locally • 100% Privacy Protected</string>
     <string name="settings_backup_recovery_key">Backup Recovery Key</string>
     <string name="settings_backup_recovery_key_hint">Use this secret code if you switch to a new device.</string>
-    <string name="settings_bbt_reminder">Basal Body Temperature Reminder (BBT)</string>
+    <string name="settings_bbt_reminder">Morning Temperature Reminder</string>
     <string name="settings_bbt_reminder_subtitle">Gentle alarm at 05:30 AM</string>
     <string name="settings_biometric_disabled">Fingerprint Lock Disabled</string>
     <string name="settings_biometric_enabled">Fingerprint / Biometric Lock Enabled</string>
@@ -436,14 +436,14 @@ Make sure you have backed up your data if you want to keep it.</string>
     <string name="settings_pro_features_unlimited">All export and sync features are active without limits.</string>
     <string name="settings_pro_lifetime_active">LIFETIME PRO LICENSE ACTIVE</string>
     <string name="settings_pro_purchase_description">One-time lifetime purchase: 100% ad-free, unlimited PDF export &amp; encrypted cloud sync.</string>
-    <string name="settings_promil_mode">Trying to Conceive Mode (TTC)</string>
+    <string name="settings_promil_mode">Trying for a Baby Mode</string>
     <string name="settings_promil_mode_enabled">Trying to Conceive Mode Enabled</string>
     <string name="settings_promil_off_description">Off: Home stays clean &amp; focuses on your next period date (teen/single friendly).</string>
     <string name="settings_promil_on_description">Active: Home shows your fertile window, ovulation &amp; conception chances.</string>
     <string name="settings_quick_guide_faq">Quick Guide &amp; FAQ</string>
     <string name="settings_quick_guide_subtitle">How to log periods, cycle predictions &amp; color meanings</string>
     <string name="settings_restore_data">Restore Data</string>
-    <string name="settings_section_backup">SELF-MANAGED DATA BACKUP</string>
+    <string name="settings_section_backup">DATA BACKUP</string>
     <string name="settings_section_delete_all_data">DELETE ALL DATA</string>
     <string name="settings_section_display">DISPLAY &amp; NOTIFICATIONS</string>
     <string name="settings_section_preferences">PREFERENCES &amp; CONTROLS</string>

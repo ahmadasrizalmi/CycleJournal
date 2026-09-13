@@ -521,6 +521,7 @@ fun LogSheetV4(
                                 SoftPill(
                                     text = stringResource(R.string.v4_mucus_info_cta),
                                     onClick = { isMucusInfoOpen = true },
+                                    modifier = Modifier.testTag("log_mucus_info"),
                                     height = 32.dp,
                                     fill = BrandTint,
                                     contentColor = BrandEnd
