@@ -36,6 +36,26 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Android App Links (Auto-verified Domain Links) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="asridigital.com"
+                    android:pathPrefix="/apps/cyclejournal" />
+            </intent-filter>
+
+            <!-- Custom URI Scheme for shortcuts and deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="cyclejournal" />
+            </intent-filter>
         </activity>
 
         <!-- Android FileProvider for sharing clinical PDF and CSV reports -->
