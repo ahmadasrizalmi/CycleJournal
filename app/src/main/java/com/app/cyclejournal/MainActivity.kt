@@ -8,6 +8,7 @@ import android.os.LocaleList
 import androidx.annotation.RequiresApi
 import android.os.Bundle
 import android.os.Process
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
@@ -131,6 +132,7 @@ class MainActivity : FragmentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         // FLAG_SECURE disabled to allow screenshot capture and preview
@@ -139,6 +141,7 @@ class MainActivity : FragmentActivity() {
         billingManager.initialize()
         adMobManager.initialize()
         adMobManager.loadRewardedVideo()
+        adMobManager.loadInterstitial()
 
         biometricAuthHelper = BiometricAuthHelper(this)
 
@@ -343,7 +346,12 @@ class MainActivity : FragmentActivity() {
                     } else {
                     CycleJournalApp(
                         onSharePdf = {
-                            runWithStorage { cycleViewModel.exportAndSharePdfReport(this@MainActivity) }
+                            adMobManager.showRewardedVideo(
+                                activity = this@MainActivity,
+                                onRewardEarned = {
+                                    runWithStorage { cycleViewModel.exportAndSharePdfReport(this@MainActivity) }
+                                }
+                            )
                         },
                         onExportCsv = {
                             runWithStorage {
@@ -388,7 +396,10 @@ class MainActivity : FragmentActivity() {
                         },
                         isProUserActive = isProUser,
                         anonymousRecoveryKey = pinManager.getOrCreateAnonymousUserId(),
-                        onSaveDailyLog = { cycleViewModel.saveDailyLog(it) },
+                        onSaveDailyLog = { logEntity ->
+                            cycleViewModel.saveDailyLog(logEntity)
+                            adMobManager.showInterstitial(this@MainActivity)
+                        },
                         onSavePin = { pinManager.savePin(it) },
                         latestCycle = latestCycle,
                         fertilePrediction = fertilePrediction,

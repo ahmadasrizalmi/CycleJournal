@@ -13,8 +13,8 @@ android {
         applicationId = "com.app.cyclejournal"
         minSdk = 26
         targetSdk = 36
-        versionCode = 21
-        versionName = "1.1.19"
+        versionCode = 22
+        versionName = "1.1.20"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Marketing screenshots run the release build with -PdemoSeed=true so the store shots
         // show a populated app. Off by default, so the shipped build never seeds content.
@@ -42,6 +42,9 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
         }
         debug {
             isMinifyEnabled = false

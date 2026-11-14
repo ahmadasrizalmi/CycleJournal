@@ -53,6 +53,7 @@ import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.domain.model.CycleStats
 import com.app.cyclejournal.domain.model.FertilePrediction
+import com.app.cyclejournal.ui.components.AdMobBannerCard
 import com.app.cyclejournal.ui.components.SoftCard
 import com.app.cyclejournal.ui.theme.AppType
 import com.app.cyclejournal.ui.theme.BrandEnd
@@ -107,7 +108,8 @@ fun CalendarV4Screen(
     selectedCalendarDate: LocalDate,
     onSelectDate: (LocalDate) -> Unit,
     onOpenLog: (LocalDate) -> Unit,
-    onToast: (String) -> Unit
+    onToast: (String) -> Unit,
+    isProUser: Boolean = false
 ) {
     val today = remember { LocalDate.now() }
     var monthCursor by remember { mutableStateOf(YearMonth.from(selectedCalendarDate)) }
@@ -183,6 +185,11 @@ fun CalendarV4Screen(
                     CalendarLegend()
                 }
             }
+        }
+
+        // ---------------------------------------------------- ad banner card -
+        item {
+            AdMobBannerCard(isProUser = isProUser)
         }
 
         // ------------------------------------------------- timeline title ---

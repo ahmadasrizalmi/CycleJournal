@@ -113,7 +113,8 @@ fun LogSheetV4(
     targetDate: LocalDate,
     initialLog: DailyLogEntity?,
     onDismiss: () -> Unit,
-    onSave: (DailyLogEntity) -> Unit
+    onSave: (DailyLogEntity) -> Unit,
+    isProUser: Boolean = false
 ) {
     val context = LocalContext.current
 
@@ -614,6 +615,12 @@ fun LogSheetV4(
                     }
                 }
             }
+
+            // ---------------------------------------------------- ad banner --
+            AdMobBannerCard(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+                isProUser = isProUser
+            )
 
             // ------------------------------------------------------- footer --
             HairLine()

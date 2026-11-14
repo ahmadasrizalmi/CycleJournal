@@ -22,10 +22,10 @@
         android:theme="@style/Theme.CycleJournal"
         android:localeConfig="@xml/locales_config">
 
-        <!-- Google AdMob Application ID (Official test ID for build & validation) -->
+        <!-- Google AdMob Application ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-3127867508262261~7951662653" />
 
         <activity
             android:name=".MainActivity"

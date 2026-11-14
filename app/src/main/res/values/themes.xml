@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme -->
+    <!-- Base application theme (Edge-to-edge compliant for Android 15+) -->
     <style name="Theme.CycleJournal" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#FFFFFF</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
         <item name="android:windowLightNavigationBar">true</item>
     </style>
 

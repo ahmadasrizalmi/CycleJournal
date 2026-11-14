@@ -54,6 +54,7 @@ import com.app.cyclejournal.data.local.entity.CycleEntity
 import com.app.cyclejournal.data.local.entity.DailyLogEntity
 import com.app.cyclejournal.domain.model.CycleStats
 import com.app.cyclejournal.domain.model.FertilePrediction
+import com.app.cyclejournal.ui.components.AdMobBannerCard
 import com.app.cyclejournal.ui.components.RingProgress
 import com.app.cyclejournal.ui.components.SoftCard
 import com.app.cyclejournal.ui.theme.AppType
@@ -118,7 +119,8 @@ fun HomeV4Screen(
     today: LocalDate = LocalDate.now(),
     onOpenLog: (LocalDate) -> Unit,
     onMarkPeriodEnded: () -> Unit,
-    onOpenCalendar: () -> Unit
+    onOpenCalendar: () -> Unit,
+    isProUser: Boolean = false
 ) {
     // While a period is still running, "days logged so far" is not the pattern length: the design
     // copy reads "<day> of <pattern length>". Use the recorded average once there is one, otherwise
@@ -219,6 +221,11 @@ fun HomeV4Screen(
                     }
                 }
             }
+        }
+
+        // ---------------------------------------------------- ad banner card -
+        item {
+            AdMobBannerCard(isProUser = isProUser)
         }
 
         // -------------------------------------------------------- ringkasan --

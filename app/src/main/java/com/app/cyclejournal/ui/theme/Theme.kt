@@ -54,8 +54,6 @@ fun CycleJournalTheme(content: @Composable () -> Unit) {
         SideEffect {
             val window = (view.context as? Activity)?.window
             if (window != null) {
-                window.statusBarColor = palette.brandStart.toArgb()
-                window.navigationBarColor = palette.paper.toArgb()
                 val controller = WindowCompat.getInsetsController(window, view)
                 // The v4 header band is a brand gradient, so the status bar runs light-on-dark.
                 controller.isAppearanceLightStatusBars = false

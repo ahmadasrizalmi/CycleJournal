@@ -281,3 +281,87 @@ Masuk ke menu: **Monetize > Products > In-app products**:
 
 * **URL Resmi Kebijakan Privasi:** `https://asridigital.com/cyclejournal/privacy`
 * **Kepatuhan Regulasi:** GDPR Pasal 9 (Perlindungan Khusus Data Kesehatan), UU Pelindungan Data Pribadi (UU PDP No. 27/2022 Indonesia), dan Kebijakan Data Kesehatan Google Play.
+
+---
+
+## 9. Detail Login / Sign-in details (App content) — WAJIB
+
+**Lokasi di Play Console:** `Kebijakan dan program` → `Konten aplikasi` → **Detail login** (*Sign-in details*).
+
+> ### Jawaban yang benar
+> Pilih: **"Semua fungsi di aplikasi saya tersedia tanpa akses khusus"**
+> (EN: *All functionality is available without special access*)
+>
+> **Jangan** pilih "Semua atau sebagian fungsi dibatasi" (*All or some functionality is
+> restricted*). Memilih opsi itu mewajibkan isi **Username + Password**; CycleJournal tidak
+> punya akun sama sekali, jadi kolom itu tidak akan pernah bisa diisi secara valid — inilah
+> yang memunculkan pesan **"Perlu diperhatikan — Detail login tidak ada"**.
+
+### Bukti bahwa tidak ada login (hasil audit build v1.1.19, versionCode 21)
+
+1. **Tidak ada akun/login di seluruh source.** Tidak ada Firebase Auth, Google Sign-In, OAuth,
+   atau endpoint login. Gradle hanya memuat Billing, AdMob, Room/SQLCipher, Biometric.
+2. **APK rilis hanya punya satu activity yang bisa diluncurkan:**
+   `launchable-activity: com.app.cyclejournal.MainActivity` (dibaca langsung dari
+   `release/CycleJournal_v1.1.19.apk` dengan `aapt dump badging`). Tidak ada activity login.
+3. **PIN aplikasi bersifat opsional dan TIDAK diisi pabrik.** Saat instal baru
+   `pinManager.isPinSet()` bernilai `false`, sehingga `MainActivity.kt:149` menandai aplikasi
+   sudah terbuka dan `MainActivity.kt:245` tidak pernah menampilkan layar kunci. Layar PIN hanya
+   muncul setelah pengguna sendiri menyimpannya dari menu Pengaturan (baris
+   `settings_pin` → `PinSetupDialog`) — `SecurityPinManager.savePin()`. Saat instalasi bersih,
+   baris tersebut terbaca **"Not set (Optional)"**.
+4. **Alur pertama kali buka tidak meminta kredensial apa pun:** carousel onboarding 3 slide →
+   tombol "Mulai" (`onboarding_new_user`) → langsung ke beranda. Tombol kedua
+   ("Pulihkan") hanya membuka pemilih berkas `.cjbackup`.
+5. **Tidak ada konten yang benar-benar terkunci di balik pembayaran.** Ekspor PDF & CSV selalu
+   aktif (`AnalysisV4Screen.kt`, `ReportPill` dipanggil tanpa syarat `isPro`); `isPro` hanya
+   menambah baris ajakan "Upgrade". `AdMobManager.ENABLE_ADS = false` (tidak ada iklan yang
+   tampil), dan sinkronisasi cloud sudah dihapus di rilis ini
+   (`CycleApplication.kt:25-27` + `LegacyCloudBackupCleanup`).
+
+### Teks siap tempel untuk kolom "Instruksi lainnya" (WAJIB bahasa Inggris)
+
+Dipakai bila Console tetap meminta keterangan tambahan:
+
+```
+No account, login, or sign-up is required to review this app. It has no backend sign-in:
+there is no username, password, e-mail, or social login anywhere in the app, so no test
+credentials exist.
+
+Steps to reach every feature from a clean install:
+1. Install and open the app. The first screen is a 3-slide onboarding carousel.
+2. Tap the primary button ("Mulai" / "Start") at the bottom. You land directly on the Home
+   dashboard. The other button only opens the system file picker to restore a .cjbackup file,
+   so it can be ignored.
+3. Use the bottom navigation: Home, Calendar, Analysis, Settings. All tracking screens,
+   the 6-month calendar projection, the FIGO anomaly analysis, and the PDF/CSV export in the
+   Analysis tab are fully usable without any purchase or sign-in.
+
+About the optional app lock: Settings > "4-Digit PIN Lock" is an OPTIONAL local privacy
+feature that is OFF by default (it shows "Not set (Optional)"). If you switch it on, you
+choose your own 4-digit PIN and it will be requested the next time the app returns from the
+background. We recommend leaving it OFF during review. If it was enabled and the PIN is no
+longer known, uninstalling and reinstalling the app clears it.
+
+About in-app purchases: the optional one-time "Lifetime Pro" product is a support/upgrade
+purchase. No feature is gated behind it, so nothing needs to be purchased in order to review
+the app.
+
+All data stays on the device. The app works fully without network access.
+```
+
+### Catatan penting
+
+* Kredensial harus **selalu aktif, bisa dipakai ulang, dan valid di semua negara**. PIN yang
+  ditulis manual sebagai "password" akan ditolak — PIN itu tidak pernah ada sebelum pengguna
+  membuatnya sendiri.
+* Aturan resmi Google: <https://support.google.com/googleplay/android-developer/answer/15748846>
+  → *"If your app requires users to set up their own password (for example, a PIN) to access
+  in-app content, be sure to provide clear instructions."* dan
+  *"If your app does not require sign-in details but you have functionalities or content behind
+  a subscription paywall, please provide additional instructions or access details…"*
+* **Tidak perlu upload AAB baru** untuk memperbaiki ini. Cukup: `Konten aplikasi` → `Detail
+  login` → ubah jawaban → **Simpan** → buka `Ringkasan publikasi` → **Kirim untuk ditinjau**.
+* Jangan menyalakan PIN di perangkat peninjau. Kalau peninjau menyalakannya lalu keluar dari
+  aplikasi lebih dari 30 detik, layar kunci akan muncul dan mereka bisa melaporkan aplikasi
+  "terkunci" — inilah satu-satunya jalur di mana aplikasi ini terlihat seperti butuh login.

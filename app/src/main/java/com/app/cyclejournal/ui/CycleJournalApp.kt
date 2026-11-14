@@ -213,7 +213,8 @@ fun CycleJournalApp(
                             )
                             showToast(resources.getString(R.string.v4_home_period_ended_toast))
                         },
-                        onOpenCalendar = { currentScreen = AppScreen.CALENDAR }
+                        onOpenCalendar = { currentScreen = AppScreen.CALENDAR },
+                        isProUser = isProLicenseActive
                     )
                     AppScreen.CALENDAR -> CalendarV4Screen(
                         periodDates = periodDates,
@@ -228,7 +229,8 @@ fun CycleJournalApp(
                             logModalDate = date
                             isLogModalOpen = true
                         },
-                        onToast = showToast
+                        onToast = showToast,
+                        isProUser = isProLicenseActive
                     )
                     AppScreen.REPORT -> AnalysisV4Screen(
                         isPro = isProLicenseActive,
@@ -365,7 +367,8 @@ fun CycleJournalApp(
                     isLogModalOpen = false
                     val isBleed = logEntity.flow in listOf(FlowIntensity.LIGHT, FlowIntensity.MEDIUM, FlowIntensity.HEAVY)
                     showToast(if (isBleed) resources.getString(R.string.app_toast_period_log_saved) else resources.getString(R.string.app_toast_daily_log_saved))
-                }
+                },
+                isProUser = isProLicenseActive
             )
         }
         if (downloadedReport != null) {

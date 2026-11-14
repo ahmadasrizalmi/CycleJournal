@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
@@ -94,6 +95,7 @@ fun BrandBand(
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
             .background(BrandGradient)
+            .statusBarsPadding()
             .padding(horizontal = Dimens.ScreenPadding)
             .padding(top = topPadding, bottom = bottomPadding)
     ) {

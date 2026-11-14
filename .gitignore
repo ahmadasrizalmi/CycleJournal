@@ -39,6 +39,10 @@ out/raw/
 out/*.raw
 out/*.zip
 out/*.png
+out/*.pdf
+out/*.cjbackup
+out/web/screenshots/v4/
+out/web/raw/pixel-10-pro/29*
 !out/screenshots/**
 !out/web/**
 out/xml/
